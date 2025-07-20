@@ -59,6 +59,10 @@ python init_default_data.py
 echo "Creating sample apartments:"
 python create_sample_apartments.py
 
+# Create static apartments page
+echo "Creating static apartments page:"
+python create_apartments_page.py
+
 # Skip creating temporary home page
 # echo "Creating temporary home page:"
 # python create_temp_home.py
