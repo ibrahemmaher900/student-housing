@@ -33,7 +33,20 @@ python manage.py collectstatic --no-input
 
 # Apply migrations
 echo "Applying migrations:"
-python manage.py migrate
+python manage.py makemigrations --noinput
+python manage.py migrate --noinput
+
+# Check if migrations were applied correctly
+echo "Checking database tables:"
+python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_housing.settings'); import django; django.setup(); from django.db import connection; print('Tables in database:', connection.introspection.table_names())"
+
+# Run database initialization script
+echo "Running database initialization script:"
+python init_database.py
+
+# Create default data
+echo "Creating default data:"
+python init_default_data.py
 
 # Create .env file if it doesn't exist
 if [ ! -f .env ]; then

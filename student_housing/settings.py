@@ -119,6 +119,12 @@ if 'DATABASE_URL' in os.environ:
     print(f"Using database: {DATABASES['default']['ENGINE']}")
 else:
     print("Using SQLite database")
+    # Make sure the SQLite database file is in a writable location
+    db_path = BASE_DIR / 'db.sqlite3'
+    print(f"SQLite database path: {db_path}")
+    print(f"Directory exists: {os.path.exists(os.path.dirname(db_path))}")
+    print(f"Directory is writable: {os.access(os.path.dirname(db_path), os.W_OK)}")
+    DATABASES['default']['NAME'] = db_path
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
