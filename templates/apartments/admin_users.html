@@ -1,0 +1,228 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">إدارة المستخدمين</h1>
+            
+            <!-- المستخدمين المحظورين -->
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">المستخدمين المحظورين</h5>
+                </div>
+                <div class="card-body">
+                    {% if banned_users %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>نوع المستخدم</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in banned_users %}
+                                        <tr>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.profile.get_user_type_display }}</td>
+                                            <td>
+                                                <a href="{% url 'unban_user' user.id %}" class="btn btn-sm btn-success" onclick="return confirm('هل أنت متأكد من إلغاء الحظر عن هذا المستخدم؟')">
+                                                    <i class="fas fa-unlock"></i> إلغاء الحظر
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            لا يوجد مستخدمين محظورين حالياً.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- المستخدمين المبلغ عنهم -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">المستخدمين المبلغ عنهم</h5>
+                </div>
+                <div class="card-body">
+                    {% if reported_users %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>اسم المستخدم</th>
+                                        <th>البريد الإلكتروني</th>
+                                        <th>نوع المستخدم</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in reported_users %}
+                                        <tr>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.profile.get_user_type_display }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger" onclick="manualBanUser({{ user.id }})">
+                                                    <i class="fas fa-ban"></i> حظر المستخدم
+                                                </button>
+                                                <button class="btn btn-sm btn-success" onclick="resetReports({{ user.id }})">
+                                                    <i class="fas fa-redo"></i> إعادة ضبط الإبلاغات
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info mb-0">
+                            لا يوجد مستخدمين مبلغ عنهم حالياً.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- جميع المستخدمين -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">جميع المستخدمين</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3" id="userTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab" aria-controls="all" aria-selected="true">الكل</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab" aria-controls="students" aria-selected="false">الطلاب</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="owners-tab" data-bs-toggle="tab" data-bs-target="#owners" type="button" role="tab" aria-controls="owners" aria-selected="false">الملاك</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="userTabsContent">
+                        <!-- جميع المستخدمين -->
+                        <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>اسم المستخدم</th>
+                                            <th>البريد الإلكتروني</th>
+                                            <th>نوع المستخدم</th>
+                                            <th>تاريخ التسجيل</th>
+                                            <th>الحالة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                            <tr>
+                                                <td>{{ user.username }}</td>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.profile.get_user_type_display }}</td>
+                                                <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+                                                <td>
+                                                    <span class="badge bg-success">نشط</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- الطلاب -->
+                        <div class="tab-pane fade" id="students" role="tabpanel" aria-labelledby="students-tab">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>اسم المستخدم</th>
+                                            <th>البريد الإلكتروني</th>
+                                            <th>تاريخ التسجيل</th>
+                                            <th>الحالة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in students %}
+                                            <tr>
+                                                <td>{{ user.username }}</td>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+                                                <td>
+                                                    <span class="badge bg-success">نشط</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- الملاك -->
+                        <div class="tab-pane fade" id="owners" role="tabpanel" aria-labelledby="owners-tab">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>اسم المستخدم</th>
+                                            <th>البريد الإلكتروني</th>
+                                            <th>تاريخ التسجيل</th>
+                                            <th>عدد الشقق</th>
+                                            <th>الحالة</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in owners %}
+                                            <tr>
+                                                <td>{{ user.username }}</td>
+                                                <td>{{ user.email }}</td>
+                                                <td>{{ user.date_joined|date:"Y-m-d" }}</td>
+                                                <td>{{ user.apartments.count }}</td>
+                                                <td>
+                                                    <span class="badge bg-success">نشط</span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // وظيفة لحظر مستخدم يدوياً
+    function manualBanUser(userId) {
+        if (confirm('هل أنت متأكد من حظر هذا المستخدم؟')) {
+            // يمكن استخدام AJAX لإرسال طلب الحظر
+            window.location.href = `/apartments/admin/users/${userId}/ban/`;
+        }
+    }
+    
+    // وظيفة لإعادة ضبط عداد الإبلاغات
+    function resetReports(userId) {
+        if (confirm('هل أنت متأكد من إعادة ضبط عداد الإبلاغات لهذا المستخدم؟')) {
+            // يمكن استخدام AJAX لإرسال طلب إعادة الضبط
+            window.location.href = `/apartments/admin/users/${userId}/reset-reports/`;
+        }
+    }
+</script>
+{% endblock %}

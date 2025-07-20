@@ -1,0 +1,228 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 bg-primary text-white mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1 class="display-5 fw-bold mb-2">إدارة الشقق</h1>
+                <p class="lead mb-0">مراجعة وإدارة الشقق المعلقة والمنشورة</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-tabs mb-4" id="apartmentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="true">
+                        <i class="fas fa-clock me-2"></i> بانتظار الموافقة <span class="badge bg-warning ms-2">{{ pending_apartments.count }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab" aria-controls="approved" aria-selected="false">
+                        <i class="fas fa-check-circle me-2"></i> تمت الموافقة <span class="badge bg-success ms-2">{{ approved_apartments.count }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected" type="button" role="tab" aria-controls="rejected" aria-selected="false">
+                        <i class="fas fa-times-circle me-2"></i> مرفوضة <span class="badge bg-danger ms-2">{{ rejected_apartments.count }}</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="apartmentTabsContent">
+                <!-- الشقق المعلقة -->
+                <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                    {% if pending_apartments %}
+                        <div class="row">
+                            {% for apartment in pending_apartments %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                {% if apartment.images.first %}
+                                                    <img src="{{ apartment.images.first.image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ apartment.title }}">
+                                                {% else %}
+                                                    <div class="bg-light h-100 d-flex align-items-center justify-content-center rounded-start">
+                                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="card-title">{{ apartment.title }}</h5>
+                                                        <span class="badge bg-warning">معلق</span>
+                                                    </div>
+                                                    <p class="card-text text-muted small mb-2">
+                                                        <i class="fas fa-map-marker-alt me-1"></i> {{ apartment.address }}
+                                                    </p>
+                                                    <p class="card-text mb-2">
+                                                        <span class="fw-bold">{{ apartment.price }} ريال</span> / شهرياً
+                                                    </p>
+                                                    <p class="card-text mb-2 small">
+                                                        <i class="fas fa-bed me-1"></i> {{ apartment.bedrooms }} غرف نوم
+                                                        <i class="fas fa-bath me-1 ms-2"></i> {{ apartment.bathrooms }} حمام
+                                                        <i class="fas fa-ruler-combined me-1 ms-2"></i> {{ apartment.area }} م²
+                                                    </p>
+                                                    <p class="card-text mb-2 small">
+                                                        <i class="fas fa-user me-1"></i> {{ apartment.owner.username }}
+                                                    </p>
+                                                    <p class="card-text mb-3">
+                                                        <small class="text-muted">تاريخ النشر: {{ apartment.created_at|date:"Y-m-d" }}</small>
+                                                    </p>
+                                                    <div class="d-flex">
+                                                        <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                                            <i class="fas fa-eye me-1"></i> عرض
+                                                        </a>
+                                                        <a href="{% url 'approve_apartment' apartment.id %}" class="btn btn-sm btn-success me-2">
+                                                            <i class="fas fa-check me-1"></i> موافقة
+                                                        </a>
+                                                        <a href="{% url 'reject_apartment' apartment.id %}" class="btn btn-sm btn-danger">
+                                                            <i class="fas fa-times me-1"></i> رفض
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> لا توجد شقق معلقة بانتظار الموافقة.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- الشقق الموافق عليها -->
+                <div class="tab-pane fade" id="approved" role="tabpanel" aria-labelledby="approved-tab">
+                    {% if approved_apartments %}
+                        <div class="row">
+                            {% for apartment in approved_apartments %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                {% if apartment.images.first %}
+                                                    <img src="{{ apartment.images.first.image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ apartment.title }}">
+                                                {% else %}
+                                                    <div class="bg-light h-100 d-flex align-items-center justify-content-center rounded-start">
+                                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="card-title">{{ apartment.title }}</h5>
+                                                        <span class="badge bg-success">تمت الموافقة</span>
+                                                    </div>
+                                                    <p class="card-text text-muted small mb-2">
+                                                        <i class="fas fa-map-marker-alt me-1"></i> {{ apartment.address }}
+                                                    </p>
+                                                    <p class="card-text mb-2">
+                                                        <span class="fw-bold">{{ apartment.price }} ريال</span> / شهرياً
+                                                    </p>
+                                                    <p class="card-text mb-2 small">
+                                                        <i class="fas fa-bed me-1"></i> {{ apartment.bedrooms }} غرف نوم
+                                                        <i class="fas fa-bath me-1 ms-2"></i> {{ apartment.bathrooms }} حمام
+                                                        <i class="fas fa-ruler-combined me-1 ms-2"></i> {{ apartment.area }} م²
+                                                    </p>
+                                                    <p class="card-text mb-2 small">
+                                                        <i class="fas fa-user me-1"></i> {{ apartment.owner.username }}
+                                                    </p>
+                                                    <p class="card-text mb-3">
+                                                        <small class="text-muted">تاريخ النشر: {{ apartment.created_at|date:"Y-m-d" }}</small>
+                                                    </p>
+                                                    <div class="d-flex">
+                                                        <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                                            <i class="fas fa-eye me-1"></i> عرض
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> لا توجد شقق موافق عليها.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- الشقق المرفوضة -->
+                <div class="tab-pane fade" id="rejected" role="tabpanel" aria-labelledby="rejected-tab">
+                    {% if rejected_apartments %}
+                        <div class="row">
+                            {% for apartment in rejected_apartments %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                {% if apartment.images.first %}
+                                                    <img src="{{ apartment.images.first.image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ apartment.title }}">
+                                                {% else %}
+                                                    <div class="bg-light h-100 d-flex align-items-center justify-content-center rounded-start">
+                                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h5 class="card-title">{{ apartment.title }}</h5>
+                                                        <span class="badge bg-danger">مرفوض</span>
+                                                    </div>
+                                                    <p class="card-text text-muted small mb-2">
+                                                        <i class="fas fa-map-marker-alt me-1"></i> {{ apartment.address }}
+                                                    </p>
+                                                    <p class="card-text mb-2">
+                                                        <span class="fw-bold">{{ apartment.price }} ريال</span> / شهرياً
+                                                    </p>
+                                                    <p class="card-text mb-2 small">
+                                                        <i class="fas fa-bed me-1"></i> {{ apartment.bedrooms }} غرف نوم
+                                                        <i class="fas fa-bath me-1 ms-2"></i> {{ apartment.bathrooms }} حمام
+                                                        <i class="fas fa-ruler-combined me-1 ms-2"></i> {{ apartment.area }} م²
+                                                    </p>
+                                                    <p class="card-text mb-2 small">
+                                                        <i class="fas fa-user me-1"></i> {{ apartment.owner.username }}
+                                                    </p>
+                                                    <p class="card-text mb-3">
+                                                        <small class="text-muted">تاريخ النشر: {{ apartment.created_at|date:"Y-m-d" }}</small>
+                                                    </p>
+                                                    <div class="d-flex">
+                                                        <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                                            <i class="fas fa-eye me-1"></i> عرض
+                                                        </a>
+                                                        <a href="{% url 'approve_apartment' apartment.id %}" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-check me-1"></i> موافقة
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> لا توجد شقق مرفوضة.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 550px;
+        margin: 0 auto;
+    }
+    
+    .auth-card {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: none;
+    }
+    
+    .auth-header {
+        background-color: #FF5A5F;
+        padding: 30px 20px;
+        text-align: center;
+        color: white;
+    }
+    
+    .auth-header h3 {
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+    
+    .auth-body {
+        padding: 30px;
+    }
+    
+    .auth-form .form-control {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+    }
+    
+    .auth-form .form-control:focus {
+        border-color: #FF5A5F;
+        box-shadow: 0 0 0 0.2rem rgba(255, 90, 95, 0.25);
+    }
+    
+    .auth-btn {
+        background-color: #FF5A5F;
+        border-color: #FF5A5F;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        width: 100%;
+    }
+    
+    .auth-btn:hover {
+        background-color: #FF4146;
+        border-color: #FF4146;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    .auth-icon {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #FF5A5F;
+    }
+    
+    .form-check-input:checked {
+        background-color: #FF5A5F;
+        border-color: #FF5A5F;
+    }
+    
+    .user-type-selector {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    
+    .user-type-option {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .user-type-option:first-child {
+        margin-left: 10px;
+    }
+    
+    .user-type-option.active {
+        border-color: #FF5A5F;
+        background-color: rgba(255, 90, 95, 0.1);
+    }
+    
+    .user-type-option i {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #767676;
+    }
+    
+    .user-type-option.active i {
+        color: #FF5A5F;
+    }
+    
+    .user-type-option h5 {
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    
+    .user-type-option p {
+        font-size: 12px;
+        color: #767676;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container my-5">
+    <div class="card auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fas fa-user-plus fa-2x"></i>
+            </div>
+            <h3>إنشاء حساب جديد</h3>
+        </div>
+        <div class="auth-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                <div class="user-type-selector">
+                    <div class="user-type-option active" data-value="student" onclick="selectUserType('student')">
+                        <i class="fas fa-user-graduate"></i>
+                        <h5>طالب</h5>
+                        <p>أبحث عن سكن قريب من جامعتي</p>
+                    </div>
+                    <div class="user-type-option" data-value="owner" onclick="selectUserType('owner')">
+                        <i class="fas fa-home"></i>
+                        <h5>مالك عقار</h5>
+                        <p>أريد تأجير شقتي للطلاب</p>
+                    </div>
+                </div>
+                
+                <input type="hidden" name="user_type" id="user_type" value="student">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">اسم المستخدم</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.username }}
+                            </div>
+                            {% if form.username.errors %}
+                            <div class="text-danger">
+                                {% for error in form.username.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">البريد الإلكتروني</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                            <div class="text-danger">
+                                {% for error in form.email.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_first_name" class="form-label">الاسم الأول</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.first_name }}
+                            </div>
+                            {% if form.first_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.first_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_last_name" class="form-label">الاسم الأخير</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.last_name }}
+                            </div>
+                            {% if form.last_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.last_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">كلمة المرور</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password1 }}
+                            </div>
+                            {% if form.password1.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password1.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">تأكيد كلمة المرور</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password2 }}
+                            </div>
+                            {% if form.password2.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password2.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                    <label class="form-check-label" for="agreeTerms">أوافق على الشروط والأحكام</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">إنشاء حساب</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>لديك حساب بالفعل؟ <a href="{% url 'login' %}">تسجيل الدخول</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function selectUserType(type) {
+        // تحديث قيمة الحقل المخفي
+        document.getElementById('user_type').value = type;
+        
+        // تحديث التصميم
+        const options = document.querySelectorAll('.user-type-option');
+        options.forEach(option => {
+            if (option.getAttribute('data-value') === type) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+    }
+</script>
+{% endblock %}

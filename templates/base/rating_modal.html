@@ -1,0 +1,84 @@
+<!-- نافذة تقييم الموقع -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="ratingModalLabel">شاركنا رأيك في موقع سكن طالب</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>نحن نسعى دائماً لتحسين خدماتنا. يرجى مشاركتنا رأيك في الموقع:</p>
+        
+        <div class="mb-3">
+          <label class="form-label fw-bold">تقييمك للموقع:</label>
+          <div class="rating-stars text-center mb-3">
+            <div class="rating-group">
+              <input type="radio" class="btn-check" name="rating" id="rating-5" value="5" autocomplete="off">
+              <label for="rating-5" class="btn btn-outline-warning btn-lg mx-1"><i class="fas fa-star"></i></label>
+              
+              <input type="radio" class="btn-check" name="rating" id="rating-4" value="4" autocomplete="off">
+              <label for="rating-4" class="btn btn-outline-warning btn-lg mx-1"><i class="fas fa-star"></i></label>
+              
+              <input type="radio" class="btn-check" name="rating" id="rating-3" value="3" autocomplete="off">
+              <label for="rating-3" class="btn btn-outline-warning btn-lg mx-1"><i class="fas fa-star"></i></label>
+              
+              <input type="radio" class="btn-check" name="rating" id="rating-2" value="2" autocomplete="off">
+              <label for="rating-2" class="btn btn-outline-warning btn-lg mx-1"><i class="fas fa-star"></i></label>
+              
+              <input type="radio" class="btn-check" name="rating" id="rating-1" value="1" autocomplete="off">
+              <label for="rating-1" class="btn btn-outline-warning btn-lg mx-1"><i class="fas fa-star"></i></label>
+            </div>
+          </div>
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              // إضافة مستمع أحداث لكل زر نجمة
+              document.querySelectorAll('.btn-check').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                  // إزالة الفئة النشطة من جميع الأزرار
+                  document.querySelectorAll('.rating-group label').forEach(function(label) {
+                    label.classList.remove('active');
+                    label.classList.remove('btn-warning');
+                    label.classList.add('btn-outline-warning');
+                  });
+                  
+                  // تحديد النجوم حتى النجمة المختارة
+                  const rating = parseInt(this.value);
+                  for (let i = 1; i <= 5; i++) {
+                    const label = document.querySelector(`label[for="rating-${i}"]`);
+                    if (i <= rating) {
+                      label.classList.add('active');
+                      label.classList.remove('btn-outline-warning');
+                      label.classList.add('btn-warning');
+                    }
+                  }
+                });
+              });
+            });
+          </script>
+        </div>
+        
+        <div class="mb-3">
+          <label for="reviewText" class="form-label fw-bold">اكتب رأيك (اختياري):</label>
+          <textarea class="form-control" id="reviewText" rows="3" placeholder="شاركنا تجربتك مع موقع سكن طالب..."></textarea>
+          <div class="form-text">سيتم عرض رأيك في صفحة آراء المستخدمين</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        <button type="button" class="btn btn-primary" id="submitRating">إرسال التقييم</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .rating-group .btn-outline-warning:hover,
+  .rating-group .btn-check:checked + .btn-outline-warning {
+    background-color: #ffc107;
+    color: #000;
+  }
+  
+  .rating-group .btn-check:focus + .btn-outline-warning {
+    box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+  }
+</style>

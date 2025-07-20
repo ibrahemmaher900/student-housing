@@ -1,0 +1,65 @@
+<!-- قائمة التنبيهات المنسدلة -->
+<div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropdown" style="width: 350px; max-height: 450px; overflow-y: auto;">
+    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom sticky-top bg-primary text-white">
+        <h6 class="mb-0 fw-bold">التنبيهات</h6>
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-light me-1" id="refresh-notifications" title="تحديث">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            {% if unread_notifications_count > 0 %}
+            <a href="{% url 'mark_all_read' %}" class="btn btn-sm btn-light" title="تعليم الكل كمقروء">
+                <i class="fas fa-check-double"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div id="notifications-container">
+        {% if user_notifications %}
+            {% for notification in user_notifications %}
+            <a href="{% url 'mark_notification_as_read' notification.id %}" class="dropdown-item py-3 border-bottom notification-item {% if not notification.is_read %}unread{% endif %}" data-id="{{ notification.id }}">
+                <div class="notification-header-row d-flex align-items-center mb-2">
+                    <div class="notification-icon rounded-circle me-2 
+                        {% if notification.notification_type == 'booking_request' %}bg-primary
+                        {% elif notification.notification_type == 'booking_approved' %}bg-success
+                        {% elif notification.notification_type == 'booking_rejected' %}bg-danger
+                        {% elif 'apartment_approved' == notification.notification_type %}bg-success
+                        {% elif 'apartment_rejected' == notification.notification_type %}bg-danger
+                        {% elif 'apartment_pending' == notification.notification_type %}bg-warning
+                        {% elif 'non_serious_booking' == notification.notification_type %}bg-warning text-dark
+                        {% elif 'user_banned' == notification.notification_type %}bg-dark
+                        {% else %}bg-info{% endif %} text-white p-2">
+                        <i class="fas 
+                            {% if 'booking' in notification.notification_type %}fa-calendar-check
+                            {% elif 'apartment' in notification.notification_type %}fa-home
+                            {% elif 'user_banned' in notification.notification_type %}fa-ban
+                            {% elif 'comment' in notification.notification_type %}fa-comment
+                            {% else %}fa-bell{% endif %}"></i>
+                    </div>
+                    <div class="fw-bold">{{ notification.get_notification_type_display }}</div>
+                    {% if not notification.is_read %}
+                    <div class="ms-auto">
+                        <span class="badge bg-danger rounded-circle p-1" style="width: 10px; height: 10px;"></span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="notification-body">
+                    <p class="mb-2 small">{{ notification.message|truncatechars:100 }}</p>
+                    <div class="text-muted small">{{ notification.created_at|timesince }}</div>
+                </div>
+            </a>
+            {% endfor %}
+            
+            <div class="text-center p-2">
+                <a href="{% url 'notifications_list' %}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-list me-1"></i> عرض جميع التنبيهات
+                </a>
+            </div>
+        {% else %}
+        <div class="text-center p-4 text-muted">
+            <i class="fas fa-bell-slash fa-2x mb-2"></i>
+            <p>لا توجد تنبيهات جديدة</p>
+        </div>
+        {% endif %}
+    </div>
+</div>

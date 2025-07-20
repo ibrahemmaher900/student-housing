@@ -1,0 +1,221 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="mb-3">حجوزاتي</h2>
+            <p class="text-muted">يمكنك متابعة حالة حجوزاتك والاطلاع على تفاصيلها من هنا.</p>
+        </div>
+    </div>
+
+    <!-- الحجوزات النشطة -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">الحجوزات النشطة</h5>
+                </div>
+                <div class="card-body">
+                    {% if active_bookings %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> لا يمكنك حجز أكثر من شقة في نفس الوقت. يجب انتظار انتهاء فترة الإيجار الحالية أو رفض طلب الحجز الحالي.
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>الشقة</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in active_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="text-decoration-none">
+                                            {{ booking.apartment.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ booking.start_date|date:"j F Y" }}</td>
+                                    <td>{{ booking.end_date|date:"j F Y" }}</td>
+                                    <td>
+                                        <span class="badge bg-success">نشط</span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-home fa-3x text-muted mb-3"></i>
+                        <p>ليس لديك أي حجوزات نشطة حالياً.</p>
+                        <a href="{% url 'apartment_list' %}" class="btn btn-primary">استكشف الشقق المتاحة</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الحجوزات قيد الانتظار -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">الحجوزات قيد الانتظار</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>الشقة</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>تاريخ الطلب</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in pending_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="text-decoration-none">
+                                            {{ booking.apartment.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ booking.start_date|date:"j F Y" }}</td>
+                                    <td>{{ booking.end_date|date:"j F Y" }}</td>
+                                    <td>{{ booking.created_at|date:"j F Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                        <p>ليس لديك أي حجوزات قيد الانتظار حالياً.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الحجوزات المرفوضة -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">الحجوزات المرفوضة</h5>
+                </div>
+                <div class="card-body">
+                    {% if rejected_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>الشقة</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>تاريخ الرفض</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in rejected_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="text-decoration-none">
+                                            {{ booking.apartment.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ booking.start_date|date:"j F Y" }}</td>
+                                    <td>{{ booking.end_date|date:"j F Y" }}</td>
+                                    <td>{{ booking.updated_at|date:"j F Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-times-circle fa-3x text-muted mb-3"></i>
+                        <p>ليس لديك أي حجوزات مرفوضة.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الحجوزات السابقة -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">الحجوزات السابقة</h5>
+                </div>
+                <div class="card-body">
+                    {% if past_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>الشقة</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in past_bookings %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="text-decoration-none">
+                                            {{ booking.apartment.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ booking.start_date|date:"j F Y" }}</td>
+                                    <td>{{ booking.end_date|date:"j F Y" }}</td>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
+                                        <a href="{% url 'add_rating' booking.apartment.id %}" class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-star me-1"></i> أضف تقييمك
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <p>ليس لديك أي حجوزات سابقة.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

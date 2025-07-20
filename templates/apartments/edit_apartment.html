@@ -1,0 +1,227 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">تعديل الشقة: {{ apartment.title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_title" class="form-label">عنوان الإعلان</label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.title.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_price" class="form-label">السعر الشهري</label>
+                                {{ form.price }}
+                                {% if form.price.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.price.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_apartment_type" class="form-label">نوع السكن</label>
+                                {{ form.apartment_type }}
+                                {% if form.apartment_type.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.apartment_type.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_area" class="form-label">المساحة بالمتر المربع</label>
+                                {{ form.area }}
+                                {% if form.area.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.area.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_bedrooms" class="form-label">عدد غرف النوم</label>
+                                {{ form.bedrooms }}
+                                {% if form.bedrooms.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.bedrooms.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_bathrooms" class="form-label">عدد الحمامات</label>
+                                {{ form.bathrooms }}
+                                {% if form.bathrooms.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.bathrooms.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_address" class="form-label">العنوان</label>
+                                {{ form.address }}
+                                {% if form.address.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.address.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_university" class="form-label">الجامعة القريبة</label>
+                                {{ form.university }}
+                                {% if form.university.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.university.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="id_distance_to_university" class="form-label">المسافة للجامعة (كم)</label>
+                                {{ form.distance_to_university }}
+                                {% if form.distance_to_university.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.distance_to_university.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.available }}
+                                <label class="form-check-label" for="id_available">متاح</label>
+                                {% if form.available.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.available.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.furnished }}
+                                <label class="form-check-label" for="id_furnished">مفروش</label>
+                                {% if form.furnished.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.furnished.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.has_wifi }}
+                                <label class="form-check-label" for="id_has_wifi">يوجد واي فاي</label>
+                                {% if form.has_wifi.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.has_wifi.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.has_ac }}
+                                <label class="form-check-label" for="id_has_ac">يوجد تكييف</label>
+                                {% if form.has_ac.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.has_ac.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3 form-check">
+                                {{ form.has_parking }}
+                                <label class="form-check-label" for="id_has_parking">يوجد موقف سيارات</label>
+                                {% if form.has_parking.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.has_parking.errors %}
+                                    {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_description" class="form-label">وصف الشقة</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="text-danger">
+                            {% for error in form.description.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_image" class="form-label">إضافة صور جديدة (يمكنك اختيار أكثر من صورة)</label>
+                        <input type="file" name="image" multiple class="form-control" id="id_image">
+                    </div>
+                    
+                    {% if apartment.images.all %}
+                    <div class="mb-3">
+                        <label class="form-label">الصور الحالية</label>
+                        <div class="row">
+                            {% for image in apartment.images.all %}
+                            <div class="col-md-3 mb-3">
+                                <img src="{{ image.image.url }}" class="img-thumbnail" alt="صورة الشقة" style="height: 150px; object-fit: cover;">
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-secondary">إلغاء</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

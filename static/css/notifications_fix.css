@@ -1,0 +1,109 @@
+/* تنسيقات نظام التنبيهات */
+
+/* تنسيقات عامة للتنبيهات */
+.notification-item {
+    transition: all 0.2s ease;
+    border-right: 3px solid transparent;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.notification-item:hover {
+    background-color: rgba(0,0,0,0.03);
+}
+
+.notification-item.unread {
+    border-right-color: #dc3545;
+    background-color: rgba(220,53,69,0.05);
+}
+
+/* أيقونة التنبيه */
+.notification-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* قائمة التنبيهات المنسدلة */
+.notifications-dropdown {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    border: none;
+    padding: 0;
+    width: 350px;
+    max-height: 450px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* بادج عدد التنبيهات */
+#notifications-badge {
+    font-size: 0.65rem;
+    padding: 0.2em 0.45em;
+}
+
+/* تأثير نبض للتنبيهات الجديدة */
+.pulse-animation {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* تنسيقات صفحة التنبيهات */
+.notification-header {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.9) 0%, rgba(0, 166, 153, 0.9) 100%);
+    padding: 20px;
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.notification-filters {
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.notification-list .notification-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 10px;
+    padding: 15px;
+}
+
+.notification-empty {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.notification-empty i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 20px;
+}
+
+.notification-header-row {
+    width: 100%;
+}
+
+.notification-body {
+    padding-right: 44px;
+}

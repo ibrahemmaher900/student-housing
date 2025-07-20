@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% block title %}403 - الوصول محظور{% endblock %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="error-template">
+                <h1>403</h1>
+                <h2>عذراً، الوصول محظور</h2>
+                <div class="error-details my-4">
+                    ليس لديك صلاحية للوصول إلى هذه الصفحة.
+                </div>
+                <div class="error-actions">
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <i class="fa fa-home"></i> العودة للصفحة الرئيسية
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

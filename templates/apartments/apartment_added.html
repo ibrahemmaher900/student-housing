@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-success">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success fa-5x"></i>
+                    </div>
+                    <h2 class="card-title mb-3">تم إضافة الشقة بنجاح!</h2>
+                    <p class="card-text mb-4">
+                        تم استلام طلب إضافة الشقة بنجاح. سيتم مراجعة الإعلان من قبل فريق الإدارة قبل نشره.
+                        <br>
+                        سيتم إشعارك عند الموافقة على الشقة أو رفضها.
+                    </p>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        يمكنك متابعة حالة الشقة من خلال صفحة "شققي" في لوحة التحكم الخاصة بك.
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'my_apartments' %}" class="btn btn-primary me-2">
+                            <i class="fas fa-home me-2"></i> عرض شققي
+                        </a>
+                        <a href="{% url 'add_apartment' %}" class="btn btn-outline-success">
+                            <i class="fas fa-plus-circle me-2"></i> إضافة شقة أخرى
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

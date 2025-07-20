@@ -1,0 +1,92 @@
+{% extends 'base/base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ apartment.title }} - سكن طالب{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="/>
+<!-- Lightbox CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts - Tajawal -->
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/static/css/apartment-detail-pro.css">
+{% endblock %}
+
+{% block content %}
+<div class="apartment-detail-container py-4">
+    <!-- شريط التنقل -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">الرئيسية</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'apartment_list' %}">الشقق</a></li>
+            <li class="breadcrumb-item active">{{ apartment.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- القسم الرئيسي -->
+        <div class="col-lg-8">
+            <!-- عنوان الشقة -->
+            <h1 class="apartment-title">
+                {{ apartment.title }}
+            </h1>
+            
+            <!-- معرض الصور -->
+            <div class="gallery-container">
+                {% if has_approved_booking %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 5; display: flex; align-items: center; justify-content: center;">
+                    <div class="bg-danger text-white p-3 rounded" style="transform: rotate(-15deg); font-weight: bold; font-size: 2rem;">محجوزة</div>
+                </div>
+                {% endif %}
+                
+                <div id="apartmentCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in apartment.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <a href="{{ image.image.url }}" data-lightbox="apartment-images" data-title="{{ apartment.title }} - صورة {{ forloop.counter }}">
+                                <img src="{{ image.image.url }}" class="main-image" alt="صورة الشقة {{ forloop.counter }}">
+                            </a>
+                        </div>
+                        {% empty %}
+                        <div class="carousel-item active">
+                            <div class="bg-secondary text-white d-flex justify-content-center align-items-center main-image">
+                                <p class="m-0">لا توجد صور متاحة</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% if apartment.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#apartmentCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">السابق</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#apartmentCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">التالي</span>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                {% if apartment.images.count > 1 %}
+                <div class="gallery-thumbnails">
+                    <div class="row">
+                        {% for image in apartment.images.all %}
+                        <div class="col-2 mb-2">
+                            <img src="{{ image.image.url }}" class="thumbnail w-100" alt="صورة مصغرة" data-bs-target="#apartmentCarousel" data-bs-slide-to="{{ forloop.counter0 }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- عدد الصور -->
+                <div class="image-counter">
+                    <span class="badge bg-dark p-2">
+                        <i class="fas fa-images me-1"></i> {{ apartment.images.count }} صورة
+                    </span>
+                </div>
+            </div>

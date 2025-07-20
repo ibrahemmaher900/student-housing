@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>إدارة الحجوزات</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>الشقة</th>
+                                <th>الطالب</th>
+                                <th>تاريخ البداية</th>
+                                <th>تاريخ النهاية</th>
+                                <th>الحالة</th>
+                                <th>تاريخ الطلب</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>{{ booking.apartment.title }}</td>
+                                <td>{{ booking.student.get_full_name|default:booking.student.username }}</td>
+                                <td>{{ booking.start_date|date:"j F Y" }}</td>
+                                <td>{{ booking.end_date|date:"j F Y" }}</td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                    <span class="badge bg-warning">قيد الانتظار</span>
+                                    {% elif booking.status == 'approved' %}
+                                    <span class="badge bg-success">تمت الموافقة</span>
+                                    {% elif booking.status == 'rejected' %}
+                                    <span class="badge bg-danger">مرفوض</span>
+                                    {% elif booking.status == 'cancelled' %}
+                                    <span class="badge bg-secondary">ملغي</span>
+                                    {% elif booking.status == 'non_serious' %}
+                                    <span class="badge bg-warning text-dark">غير جاد</span>
+                                    {% endif %}
+                                    
+                                    {% if booking.student.profile.non_serious_reports > 0 %}
+                                    <span class="badge bg-danger ms-1" title="عدد الإبلاغات عن عدم الجدية">
+                                        <i class="fas fa-exclamation-triangle"></i> {{ booking.student.profile.non_serious_reports }}/3
+                                    </span>
+                                    {% endif %}
+                                    
+                                    {% if booking.student.profile.is_banned %}
+                                    <span class="badge bg-dark ms-1" title="مستخدم محظور">
+                                        <i class="fas fa-ban"></i> محظور
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ booking.created_at|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if booking.status == 'pending' %}
+                                    <div class="btn-group">
+                                        <a href="{% url 'update_booking_status' booking.id 'approve' %}" class="btn btn-sm btn-success">موافقة</a>
+                                        <a href="{% url 'update_booking_status' booking.id 'reject' %}" class="btn btn-sm btn-danger">رفض</a>
+                                    </div>
+                                    {% elif booking.status == 'approved' %}
+                                    <div class="btn-group">
+                                        <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
+                                        <a href="{% url 'update_booking_status' booking.id 'non_serious' %}" class="btn btn-sm btn-warning" onclick="return confirm('هل أنت متأكد من الإبلاغ عن هذا المستخدم كغير جاد في الحجز؟ سيتم إعادة الشقة للحالة المتاحة.')">
+                                        الإبلاغ عن عدم الجدية</a>
+                                    </div>
+                                    {% else %}
+                                    <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">لا توجد حجوزات حالياً</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

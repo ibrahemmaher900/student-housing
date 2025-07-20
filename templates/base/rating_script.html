@@ -1,0 +1,5 @@
+<!-- نظام تقييم الموقع -->
+{% if user.is_authenticated %}
+<script src="/static/js/site-rating.js"></script>
+{% include 'base/rating_modal.html' %}
+{% endif %}

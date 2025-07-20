@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}سكن طالب{% endblock %}</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="/static/css/notifications.css">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        /* تنسيقات الإشعارات */
+        .notification-item {
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+        }
+        
+        .notification-item:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+        
+        .notification-item.unread {
+            border-right-color: #dc3545;
+            background-color: rgba(220,53,69,0.05);
+        }
+        
+        .notification-icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .notifications-dropdown {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            border: none;
+            padding: 0;
+        }
+        
+        #notifications-badge {
+            font-size: 0.65rem;
+            padding: 0.2em 0.45em;
+        }
+        
+        /* تنسيقات القائمة المنسدلة الفرعية */
+        .dropdown-submenu {
+            position: relative;
+        }
+        
+        .dropdown-submenu .dropdown-menu {
+            top: 0;
+            right: 100%;
+            margin-top: -1px;
+        }
+        
+        .dropdown-submenu:hover > .dropdown-menu {
+            display: block;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% if user.is_authenticated %}user-authenticated{% endif %}">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">سكن طالب</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">الرئيسية</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'apartment_list' %}">استكشف الشقق</a>
+                    </li>
+
+                    {% if user.is_staff or user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link bg-warning text-dark rounded px-3" href="{% url 'admin_apartments' %}"><i class="fas fa-cog me-1"></i> إدارة الشقق</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                {% if unread_notifications_count > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifications-badge">
+                                    {{ unread_notifications_count }}
+                                </span>
+                                {% endif %}
+                            </a>
+                            {% include 'base/notifications_dropdown.html' %}
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <div class="profile-img-container me-2">
+                                    <img src="{{ user.profile.get_profile_picture_url }}" alt="{{ user.username }}" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+                                    {% if user.profile.user_type == 'owner' %}
+                                    <span class="position-absolute bottom-0 end-0 badge bg-success rounded-circle p-1" style="width: 12px; height: 12px;" title="مالك عقار"></span>
+                                    {% else %}
+                                    <span class="position-absolute bottom-0 end-0 badge bg-info rounded-circle p-1" style="width: 12px; height: 12px;" title="طالب"></span>
+                                    {% endif %}
+                                </div>
+                                <span>{{ user.username }}</span>
+                                {% include 'base/user_banned_badge.html' %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <div class="px-3 py-2 d-flex align-items-center">
+                                        <div class="position-relative me-2">
+                                            <img src="{{ user.profile.get_profile_picture_url }}" alt="{{ user.username }}" class="rounded-circle" width="48" height="48" style="object-fit: cover;">
+                                            <span class="position-absolute bottom-0 end-0 badge {% if user.profile.user_type == 'owner' %}bg-success{% else %}bg-info{% endif %} rounded-circle p-1" style="width: 14px; height: 14px;"></span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold d-flex align-items-center">
+                                                {{ user.get_full_name|default:user.username }}
+                                                {% include 'base/user_banned_badge.html' %}
+                                            </div>
+                                            <div class="text-muted small">{{ user.email }}</div>
+                                            <div class="text-muted small">
+                                                {% if user.profile.user_type == 'owner' %}
+                                                <i class="fas fa-home me-1"></i> مالك عقار
+                                                {% else %}
+                                                <i class="fas fa-user-graduate me-1"></i> طالب
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user me-2"></i>الملف الشخصي</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_wishlist' %}"><i class="fas fa-heart me-2"></i>المفضلات</a></li>
+                                <li><a class="dropdown-item" href="{% url 'notifications_list' %}"><i class="fas fa-bell me-2"></i>التنبيهات {% if unread_notifications_count > 0 %}<span class="badge bg-danger">{{ unread_notifications_count }}</span>{% endif %}</a></li>
+                                {% if user.profile.user_type == 'owner' %}
+                                    <li><a class="dropdown-item" href="{% url 'my_apartments' %}"><i class="fas fa-home me-2"></i>شققي</a></li>
+                                    <li class="dropdown-submenu">
+                                        <a class="dropdown-item dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                            <i class="fas fa-plus me-2"></i>إضافة عقار
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="{% url 'add_apartment' %}">إضافة شقة</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'add_room' %}">إضافة غرفة</a></li>
+                                            <li><a class="dropdown-item" href="{% url 'add_bed' %}">إضافة سرير في غرفة مشتركة</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{% url 'manage_bookings' %}"><i class="fas fa-calendar-check me-2"></i>إدارة الحجوزات</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{% url 'my_bookings' %}"><i class="fas fa-calendar me-2"></i>حجوزاتي</a></li>
+                                {% endif %}
+                                {% if user.is_staff or user.is_superuser %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_apartments' %}"><i class="fas fa-home me-2"></i>إدارة الشقق</a></li>
+                                <li><a class="dropdown-item" href="{% url 'admin_users' %}"><i class="fas fa-users me-2"></i>إدارة المستخدمين</a></li>
+                                <li><a class="dropdown-item" href="/admin/" target="_blank"><i class="fas fa-tools me-2"></i>لوحة التحكم</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt me-1"></i> تسجيل الدخول</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn btn-primary text-white px-3 mx-2" href="{% url 'register' %}">التسجيل</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4">
+        {% include 'base/banned_alert.html' %}
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>سكن طالب</h5>
+                    <p>منصة لمساعدة طلاب الجامعات في العثور على سكن مناسب بالقرب من جامعاتهم.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>استكشف</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'home' %}">الرئيسية</a></li>
+                        <li><a href="{% url 'apartment_list' %}">الشقق</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'profile' %}">الملف الشخصي</a></li>
+                        {% else %}
+                            <li><a href="{% url 'login' %}">تسجيل الدخول</a></li>
+                            <li><a href="{% url 'register' %}">التسجيل</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>المساعدة</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">الأسئلة الشائعة</a></li>
+                        <li><a href="#">سياسة الخصوصية</a></li>
+                        <li><a href="#">شروط الاستخدام</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>تواصل معنا</h5>
+                    <p>
+                        <i class="fas fa-envelope me-2"></i> info@studenthousing.com
+                    </p>
+                    <div class="mt-3">
+                        <a href="#" class="me-2"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="me-2"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="me-2"><i class="fab fa-instagram fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2025 سكن طالب. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- نظام الإشعارات -->
+    {% if user.is_authenticated %}
+    <script src="/static/js/notifications.js"></script>
+    {% endif %}
+    
+    <!-- تأثيرات الحركة المشتركة -->
+    <script src="/static/js/animations.js"></script>
+    
+    {% include 'base/rating_script.html' %}
+    
+    <!-- تفعيل القائمة المنسدلة الفرعية -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تفعيل القائمة المنسدلة الفرعية
+            document.querySelectorAll('.dropdown-submenu .dropdown-toggle').forEach(function(element) {
+                element.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var submenu = this.nextElementSibling;
+                    var isOpen = submenu.classList.contains('show');
+                    
+                    // إغلاق جميع القوائم المنسدلة الفرعية المفتوحة
+                    document.querySelectorAll('.dropdown-submenu .dropdown-menu.show').forEach(function(menu) {
+                        menu.classList.remove('show');
+                    });
+                    
+                    // فتح أو إغلاق القائمة الحالية
+                    if (!isOpen) {
+                        submenu.classList.add('show');
+                    }
+                });
+            });
+            
+            // إغلاق القوائم المنسدلة الفرعية عند النقر خارجها
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.dropdown-submenu')) {
+                    document.querySelectorAll('.dropdown-submenu .dropdown-menu.show').forEach(function(menu) {
+                        menu.classList.remove('show');
+                    });
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

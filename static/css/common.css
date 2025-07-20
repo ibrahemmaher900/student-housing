@@ -1,0 +1,385 @@
+/* ملف CSS مشترك لتوحيد تصميم جميع صفحات الموقع */
+
+:root {
+  --primary-color: #FF5A5F;
+  --secondary-color: #00A699;
+  --dark-color: #484848;
+  --light-color: #767676;
+  --bg-color: #F7F7F7;
+  --white-color: #FFFFFF;
+}
+
+/* تحسينات عامة للصفحات */
+body {
+  background-color: #f9f9f9;
+}
+
+/* تحسين العناوين */
+.section-title {
+  font-weight: 800;
+  margin-bottom: 40px;
+  position: relative;
+  display: inline-block;
+  font-size: 2rem;
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 0;
+  width: 80px;
+  height: 4px;
+  background-color: var(--primary-color);
+}
+
+/* تحسين البطاقات */
+.card {
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: none;
+  margin-bottom: 30px;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card .card-img-top {
+  height: 240px;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+.card .card-body {
+  padding: 20px;
+}
+
+.card .card-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+/* تحسين الأزرار */
+.btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: #E74E55;
+  border-color: #E74E55;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(231, 78, 85, 0.3);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(231, 78, 85, 0.3);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-secondary:hover {
+  background-color: #009688;
+  border-color: #009688;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 150, 136, 0.3);
+}
+
+/* تحسين النماذج */
+.form-control {
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(255, 90, 95, 0.25);
+}
+
+.form-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* تحسين صفحات التفاصيل */
+.detail-section {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 25px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.detail-section-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.detail-section-title:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+/* تحسين الشارات والعلامات */
+.badge {
+  padding: 6px 12px;
+  font-weight: 500;
+  border-radius: 30px;
+}
+
+.feature-badge {
+  background-color: #f0f0f0;
+  color: var(--dark-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.feature-badge:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.price-tag {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+}
+
+/* تحسين صفحات القوائم */
+.filter-section {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.filter-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+/* تحسين صفحة الملف الشخصي */
+.profile-header {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-stats {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.profile-stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.profile-stat-label {
+  font-size: 0.9rem;
+  color: var(--light-color);
+}
+
+/* تحسين صفحات الحجز */
+.booking-card {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.booking-status {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.booking-status.pending {
+  background-color: #FFF3CD;
+  color: #856404;
+}
+
+.booking-status.approved {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+
+.booking-status.rejected {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+
+/* تحسين صفحة الإشعارات */
+.notification-card {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  border-right: 4px solid transparent;
+}
+
+.notification-card.unread {
+  border-right-color: var(--primary-color);
+  background-color: rgba(255, 90, 95, 0.05);
+}
+
+.notification-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.notification-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 15px;
+  color: white;
+}
+
+/* تحسين صفحة المفضلات */
+.wishlist-card {
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.wishlist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-remove {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wishlist-remove:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* تأثيرات الحركة */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* تحسينات للهواتف المحمولة */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .card .card-img-top {
+    height: 180px;
+  }
+  
+  .detail-section {
+    padding: 15px;
+  }
+  
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+  }
+}

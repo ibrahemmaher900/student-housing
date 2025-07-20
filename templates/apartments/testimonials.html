@@ -1,0 +1,79 @@
+<!-- قسم آراء المستخدمين -->
+<div class="container testimonials-section fade-in">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h2 class="section-title d-inline-block">آراء المستخدمين</h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for rating in site_ratings %}
+        <div class="col-md-4 mb-4">
+            <div class="testimonial-card">
+                <div class="rating-stars text-center mb-3">
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= rating.rating %}
+                            <i class="fas fa-star text-warning"></i>
+                        {% else %}
+                            <i class="far fa-star text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="testimonial-text">
+                    "{{ rating.review }}"
+                </p>
+                <div class="testimonial-author">
+                    <img src="{{ rating.user.profile.get_profile_picture_url }}" alt="صورة المستخدم">
+                    <div class="testimonial-author-info">
+                        <h5>{{ rating.user.get_full_name|default:rating.user.username }}</h5>
+                        <p>{{ rating.created_at|date:"j F Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-md-4 mb-4">
+            <div class="testimonial-card">
+                <p class="testimonial-text">
+                    "ساعدني موقع سكن طالب في العثور على شقة مناسبة قريبة من جامعتي بسعر معقول. الموقع سهل الاستخدام والتواصل مع المالك كان سلساً."
+                </p>
+                <div class="testimonial-author">
+                    <img src="/static/img/hero-bg.jpg" alt="صورة الطالب">
+                    <div class="testimonial-author-info">
+                        <h5>أحمد محمد</h5>
+                        <p>طالب في جامعة الملك سعود</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="testimonial-card">
+                <p class="testimonial-text">
+                    "وفرت الكثير من الوقت والجهد في البحث عن سكن. الصور والمعلومات المتوفرة على الموقع دقيقة جداً وساعدتني في اتخاذ القرار المناسب."
+                </p>
+                <div class="testimonial-author">
+                    <img src="/static/img/hero-bg.jpg" alt="صورة الطالبة">
+                    <div class="testimonial-author-info">
+                        <h5>سارة أحمد</h5>
+                        <p>طالبة في جامعة الأميرة نورة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="testimonial-card">
+                <p class="testimonial-text">
+                    "كمالك عقار، ساعدني الموقع في تأجير شقتي بسرعة لطلاب جادين. النظام سهل الاستخدام والدعم الفني ممتاز."
+                </p>
+                <div class="testimonial-author">
+                    <img src="/static/img/hero-bg.jpg" alt="صورة المالك">
+                    <div class="testimonial-author-info">
+                        <h5>خالد العمري</h5>
+                        <p>مالك عقار</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+
+{% block title %}تسجيل الخروج - سكن طالب{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">تسجيل الخروج</h4>
+            </div>
+            <div class="card-body text-center">
+                <h5>تم تسجيل خروجك بنجاح</h5>
+                <p>شكراً لاستخدامك موقع سكن طالب</p>
+                <a href="{% url 'login' %}" class="btn btn-primary">تسجيل الدخول مرة أخرى</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

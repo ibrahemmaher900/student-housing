@@ -1,0 +1,323 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    {% include 'users/banned_status.html' %}
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="position-relative mb-4 mx-auto" style="width: 150px; height: 150px;">
+                        <img src="{{ user.profile.get_profile_picture_url }}" alt="الصورة الشخصية" class="rounded-circle img-fluid border shadow" style="width: 150px; height: 150px; object-fit: cover;">
+                        <div class="position-absolute bottom-0 end-0">
+                            <span class="badge rounded-pill {% if user.profile.user_type == 'student' %}bg-info{% else %}bg-success{% endif %} p-2">
+                                {% if user.profile.user_type == 'student' %}
+                                <i class="fas fa-user-graduate me-1"></i> طالب
+                                {% else %}
+                                <i class="fas fa-home me-1"></i> مالك عقار
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <h4 class="mb-1 fw-bold">{{ user.get_full_name|default:user.username }}</h4>
+                    {% if user.profile.university %}
+                    <p class="text-muted">
+                        <i class="fas fa-university me-1"></i> {{ user.profile.university.name }}
+                    </p>
+                    {% endif %}
+                    {% if user.profile.bio %}
+                    <p class="text-muted small mt-2">{{ user.profile.bio|truncatechars:100 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle me-2"></i>معلومات الاتصال</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-user text-primary me-3"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-0 fw-bold">الاسم الكامل</p>
+                            <p class="text-muted mb-0">{{ user.get_full_name|default:"-" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-envelope text-primary me-3"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-0 fw-bold">البريد الإلكتروني</p>
+                            <p class="text-muted mb-0">{{ user.email|default:"-" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-phone text-primary me-3"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="mb-0 fw-bold">رقم الهاتف</p>
+                            <p class="text-muted mb-0">{{ user.profile.phone_number|default:"-" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white py-3 d-flex align-items-center">
+                    <i class="fas fa-user-edit me-2"></i>
+                    <h5 class="mb-0 fw-bold">تعديل الملف الشخصي</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="form-group mb-3">
+                                    <label for="id_username" class="form-label">اسم المستخدم</label>
+                                    <div class="input-group">
+                                        {{ u_form.username }}
+                                        <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
+                                    </div>
+                                    <div class="form-text text-muted">لا يمكن تغيير اسم المستخدم</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="id_email" class="form-label">البريد الإلكتروني</label>
+                                    <div class="input-group">
+                                        {{ u_form.email }}
+                                        <span class="input-group-text bg-light"><i class="fas fa-lock text-muted"></i></span>
+                                    </div>
+                                    <div class="form-text text-muted">لا يمكن تغيير البريد الإلكتروني</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="form-group mb-3">
+                                    <label for="id_first_name" class="form-label">الاسم الأول</label>
+                                    <div class="input-group">
+                                        {{ u_form.first_name }}
+                                        <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                                    </div>
+                                    {% if u_form.first_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in u_form.first_name.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="id_last_name" class="form-label">الاسم الأخير</label>
+                                    <div class="input-group">
+                                        {{ u_form.last_name }}
+                                        <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                                    </div>
+                                    {% if u_form.last_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in u_form.last_name.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="form-group mb-3">
+                                    <label for="id_phone_number" class="form-label">رقم الهاتف</label>
+                                    <div class="input-group">
+                                        {{ p_form.phone_number }}
+                                        <span class="input-group-text bg-light"><i class="fas fa-phone text-muted"></i></span>
+                                    </div>
+                                    {% if p_form.phone_number.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in p_form.phone_number.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="id_university" class="form-label">الجامعة</label>
+                                    <div class="input-group">
+                                        {{ p_form.university }}
+                                        <span class="input-group-text bg-light"><i class="fas fa-university text-muted"></i></span>
+                                    </div>
+                                    {% if p_form.university.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in p_form.university.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_bio" class="form-label">نبذة شخصية</label>
+                            <div class="input-group">
+                                {{ p_form.bio }}
+                                <span class="input-group-text bg-light"><i class="fas fa-info-circle text-muted"></i></span>
+                            </div>
+                            {% if p_form.bio.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in p_form.bio.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text text-muted">أخبرنا قليلاً عن نفسك</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_profile_picture" class="form-label">الصورة الشخصية</label>
+                            <div class="input-group">
+                                {{ p_form.profile_picture }}
+                                <span class="input-group-text bg-light"><i class="fas fa-camera text-muted"></i></span>
+                            </div>
+                            {% if p_form.profile_picture.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in p_form.profile_picture.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text text-muted">يفضل صورة مربعة بدقة عالية</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2">
+                                <i class="fas fa-save me-2"></i>حفظ التغييرات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- إحصائيات المستخدم -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2"></i>إحصائيات الحساب</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row text-center">
+                        {% if user.profile.user_type == 'student' %}
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <a href="{% url 'my_wishlist' %}" class="text-decoration-none">
+                                <div class="bg-light rounded p-3 h-100 stat-card">
+                                    <div class="h1 text-primary mb-2"><i class="fas fa-heart"></i></div>
+                                    <h5 class="fw-bold">المفضلة</h5>
+                                    <p class="text-muted mb-0">{{ user_stats.wishlist_count }}</p>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <a href="{% url 'my_bookings' %}" class="text-decoration-none">
+                                <div class="bg-light rounded p-3 h-100 stat-card">
+                                    <div class="h1 text-primary mb-2"><i class="fas fa-calendar-check"></i></div>
+                                    <h5 class="fw-bold">الحجوزات</h5>
+                                    <p class="text-muted mb-0">{{ user_stats.bookings_count }}</p>
+                                    <div class="d-flex justify-content-center mt-2">
+                                        <span class="badge bg-success me-2" title="تمت الموافقة">
+                                            <i class="fas fa-check-circle"></i> {{ user_stats.approved_bookings }}
+                                        </span>
+                                        <span class="badge bg-warning" title="قيد الانتظار">
+                                            <i class="fas fa-clock"></i> {{ user_stats.pending_bookings }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'notifications_list' %}" class="text-decoration-none">
+                                <div class="bg-light rounded p-3 h-100 stat-card">
+                                    <div class="h1 text-primary mb-2"><i class="fas fa-bell"></i></div>
+                                    <h5 class="fw-bold">التنبيهات</h5>
+                                    <p class="text-muted mb-0">{{ user_stats.notifications_count }}</p>
+                                    {% if user_stats.unread_notifications > 0 %}
+                                    <div class="mt-2">
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-envelope"></i> {{ user_stats.unread_notifications }} غير مقروءة
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <a href="{% url 'my_apartments' %}" class="text-decoration-none">
+                                <div class="bg-light rounded p-3 h-100 stat-card">
+                                    <div class="h1 text-primary mb-2"><i class="fas fa-home"></i></div>
+                                    <h5 class="fw-bold">الشقق</h5>
+                                    <p class="text-muted mb-0">{{ user_stats.apartments_count }}</p>
+                                    <div class="d-flex justify-content-center mt-2">
+                                        <span class="badge bg-success me-2" title="تمت الموافقة">
+                                            <i class="fas fa-check-circle"></i> {{ user_stats.approved_apartments }}
+                                        </span>
+                                        <span class="badge bg-warning" title="قيد الانتظار">
+                                            <i class="fas fa-clock"></i> {{ user_stats.pending_apartments }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <a href="{% url 'manage_bookings' %}" class="text-decoration-none">
+                                <div class="bg-light rounded p-3 h-100 stat-card">
+                                    <div class="h1 text-primary mb-2"><i class="fas fa-calendar-check"></i></div>
+                                    <h5 class="fw-bold">الحجوزات</h5>
+                                    <p class="text-muted mb-0">{{ user_stats.bookings_count }}</p>
+                                    <div class="d-flex justify-content-center mt-2">
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle"></i> {{ user_stats.approved_bookings }} مؤكدة
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{% url 'notifications_list' %}" class="text-decoration-none">
+                                <div class="bg-light rounded p-3 h-100 stat-card">
+                                    <div class="h1 text-primary mb-2"><i class="fas fa-bell"></i></div>
+                                    <h5 class="fw-bold">التنبيهات</h5>
+                                    <p class="text-muted mb-0">{{ user_stats.notifications_count }}</p>
+                                    {% if user_stats.unread_notifications > 0 %}
+                                    <div class="mt-2">
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-envelope"></i> {{ user_stats.unread_notifications }} غير مقروءة
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block title %}تسجيل الدخول - سكن طالب{% endblock %}
+
+{% block content %}
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <button class="close-btn" onclick="history.back()"><i class="fas fa-times"></i></button>
+      <h2 class="login-title">مرحبًا بك في سكن طالب</h2>
+    </div>
+    
+    <div class="login-content">
+      <div class="login-left">
+        <!-- Social Login Buttons -->
+        <a href="{% provider_login_url 'google' %}" class="social-btn google-btn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" class="google-icon">
+          المتابعة باستخدام حساب جوجل
+        </a>
+        
+        <a href="{% provider_login_url 'facebook' %}" class="social-btn facebook-btn">
+          <i class="fab fa-facebook-f facebook-icon"></i>
+          المتابعة باستخدام حساب فيسبوك
+        </a>
+        
+        <!-- Divider -->
+        <div class="divider">
+          <span>أو</span>
+        </div>
+        
+        <!-- Email Login Form -->
+        <form class="login-form" method="POST" action="{% url 'account_login' %}">
+          {% csrf_token %}
+          <input type="text" name="login" placeholder="البريد الإلكتروني" class="login-input" required>
+          <button type="submit" class="login-btn">متابعة</button>
+        </form>
+        
+        <div class="terms-text">
+          يتم قبول الشروط والأحكام و سياسة الخصوصية الخاصة بنا عند التسجيل
+        </div>
+      </div>
+      
+      <div class="login-right">
+        <div class="illustration">
+          <img src="{% static 'img/login-illustration.png' %}" alt="Housing Illustration" onerror="this.src='https://i.imgur.com/8tZZG0H.png'">
+        </div>
+        <div class="features">
+          <div class="feature-item">اعرض العقارات المحفوظة</div>
+          <div class="feature-item">احتفظ بسجل البحث عبر الأجهزة</div>
+          <div class="feature-item">انظر إلى العقارات التي تواصلت معها</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Tajawal', sans-serif;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0;
+    background-color: #fff;
+  }
+  
+  .login-card {
+    width: 100%;
+    max-width: 100%;
+    background-color: white;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  
+  .login-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    text-align: center;
+  }
+  
+  .close-btn {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+    padding: 0;
+  }
+  
+  .login-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .login-content {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .login-left {
+    flex: 1;
+    padding: 30px;
+  }
+  
+  .login-right {
+    flex: 1;
+    background-color: #f8f9fa;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    text-align: right;
+  }
+  
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 15px;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  
+  .google-btn {
+    background-color: #4285F4;
+  }
+  
+  .facebook-btn {
+    background-color: #3b5998;
+  }
+  
+  .google-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    background-color: white;
+    border-radius: 50%;
+    padding: 2px;
+  }
+  
+  .facebook-icon {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+  
+  .divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+  }
+  
+  .divider::before,
+  .divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .divider span {
+    padding: 0 10px;
+    color: #777;
+  }
+  
+  .login-form {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  .login-input {
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: right;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .login-input:focus {
+    outline: none;
+    border-color: #E74C3C;
+  }
+  
+  .login-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #E74C3C;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .terms-text {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin-top: 20px;
+  }
+  
+  .illustration {
+    margin-bottom: 30px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .illustration img {
+    max-width: 100%;
+    max-height: 250px;
+  }
+  
+  .features {
+    width: 100%;
+  }
+  
+  .feature-item {
+    margin-bottom: 15px;
+    text-align: right;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    .login-content {
+      flex-direction: column;
+    }
+    
+    .login-right {
+      display: none;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,324 @@
+/* تصميم احترافي لصفحة تفاصيل الشقة */
+
+/* تنسيقات عامة */
+.apartment-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Tajawal', sans-serif;
+}
+
+/* تنسيق العنوان الرئيسي */
+.apartment-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-right: 5px solid #3498db;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* تنسيق معرض الصور */
+.gallery-container {
+    position: relative;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.main-image {
+    height: 450px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.gallery-thumbnails {
+    padding: 15px;
+    background-color: #fff;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.thumbnail {
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+    transform: scale(1.05);
+    border-color: #3498db;
+}
+
+/* تنسيق الأقسام */
+.detail-section {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.detail-section:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* عنوان القسم */
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    color: #3498db;
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-left: 10px;
+    background-color: #3498db;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+/* تنسيق بطاقة السعر */
+.price-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.price-card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.price-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.price-amount {
+    font-size: 28px;
+    font-weight: 700;
+    color: #3498db;
+}
+
+.price-period {
+    font-size: 16px;
+    color: #777;
+}
+
+/* تنسيق ملخص المعلومات */
+.info-summary {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.1) 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.info-badge {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 50px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-left: 5px;
+    font-size: 0.9rem;
+}
+
+.info-badge i {
+    margin-left: 5px;
+}
+
+.info-item {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+}
+
+.info-item i {
+    margin-left: 10px;
+    color: #3498db;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+/* تنسيق بطاقات المرافق */
+.amenity-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #e9ecef;
+}
+
+.amenity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.amenity-card i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #3498db;
+}
+
+.amenity-card.available {
+    border-color: #2ecc71;
+}
+
+.amenity-card.available i {
+    color: #2ecc71;
+}
+
+/* تنسيق بيانات المالك */
+.owner-card {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.owner-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 20px;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.contact-method {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+
+.contact-method:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.contact-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* تنسيق الخريطة */
+.map-container {
+    height: 400px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* تنسيق أزرار الحجز */
+.booking-btn {
+    padding: 12px 25px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.booking-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* تنسيق التقييمات */
+.rating-summary {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.rating-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 193, 7, 0.2) 100%);
+    border: 2px solid rgba(255, 193, 7, 0.3);
+    margin-left: 20px;
+}
+
+.rating-stars {
+    font-size: 1.2rem;
+    color: #ffc107;
+}
+
+/* تنسيق للشاشات الصغيرة */
+@media (max-width: 768px) {
+    .main-image {
+        height: 300px;
+    }
+    
+    .price-card {
+        position: static;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .owner-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .owner-avatar {
+        margin-left: 0;
+        margin-bottom: 15px;
+    }
+}
