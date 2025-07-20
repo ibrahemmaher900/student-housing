@@ -24,14 +24,51 @@ def debug_view(request):
 
 def temp_home(request):
     """Temporary home page"""
-    # Try to serve the static coming_soon.html file
-    try:
-        with open(os.path.join(settings.BASE_DIR, 'static', 'coming_soon.html'), 'r', encoding='utf-8') as f:
-            content = f.read()
-        return HttpResponse(content, content_type="text/html")
-    except:
-        # Fallback to a simple message
-        return HttpResponse(
-            "<h1>سكن طالب</h1><p>نعمل على تجهيز الموقع. يرجى العودة لاحقًا.</p>",
-            content_type="text/html"
-        )
+    # Return a simple HTML page with proper encoding
+    html = '''
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>سكن طالب - قريبًا</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+        <style>
+            body {
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+                background-color: #f8f9fa;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+            }
+            .coming-soon {
+                padding: 2rem;
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                max-width: 600px;
+                width: 90%;
+            }
+            .logo {
+                font-size: 2.5rem;
+                font-weight: bold;
+                color: #dc3545;
+                margin-bottom: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="coming-soon">
+            <div class="logo">سكن طالب</div>
+            <h2>قريبًا</h2>
+            <p class="lead">نعمل على تجهيز الموقع لمساعدة الطلاب في العثور على سكن مناسب بالقرب من جامعاتهم.</p>
+            <div class="mt-4">
+                <a href="/admin/" class="btn btn-outline-secondary">تسجيل الدخول للإدارة</a>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+    return HttpResponse(html, content_type="text/html; charset=utf-8")

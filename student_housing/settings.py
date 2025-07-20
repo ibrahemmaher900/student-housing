@@ -117,10 +117,17 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': str(BASE_DIR / 'db.sqlite3'),
         }
     }
-    print("Using SQLite database for local development")
+    print(f"Using SQLite database at: {DATABASES['default']['NAME']}")
+    
+# Print database configuration for debugging
+print(f"Database engine: {DATABASES['default']['ENGINE']}")
+print(f"Database name: {DATABASES['default']['NAME']}")
+print(f"Database user: {DATABASES['default'].get('USER', 'Not set')}")
+print(f"Database host: {DATABASES['default'].get('HOST', 'Not set')}")
+print(f"Database port: {DATABASES['default'].get('PORT', 'Not set')}")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
