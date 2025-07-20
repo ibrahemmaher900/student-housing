@@ -18,7 +18,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-key-for-development-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# Temporarily enable debug for troubleshooting
+DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com').split(',')
 
@@ -115,6 +116,9 @@ DATABASES = {
 # Override database settings with DATABASE_URL environment variable if available
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+    print(f"Using database: {DATABASES['default']['ENGINE']}")
+else:
+    print("Using SQLite database")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
