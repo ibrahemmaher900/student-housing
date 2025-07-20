@@ -17,8 +17,10 @@ services:
           property: connectionString
       - key: DJANGO_SETTINGS_MODULE
         value: "student_housing.settings"
+    plan: free
 
 databases:
   - name: student_housing_db
     databaseName: student_housing
     user: student_housing_user
+    plan: free

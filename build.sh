@@ -2,6 +2,9 @@
 # exit on error
 set -o errexit
 
+# Create .env file
+python create_env.py
+
 # Run diagnostics script
 python render_debug.py
 
@@ -44,9 +47,17 @@ python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_h
 echo "Running database initialization script:"
 python init_database.py
 
+# Create tables manually if needed
+echo "Creating tables manually if needed:"
+python create_tables.py
+
 # Create default data
 echo "Creating default data:"
 python init_default_data.py
+
+# Create temporary home page
+echo "Creating temporary home page:"
+python create_temp_home.py
 
 # Create .env file if it doesn't exist
 if [ ! -f .env ]; then

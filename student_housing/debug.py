@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.conf import settings
+from django.shortcuts import render
 import sys
 import os
 import django
@@ -20,3 +21,17 @@ def debug_view(request):
     ]
     
     return HttpResponse("<br>".join(debug_info), content_type="text/html")
+
+def temp_home(request):
+    """Temporary home page"""
+    # Try to serve the static coming_soon.html file
+    try:
+        with open(os.path.join(settings.BASE_DIR, 'static', 'coming_soon.html'), 'r', encoding='utf-8') as f:
+            content = f.read()
+        return HttpResponse(content, content_type="text/html")
+    except:
+        # Fallback to a simple message
+        return HttpResponse(
+            "<h1>سكن طالب</h1><p>نعمل على تجهيز الموقع. يرجى العودة لاحقًا.</p>",
+            content_type="text/html"
+        )

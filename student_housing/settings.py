@@ -106,25 +106,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'student_housing.wsgi.application'
 
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Override database settings with DATABASE_URL environment variable if available
+# Always use DATABASE_URL if available (for Render PostgreSQL)
 if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-    print(f"Using database: {DATABASES['default']['ENGINE']}")
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    }
+    print(f"Using database from DATABASE_URL: {DATABASES['default']['ENGINE']}")
 else:
-    print("Using SQLite database")
-    # Make sure the SQLite database file is in a writable location
-    db_path = BASE_DIR / 'db.sqlite3'
-    print(f"SQLite database path: {db_path}")
-    print(f"Directory exists: {os.path.exists(os.path.dirname(db_path))}")
-    print(f"Directory is writable: {os.access(os.path.dirname(db_path), os.W_OK)}")
-    DATABASES['default']['NAME'] = db_path
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    print("Using SQLite database for local development")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
