@@ -12,4 +12,6 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_housing.settings')
 
+# Define both 'application' and 'app' for compatibility
 application = get_wsgi_application()
+app = application  # Gunicorn is looking for 'app'
