@@ -4,13 +4,4 @@ services:
     env: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn app:app"
-    envVars:
-      - key: SECRET_KEY
-        generateValue: true
-      - key: DEBUG
-        value: "True"
-      - key: ALLOWED_HOSTS
-        value: "*"
-      - key: DJANGO_SETTINGS_MODULE
-        value: "student_housing.settings"
     plan: free
