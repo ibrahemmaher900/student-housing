@@ -3,7 +3,7 @@ services:
     name: student-housing
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn student_housing.wsgi:application"
+    startCommand: "gunicorn wsgi:application"
     envVars:
       - key: SECRET_KEY
         generateValue: true
