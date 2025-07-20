@@ -1,1 +1,1 @@
-web: gunicorn student_housing.wsgi
+web: gunicorn student_housing.wsgi:application
