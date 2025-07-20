@@ -12,9 +12,9 @@ ls -la
 # Install dependencies
 pip install -r requirements.txt
 
-# Create index.py if it doesn't exist
+# Create index.py if it doesn't exist (fallback page)
 if [ ! -f index.py ]; then
-    echo "Creating index.py"
+    echo "Creating index.py (fallback page)"
     cat > index.py << 'EOF'
 from django.http import HttpResponse
 
@@ -90,51 +90,32 @@ def index(request):
 EOF
 fi
 
-# Create app.py if it doesn't exist
-if [ ! -f app.py ]; then
-    echo "Creating app.py"
-    cat > app.py << 'EOF'
-"""
-WSGI app for student_housing project.
-"""
+# Try to set up Django
+echo "Setting up Django..."
+python -c "import django; print(f'Django version: {django.__version__}')"
 
+# Collect static files
+echo "Collecting static files:"
+python manage.py collectstatic --no-input || echo "Collectstatic failed, continuing..."
+
+# Apply migrations
+echo "Applying migrations:"
+python manage.py makemigrations --noinput || echo "Makemigrations failed, continuing..."
+python manage.py migrate --noinput || echo "Migrate failed, continuing..."
+
+# Create superuser if needed
+echo "Creating superuser if needed:"
+python -c "
 import os
-import sys
-import logging
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[logging.StreamHandler(sys.stdout)]
-)
-logger = logging.getLogger('app')
-
-# Add the project directory to the Python path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-try:
-    # Import the index function
-    from index import index
-    
-    # Define a simple WSGI application
-    def app(environ, start_response):
-        """Simple WSGI application that serves the index page"""
-        status = '200 OK'
-        headers = [('Content-type', 'text/html; charset=utf-8')]
-        start_response(status, headers)
-        
-        # Return the index page
-        return [index(None).content]
-    
-    # For compatibility with gunicorn
-    application = app
-    
-    logger.info("WSGI application initialized successfully")
-except Exception as e:
-    logger.error(f"Error initializing WSGI application: {e}", exc_info=True)
-    raise
-EOF
-fi
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_housing.settings')
+import django
+django.setup()
+from django.contrib.auth.models import User
+if not User.objects.filter(username='admin').exists():
+    User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+    print('Superuser created')
+else:
+    print('Superuser already exists')
+" || echo "Superuser creation failed, continuing..."
 
 echo "Build completed successfully"

@@ -4,4 +4,19 @@ services:
     env: python
     buildCommand: "./build.sh"
     startCommand: "gunicorn app:app"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: True
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com,localhost,127.0.0.1"
+      - key: DJANGO_SETTINGS_MODULE
+        value: "student_housing.settings"
+    plan: free
+
+databases:
+  - name: student_housing_db
+    databaseName: student_housing
+    user: student_housing_user
     plan: free
