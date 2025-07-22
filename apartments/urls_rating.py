@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views_rating
+from .views_rating_fix import add_rating
 
 urlpatterns = [
-    path('submit-rating/', views_rating.submit_rating, name='submit_rating'),
+    path('add-rating/', add_rating, name='add_rating'),
 ]
