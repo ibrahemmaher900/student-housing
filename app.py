@@ -18,10 +18,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_housing.settings')
 
 # Import Django WSGI application
 try:
-    # Use the original wsgi.py file
-    from student_housing.wsgi import application
+    from django.core.wsgi import get_wsgi_application
+    application = get_wsgi_application()
     app = application  # For Gunicorn
-    logger.info("Django application loaded successfully from wsgi.py")
+    logger.info("Django application loaded successfully")
 except Exception as e:
     logger.error(f"Error loading Django application: {e}")
     raise
