@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import SiteRating
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 
+@ensure_csrf_cookie
 @login_required
 def add_rating(request):
     """إضافة تقييم للموقع"""
@@ -24,7 +27,7 @@ def add_rating(request):
             # إنشاء التقييم
             SiteRating.objects.create(
                 user=request.user,
-                rating=rating,
+                rating=int(rating),
                 comment=comment
             )
             

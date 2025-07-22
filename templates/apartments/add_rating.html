@@ -1,101 +1,49 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
-{% block title %}سكن طالب{% endblock %}
-
-{% block extra_css %}
-<style>
-    .rating-container {
-        direction: rtl;
-        display: inline-block;
-        margin-bottom: 20px;
-    }
-    
-    .rating-container input {
-        display: none;
-    }
-    
-    .rating-container label {
-        float: right;
-        color: #ddd;
-        font-size: 30px;
-        padding: 0 5px;
-        cursor: pointer;
-    }
-    
-    .rating-container label:before {
-        content: '★';
-    }
-    
-    .rating-container input:checked ~ label,
-    .rating-container label:hover,
-    .rating-container label:hover ~ label {
-        color: #ffc107;
-    }
-    
-    .rating-container input:checked + label:hover,
-    .rating-container input:checked ~ label:hover,
-    .rating-container label:hover ~ input:checked ~ label,
-    .rating-container input:checked ~ label:hover ~ label {
-        color: #ffdb70;
-    }
-</style>
-{% endblock %}
+{% block title %}إضافة تقييم - سكن طالب{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
+            <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">{% if existing_rating %}تعديل التقييم{% else %}إضافة تقييم{% endif %} لـ {{ apartment.title }}</h4>
+                    <h4 class="mb-0">شاركنا رأيك في موقع سكن طالب</h4>
                 </div>
                 <div class="card-body">
-                    <div class="mb-4">
-                        <div class="d-flex align-items-center mb-3">
-                            <img src="{{ apartment.images.first.image.url|default:'/static/img/placeholder.jpg' }}" alt="{{ apartment.title }}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;">
-                            <div>
-                                <h5 class="mb-1">{{ apartment.title }}</h5>
-                                <p class="text-muted mb-0"><i class="fas fa-map-marker-alt me-1"></i> {{ apartment.address }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <form method="post">
+                    <form id="rating-form" method="post">
                         {% csrf_token %}
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">التقييم</label>
-                            <div class="rating-container">
-                                {% for radio in form.stars %}
-                                    {{ radio.tag }}
-                                    <label for="{{ radio.id_for_label }}"></label>
-                                {% endfor %}
-                            </div>
-                            {% if form.stars.errors %}
-                            <div class="text-danger small mt-1">
-                                {{ form.stars.errors }}
-                            </div>
-                            {% endif %}
-                        </div>
-                        
                         <div class="mb-3">
-                            <label for="{{ form.review.id_for_label }}" class="form-label fw-bold">المراجعة</label>
-                            {{ form.review }}
-                            {% if form.review.errors %}
-                            <div class="text-danger small mt-1">
-                                {{ form.review.errors }}
+                            <label class="form-label">التقييم:</label>
+                            <div class="rating-stars">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rating" id="rating1" value="1">
+                                    <label class="form-check-label" for="rating1">1 ★</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rating" id="rating2" value="2">
+                                    <label class="form-check-label" for="rating2">2 ★</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rating" id="rating3" value="3">
+                                    <label class="form-check-label" for="rating3">3 ★</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rating" id="rating4" value="4">
+                                    <label class="form-check-label" for="rating4">4 ★</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="rating" id="rating5" value="5">
+                                    <label class="form-check-label" for="rating5">5 ★</label>
+                                </div>
                             </div>
-                            {% endif %}
-                            <div class="form-text">اكتب مراجعتك وتجربتك مع هذه الشقة</div>
                         </div>
-                        
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'apartment_detail' pk=apartment.id %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-right me-1"></i> العودة
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> حفظ التقييم
-                            </button>
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">تعليق:</label>
+                            <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
                         </div>
+                        <button type="submit" class="btn btn-primary">إرسال التقييم</button>
                     </form>
                 </div>
             </div>
@@ -105,5 +53,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="/static/js/ratings.js"></script>
+<script src="{% static 'js/rating_fix.js' %}"></script>
 {% endblock %}
