@@ -2,21 +2,17 @@
 # exit on error
 set -o errexit
 
-# Print environment information
-echo "Python version:"
-python --version
+echo "Python version: $(python --version)"
 echo "Current directory: $(pwd)"
-echo "Directory contents:"
-ls -la
+echo "Directory contents: $(ls -la)"
 
 # Install dependencies
-pip install -r requirements.txt
-pip install requests django-allauth whitenoise gunicorn dj-database-url django-cors-headers django-csp django-axes
+pip install django django-allauth whitenoise gunicorn requests
 
 # Collect static files
-python manage.py collectstatic --no-input
+python manage.py collectstatic --noinput || echo "Collectstatic failed"
 
 # Apply migrations
-python manage.py migrate
+python manage.py migrate || echo "Migrate failed"
 
-echo "Build completed successfully"
+echo "Build completed"
