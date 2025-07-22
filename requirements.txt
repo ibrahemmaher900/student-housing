@@ -7,4 +7,4 @@ gunicorn>=21.2.0
 dj-database-url>=2.0.0
 django-cors-headers>=4.0.0
 django-csp>=3.7
-django-axes>=6.0.0
+django-axes>=6.0.0requests>=2.31.0
