@@ -1,0 +1,74 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}التسجيل - سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">إنشاء حساب جديد</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">اسم المستخدم</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="text-danger">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">البريد الإلكتروني</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="text-danger">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">كلمة المرور</label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="text-danger">{{ form.password1.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">تأكيد كلمة المرور</label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="text-danger">{{ form.password2.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">نوع المستخدم</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="user_type" id="id_user_type_0" value="student" checked>
+                                <label class="form-check-label" for="id_user_type_0">طالب</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="user_type" id="id_user_type_1" value="owner">
+                                <label class="form-check-label" for="id_user_type_1">مالك عقار</label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">تسجيل</button>
+                    </form>
+                    <div class="border-top pt-3 mt-3">
+                        <small class="text-muted">
+                            هل لديك حساب بالفعل؟ <a href="{% url 'login' %}" class="ms-2">تسجيل الدخول</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
