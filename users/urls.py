@@ -1,13 +1,11 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
 from . import views
-from .views_social import social_login
+from .views_simple_logout import simple_logout
 
 urlpatterns = [
+    path('login/', views.login_view, name='login'),
+    path('logout/', simple_logout, name='logout'),
     path('register/', views.register, name='register'),
     path('profile/', views.profile, name='profile'),
-    path('profile/<int:user_id>/', views.view_profile, name='view_profile'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name='logout'),
-    path('social/<str:provider>/', social_login, name='socialaccount_login'),
+    path('profile/<str:username>/', views.view_profile, name='view_profile'),
 ]
