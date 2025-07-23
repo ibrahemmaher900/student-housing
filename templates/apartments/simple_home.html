@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}سكن طالب - الصفحة الرئيسية{% endblock %}
+
+{% block content %}
+<div class="hero bg-primary text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">سكن طالب</h1>
+        <p class="lead">ابحث عن سكن قريب من جامعتك</p>
+        <div class="mt-4">
+            <a href="/apartments/" class="btn btn-light btn-lg me-2">استعرض الشقق</a>
+            {% if user.is_authenticated and user.profile.user_type == 'owner' %}
+                <a href="/apartments/add-apartment/" class="btn btn-outline-light btn-lg">أضف عقارك</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <h2 class="text-center mb-5">مميزات سكن طالب</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                    <h4>بحث متقدم</h4>
+                    <p>ابحث عن الشقق حسب معايير مختلفة (الجامعة، السعر، نوع السكن)</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                    <h4>تنوع السكن</h4>
+                    <p>شقق كاملة، غرف مشتركة، أو أسرّة في غرف مشتركة</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                    <h4>حجز مباشر</h4>
+                    <p>احجز سكنك مباشرة من خلال المنصة وتواصل مع المالك</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
