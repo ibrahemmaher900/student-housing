@@ -3,6 +3,7 @@ import secrets
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 import environ
+import dj_database_url
 
 # Initialize environ
 env = environ.Env()
@@ -13,9 +14,11 @@ environ.Env.read_env(os.path.join(Path(__file__).resolve().parent.parent, '.env'
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
+# Use environment variable for SECRET_KEY in production
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-key-for-development-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Debug mode
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com').split(',')
@@ -37,6 +40,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'corsheaders',
+    'csp',
+    'axes',
     
     # Local apps
     'apartments',
@@ -54,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'student_housing.urls'
@@ -78,12 +84,21 @@ TEMPLATES = [
 WSGI_APPLICATION = 'student_housing.wsgi.application'
 
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# Always use DATABASE_URL if available (for Render PostgreSQL)
+if 'DATABASE_URL' in os.environ:
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
     }
-}
+    print(f"Using database from DATABASE_URL: {DATABASES['default']['ENGINE']}")
+else:
+    # Fallback to SQLite for local development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': str(BASE_DIR / 'db.sqlite3'),
+        }
+    }
+    print(f"Using SQLite database at: {DATABASES['default']['NAME']}")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -128,6 +143,7 @@ LOGIN_URL = 'login'
 # django-allauth settings
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
@@ -139,17 +155,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# Render specific settings
-import os
-ALLOWED_HOSTS = ['*']
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Render specific settings
-import os
-ALLOWED_HOSTS = ['*']
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-# Disable social providers temporarily
+# Temporarily disable social providers
 SOCIALACCOUNT_PROVIDERS = {}
