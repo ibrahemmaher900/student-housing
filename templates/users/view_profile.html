@@ -1,181 +1,28 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
-{% block title %}سكن طالب{% endblock %}
+{% block title %}{{ user.username }} - سكن طالب{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="row">
-        <div class="col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center p-4">
-                    <div class="position-relative mb-4 mx-auto" style="width: 150px; height: 150px;">
-                        <img src="{{ profile_user.profile.get_profile_picture_url }}" alt="{{ profile_user.username }}" class="rounded-circle img-fluid border shadow" style="width: 150px; height: 150px; object-fit: cover;">
-                        <div class="position-absolute bottom-0 end-0">
-                            <span class="badge rounded-pill {% if profile_user.profile.user_type == 'student' %}bg-info{% else %}bg-success{% endif %} p-2">
-                                {% if profile_user.profile.user_type == 'student' %}
-                                <i class="fas fa-user-graduate me-1"></i> طالب
-                                {% else %}
-                                <i class="fas fa-home me-1"></i> مالك عقار
-                                {% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    <h4 class="mb-1 fw-bold">{{ profile_user.get_full_name|default:profile_user.username }}</h4>
-                    {% if profile_user.profile.university %}
-                    <p class="text-muted">
-                        <i class="fas fa-university me-1"></i> {{ profile_user.profile.university.name }}
-                    </p>
-                    {% endif %}
-                    {% if profile_user.profile.bio %}
-                    <p class="text-muted small mt-2">{{ profile_user.profile.bio|truncatechars:100 }}</p>
-                    {% endif %}
-                    
-                    {% if not is_self %}
-                    <div class="mt-3">
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#contactUserModal">
-                            <i class="fas fa-envelope me-2"></i>تواصل مع {{ profile_user.username }}
-                        </button>
-                    </div>
-                    {% else %}
-                    <div class="mt-3">
-                        <a href="{% url 'profile' %}" class="btn btn-outline-primary">
-                            <i class="fas fa-edit me-2"></i>تعديل الملف الشخصي
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-light py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-info-circle me-2"></i>معلومات الاتصال</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-user text-primary me-3"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="mb-0 fw-bold">الاسم الكامل</p>
-                            <p class="text-muted mb-0">{{ profile_user.get_full_name|default:"-" }}</p>
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-calendar text-primary me-3"></i>
-                        </div>
-                        <div class="flex-grow-1">
-                            <p class="mb-0 fw-bold">عضو منذ</p>
-                            <p class="text-muted mb-0">{{ profile_user.date_joined|date:"F Y" }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-8">
-            <!-- إحصائيات المستخدم -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-chart-bar me-2"></i>إحصائيات الحساب</h5>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0 fw-bold">{{ user.username }}</h3>
                 </div>
                 <div class="card-body p-4">
-                    <div class="row text-center">
-                        {% if is_owner %}
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <div class="bg-light rounded p-3 h-100">
-                                <div class="h1 text-primary mb-2"><i class="fas fa-home"></i></div>
-                                <h5 class="fw-bold">الشقق</h5>
-                                <p class="text-muted mb-0">{{ user_stats.apartments_count }}</p>
-                                <div class="d-flex justify-content-center mt-2">
-                                    <span class="badge bg-success me-2" title="تمت الموافقة">
-                                        <i class="fas fa-check-circle"></i> {{ user_stats.approved_apartments }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                    <p><strong>البريد الإلكتروني:</strong> {{ user.email }}</p>
+                    <p><strong>نوع المستخدم:</strong> 
+                        {% if user.profile.user_type == 'owner' %}
+                            مالك عقار
                         {% else %}
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <div class="bg-light rounded p-3 h-100">
-                                <div class="h1 text-primary mb-2"><i class="fas fa-heart"></i></div>
-                                <h5 class="fw-bold">المفضلة</h5>
-                                <p class="text-muted mb-0">{{ user_stats.wishlist_count }}</p>
-                            </div>
-                        </div>
+                            طالب
                         {% endif %}
-                        <div class="col-md-6">
-                            <div class="bg-light rounded p-3 h-100">
-                                <div class="h1 text-primary mb-2"><i class="fas fa-calendar-check"></i></div>
-                                <h5 class="fw-bold">الحجوزات</h5>
-                                <p class="text-muted mb-0">{{ user_stats.bookings_count }}</p>
-                            </div>
-                        </div>
-                    </div>
+                    </p>
                 </div>
-            </div>
-            
-            {% if is_owner and apartments %}
-            <!-- شقق المالك -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-light py-3">
-                    <h5 class="mb-0 fw-bold"><i class="fas fa-building me-2"></i>شقق {{ profile_user.get_full_name|default:profile_user.username }}</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row">
-                        {% for apartment in apartments %}
-                        <div class="col-md-6 mb-4">
-                            <div class="card h-100 shadow-sm">
-                                <img src="{{ apartment.images.first.image.url|default:'#' }}" class="card-img-top" alt="{{ apartment.title }}" style="height: 150px; object-fit: cover;">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ apartment.title }}</h5>
-                                    <p class="card-text text-primary fw-bold">{{ apartment.price }} ريال/شهر</p>
-                                    <p class="card-text small text-muted">{{ apartment.address|truncatechars:50 }}</p>
-                                    <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary">عرض التفاصيل</a>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<!-- Modal للتواصل مع المستخدم -->
-{% if not is_self %}
-<div class="modal fade" id="contactUserModal" tabindex="-1" aria-labelledby="contactUserModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="contactUserModalLabel">تواصل مع {{ profile_user.get_full_name|default:profile_user.username }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center mb-4">
-                    <img src="{{ profile_user.profile.get_profile_picture_url }}" alt="{{ profile_user.username }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
-                    <h5>{{ profile_user.get_full_name|default:profile_user.username }}</h5>
-                </div>
-                
-                <form>
-                    <div class="mb-3">
-                        <label for="messageSubject" class="form-label">الموضوع</label>
-                        <input type="text" class="form-control" id="messageSubject" placeholder="موضوع الرسالة">
-                    </div>
-                    <div class="mb-3">
-                        <label for="messageContent" class="form-label">الرسالة</label>
-                        <textarea class="form-control" id="messageContent" rows="5" placeholder="اكتب رسالتك هنا..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                <button type="button" class="btn btn-primary">إرسال الرسالة</button>
             </div>
         </div>
     </div>
 </div>
-{% endif %}
 {% endblock %}
