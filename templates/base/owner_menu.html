@@ -1,0 +1,15 @@
+{% if user.is_authenticated and user.profile.user_type == 'owner' %}
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="ownerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-building me-1"></i> إدارة العقارات
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="ownerDropdown">
+        <li><a class="dropdown-item" href="{% url 'add_apartment' %}"><i class="fas fa-plus-circle me-1"></i> إضافة شقة</a></li>
+        <li><a class="dropdown-item" href="{% url 'add_room' %}"><i class="fas fa-door-open me-1"></i> إضافة غرفة</a></li>
+        <li><a class="dropdown-item" href="{% url 'add_bed' %}"><i class="fas fa-bed me-1"></i> إضافة سرير</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="{% url 'my_apartments' %}"><i class="fas fa-list me-1"></i> عقاراتي</a></li>
+        <li><a class="dropdown-item" href="{% url 'manage_bookings' %}"><i class="fas fa-calendar-check me-1"></i> إدارة الحجوزات</a></li>
+    </ul>
+</li>
+{% endif %}
