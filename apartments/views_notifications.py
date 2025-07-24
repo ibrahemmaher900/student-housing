@@ -48,9 +48,14 @@ def delete_notification(request, pk):
     return redirect('notifications_list')
 
 @login_required
+@require_POST
 def mark_all_read(request):
     """تعليم جميع التنبيهات كمقروءة"""
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    
+    if request.headers.get('Content-Type') == 'application/json':
+        return JsonResponse({'success': True})
+    
     messages.success(request, 'تم تعليم جميع التنبيهات كمقروءة')
     
     # العودة إلى الصفحة السابقة
@@ -77,18 +82,30 @@ def mark_notification_as_read_api(request, pk):
 @login_required
 def get_recent_notifications(request):
     """الحصول على آخر الإشعارات (API)"""
-    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:5]
-    data = [{
-        'id': notification.id,
-        'message': notification.message,
-        'type': notification.notification_type,
-        'type_display': notification.get_notification_type_display(),
-        'is_read': notification.is_read,
-        'created_at': notification.created_at.strftime('%Y-%m-%d %H:%M'),
-        'url': get_notification_url(notification)
-    } for notification in notifications]
+    notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:10]
     
-    return JsonResponse({'notifications': data})
+    notifications_data = []
+    for notification in notifications:
+        data = {
+            'id': notification.id,
+            'message': notification.message,
+            'notification_type': notification.notification_type,
+            'is_read': notification.is_read,
+            'created_at': notification.created_at.isoformat(),
+            'related_apartment': notification.related_apartment.id if notification.related_apartment else None,
+            'related_booking': notification.related_booking.id if notification.related_booking else None,
+        }
+        notifications_data.append(data)
+    
+    unread_count = Notification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).count()
+    
+    return JsonResponse({
+        'notifications': notifications_data,
+        'unread_count': unread_count
+    })
 
 def get_notification_url(notification):
     """الحصول على رابط الإشعار بناءً على نوعه"""
