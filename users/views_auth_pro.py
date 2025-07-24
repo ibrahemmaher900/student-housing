@@ -36,7 +36,7 @@ def login_pro(request):
         else:
             messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
     
-    return render(request, 'users/login_pro.html')
+    return render(request, 'users/login.html')
 
 def register_pro(request):
     """وظيفة التسجيل المحسنة"""
@@ -66,7 +66,7 @@ def register_pro(request):
         if errors:
             for error in errors:
                 messages.error(request, error)
-            return render(request, 'users/register_pro.html')
+            return render(request, 'users/register.html')
         
         # إنشاء المستخدم
         user = User.objects.create_user(username=username, email=email, password=password1)
@@ -79,7 +79,7 @@ def register_pro(request):
         messages.success(request, f'تم إنشاء حساب لـ {username}! يمكنك الآن تسجيل الدخول.')
         return redirect('login')
     
-    return render(request, 'users/register_pro.html')
+    return render(request, 'users/register.html')
 
 def logout_pro(request):
     """وظيفة تسجيل الخروج المحسنة"""
