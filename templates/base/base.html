@@ -43,6 +43,13 @@
                         </ul>
                     </li>
                     {% endif %}
+                    {% if user.is_staff or user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/apartments/admin/dashboard/">
+                            <i class="fas fa-tachometer-alt me-1"></i> لوحة التحكم
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}

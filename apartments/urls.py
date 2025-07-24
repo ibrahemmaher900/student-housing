@@ -43,6 +43,7 @@ urlpatterns = [
     path('comment/<int:comment_id>/reject/', views_comments.reject_comment, name='reject_comment'),
     
     # مسارات إدارة الشقق
+    path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/apartments/', views.admin_apartments, name='admin_apartments'),
     path('admin/apartments/<int:pk>/approve/', views.approve_apartment, name='approve_apartment'),
     path('admin/apartments/<int:pk>/reject/', views.reject_apartment, name='reject_apartment'),

@@ -723,3 +723,50 @@ def reject_apartment(request, pk):
     
     messages.success(request, 'تم رفض الشقة بنجاح!')
     return redirect('admin_apartments')
+
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    from django.contrib.auth.models import User
+    
+    # الإحصائيات العامة
+    total_users = User.objects.count()
+    total_apartments = Apartment.objects.count()
+    pending_apartments = Apartment.objects.filter(status='pending').count()
+    total_bookings = Booking.objects.count()
+    
+    # تفاصيل المستخدمين
+    students_count = User.objects.filter(profile__user_type='student').count()
+    owners_count = User.objects.filter(profile__user_type='owner').count()
+    recent_students = User.objects.filter(profile__user_type='student').order_by('-date_joined')[:10]
+    recent_owners = User.objects.filter(profile__user_type='owner').order_by('-date_joined')[:10]
+    
+    # الشقق
+    approved_apartments = Apartment.objects.filter(status='approved').count()
+    rejected_apartments = Apartment.objects.filter(status='rejected').count()
+    pending_apartments_list = Apartment.objects.filter(status='pending').order_by('-created_at')[:10]
+    
+    # الحجوزات
+    approved_bookings = Booking.objects.filter(status='approved').count()
+    pending_bookings = Booking.objects.filter(status='pending').count()
+    rejected_bookings = Booking.objects.filter(status='rejected').count()
+    recent_bookings = Booking.objects.order_by('-created_at')[:10]
+    
+    context = {
+        'total_users': total_users,
+        'total_apartments': total_apartments,
+        'pending_apartments': pending_apartments,
+        'total_bookings': total_bookings,
+        'students_count': students_count,
+        'owners_count': owners_count,
+        'recent_students': recent_students,
+        'recent_owners': recent_owners,
+        'approved_apartments': approved_apartments,
+        'rejected_apartments': rejected_apartments,
+        'pending_apartments_list': pending_apartments_list,
+        'approved_bookings': approved_bookings,
+        'pending_bookings': pending_bookings,
+        'rejected_bookings': rejected_bookings,
+        'recent_bookings': recent_bookings,
+    }
+    return render(request, 'apartments/admin_dashboard.html', context)

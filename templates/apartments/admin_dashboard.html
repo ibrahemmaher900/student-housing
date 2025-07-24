@@ -1,0 +1,317 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}لوحة التحكم - الإدارة{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم الإدارية</h1>
+        </div>
+    </div>
+
+    <!-- الإحصائيات العامة -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ total_users }}</h4>
+                            <p class="mb-0">إجمالي المستخدمين</p>
+                        </div>
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ total_apartments }}</h4>
+                            <p class="mb-0">إجمالي الشقق</p>
+                        </div>
+                        <i class="fas fa-home fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ pending_apartments }}</h4>
+                            <p class="mb-0">شقق تنتظر الموافقة</p>
+                        </div>
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4>{{ total_bookings }}</h4>
+                            <p class="mb-0">إجمالي الحجوزات</p>
+                        </div>
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- تفاصيل المستخدمين -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-graduate me-2"></i>الطلاب ({{ students_count }})</h5>
+                </div>
+                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                    {% for student in recent_students %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                        <div>
+                            <strong>{{ student.username }}</strong>
+                            <small class="text-muted d-block">{{ student.email }}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ student.date_joined|date:"d/m/Y" }}</small>
+                            {% if student.profile.is_banned %}
+                            <span class="badge bg-danger">محظور</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-tie me-2"></i>مالكي العقارات ({{ owners_count }})</h5>
+                </div>
+                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                    {% for owner in recent_owners %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                        <div>
+                            <strong>{{ owner.username }}</strong>
+                            <small class="text-muted d-block">{{ owner.email }}</small>
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ owner.date_joined|date:"d/m/Y" }}</small>
+                            <span class="badge bg-success">{{ owner.apartment_set.count }} شقة</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشقق التي تنتظر الموافقة -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h5><i class="fas fa-clock me-2"></i>الشقق التي تنتظر الموافقة ({{ pending_apartments_list|length }})</h5>
+                    <a href="/apartments/admin/apartments/" class="btn btn-sm btn-primary">عرض الكل</a>
+                </div>
+                <div class="card-body">
+                    {% if pending_apartments_list %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>العنوان</th>
+                                    <th>المالك</th>
+                                    <th>السعر</th>
+                                    <th>المدينة</th>
+                                    <th>تاريخ الإضافة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for apartment in pending_apartments_list %}
+                                <tr>
+                                    <td>{{ apartment.title }}</td>
+                                    <td>{{ apartment.owner.username }}</td>
+                                    <td>{{ apartment.price }} جنيه</td>
+                                    <td>{{ apartment.city }}</td>
+                                    <td>{{ apartment.created_at|date:"d/m/Y" }}</td>
+                                    <td>
+                                        <a href="/apartments/admin/apartments/{{ apartment.id }}/approve/" class="btn btn-sm btn-success">موافقة</a>
+                                        <a href="/apartments/admin/apartments/{{ apartment.id }}/reject/" class="btn btn-sm btn-danger">رفض</a>
+                                        <a href="/apartments/{{ apartment.id }}/" class="btn btn-sm btn-info">عرض</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">لا توجد شقق تنتظر الموافقة</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الحجوزات الحديثة -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar-check me-2"></i>الحجوزات الحديثة</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>الطالب</th>
+                                    <th>الشقة</th>
+                                    <th>المالك</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ الحجز</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in recent_bookings %}
+                                <tr>
+                                    <td>{{ booking.student.username }}</td>
+                                    <td>{{ booking.apartment.title|truncatechars:30 }}</td>
+                                    <td>{{ booking.apartment.owner.username }}</td>
+                                    <td>
+                                        {% if booking.status == 'pending' %}
+                                        <span class="badge bg-warning">في الانتظار</span>
+                                        {% elif booking.status == 'approved' %}
+                                        <span class="badge bg-success">معتمد</span>
+                                        {% elif booking.status == 'rejected' %}
+                                        <span class="badge bg-danger">مرفوض</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ booking.created_at|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- إحصائيات تفصيلية -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar me-2"></i>إحصائيات الشقق</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h4 class="text-success">{{ approved_apartments }}</h4>
+                            <small>معتمدة</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-warning">{{ pending_apartments }}</h4>
+                            <small>في الانتظار</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-danger">{{ rejected_apartments }}</h4>
+                            <small>مرفوضة</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie me-2"></i>إحصائيات الحجوزات</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <h4 class="text-success">{{ approved_bookings }}</h4>
+                            <small>معتمدة</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-warning">{{ pending_bookings }}</h4>
+                            <small>في الانتظار</small>
+                        </div>
+                        <div class="col-4">
+                            <h4 class="text-danger">{{ rejected_bookings }}</h4>
+                            <small>مرفوضة</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- روابط سريعة للإدارة -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools me-2"></i>أدوات الإدارة</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="/apartments/admin/apartments/" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-home me-2"></i>إدارة الشقق
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/apartments/admin/users/" class="btn btn-outline-success w-100">
+                                <i class="fas fa-users me-2"></i>إدارة المستخدمين
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/" class="btn btn-outline-info w-100">
+                                <i class="fas fa-cog me-2"></i>لوحة Django
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/apartments/notifications/" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-bell me-2"></i>الإشعارات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.badge {
+    font-size: 0.75rem;
+}
+</style>
+{% endblock %}
