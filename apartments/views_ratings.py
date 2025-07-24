@@ -64,6 +64,9 @@ def add_rating(request, apartment_id):
                     related_apartment=apartment
                 )
             
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({'success': True, 'message': 'تم حفظ تقييمك بنجاح'})
+            
             messages.success(request, 'تم حفظ تقييمك بنجاح')
             return redirect('apartment_detail', pk=apartment_id)
     else:

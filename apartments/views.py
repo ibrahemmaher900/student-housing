@@ -148,11 +148,17 @@ def apartment_detail(request, pk):
     
     if request.user.is_authenticated:
         # التحقق من حجز المستخدم لهذه الشقة
-        user_has_booking = Booking.objects.filter(
+        user_booking = Booking.objects.filter(
             apartment=apartment,
-            student=request.user,
-            status__in=['pending', 'approved']
-        ).exists()
+            student=request.user
+        ).first()
+        
+        if user_booking:
+            user_has_booking = True
+            user_booking_status = user_booking.status
+        else:
+            user_has_booking = False
+            user_booking_status = None
         
         # التحقق من أن المستخدم هو المستأجر الفعلي للشقة (حجز معتمد حالي أو سابق)
         active_booking = Booking.objects.filter(
@@ -203,6 +209,7 @@ def apartment_detail(request, pk):
         'comments': comments,
         'ratings': ratings,
         'user_has_booking': user_has_booking,
+        'user_booking_status': user_booking_status,
         'is_in_wishlist': is_in_wishlist,
         'user_has_rating': user_has_rating,
         'user_has_active_booking_elsewhere': user_has_active_booking_elsewhere,
