@@ -31,21 +31,26 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'apartment_list' %}">استعرض الشقق</a>
                     </li>
+                    {% if user.is_authenticated and user.profile.user_type == 'owner' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_apartment' %}">إضافة شقة</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+                            <a class="nav-link" href="/users/profile/">{{ user.username }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">تسجيل الخروج</a>
+                            <a class="nav-link" href="/users/logout/">تسجيل الخروج</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">تسجيل الدخول</a>
+                            <a class="nav-link" href="/users/login/">تسجيل الدخول</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'register' %}">التسجيل</a>
+                            <a class="nav-link" href="/users/register/">التسجيل</a>
                         </li>
                     {% endif %}
                 </ul>
