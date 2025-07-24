@@ -1,0 +1,214 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}لوحة تحكم المالك{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1><i class="fas fa-tachometer-alt me-2"></i>لوحة تحكم المالك</h1>
+        </div>
+    </div>
+
+    <!-- الإحصائيات -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4>{{ total_apartments }}</h4>
+                    <p class="mb-0">إجمالي الشقق</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h4>{{ approved_apartments }}</h4>
+                    <p class="mb-0">شقق معتمدة</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h4>{{ pending_bookings }}</h4>
+                    <p class="mb-0">حجوزات في الانتظار</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h4>{{ total_bookings }}</h4>
+                    <p class="mb-0">إجمالي الحجوزات</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- شققي -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h5><i class="fas fa-home me-2"></i>شققي</h5>
+                    <a href="/apartments/add/" class="btn btn-primary btn-sm">إضافة شقة جديدة</a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>العنوان</th>
+                                    <th>السعر</th>
+                                    <th>الحالة</th>
+                                    <th>المشاهدات</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for apartment in apartments %}
+                                <tr>
+                                    <td>{{ apartment.title }}</td>
+                                    <td>{{ apartment.price }} جنيه</td>
+                                    <td>
+                                        {% if apartment.status == 'approved' %}
+                                        <span class="badge bg-success">معتمدة</span>
+                                        {% elif apartment.status == 'pending' %}
+                                        <span class="badge bg-warning">في الانتظار</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">مرفوضة</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ apartment.views_count }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/apartments/{{ apartment.id }}/" class="btn btn-sm btn-outline-info">عرض</a>
+                                            <a href="/apartments/{{ apartment.id }}/edit/" class="btn btn-sm btn-outline-primary">تعديل</a>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteApartment({{ apartment.id }})">حذف</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- الحجوزات -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-calendar me-2"></i>الحجوزات</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>الطالب</th>
+                                    <th>الشقة</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ النهاية</th>
+                                    <th>الحالة</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>{{ booking.student.username }}</td>
+                                    <td>{{ booking.apartment.title|truncatechars:30 }}</td>
+                                    <td>{{ booking.start_date }}</td>
+                                    <td>{{ booking.end_date }}</td>
+                                    <td>
+                                        {% if booking.status == 'pending' %}
+                                        <span class="badge bg-warning">في الانتظار</span>
+                                        {% elif booking.status == 'approved' %}
+                                        <span class="badge bg-success">معتمد</span>
+                                        {% elif booking.status == 'rejected' %}
+                                        <span class="badge bg-danger">مرفوض</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if booking.status == 'pending' %}
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-success" onclick="updateBookingStatus({{ booking.id }}, 'approve')">قبول</button>
+                                            <button class="btn btn-sm btn-danger" onclick="updateBookingStatus({{ booking.id }}, 'reject')">رفض</button>
+                                        </div>
+                                        {% elif booking.status == 'approved' %}
+                                        <button class="btn btn-sm btn-warning" onclick="reportNonSerious({{ booking.id }})">إبلاغ عن عدم الجدية</button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteApartment(apartmentId) {
+    if (confirm('هل أنت متأكد من حذف هذه الشقة؟')) {
+        window.location.href = `/apartments/${apartmentId}/delete/`;
+    }
+}
+
+function updateBookingStatus(bookingId, status) {
+    if (confirm(`هل أنت متأكد من ${status === 'approve' ? 'قبول' : 'رفض'} هذا الحجز؟`)) {
+        fetch(`/apartments/booking/${bookingId}/${status}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function reportNonSerious(bookingId) {
+    if (confirm('هل أنت متأكد من الإبلاغ عن هذا المستخدم كغير جاد؟ سيتم تجميد حسابه بعد 3 بلاغات.')) {
+        fetch(`/apartments/booking/${bookingId}/non_serious/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('تم الإبلاغ بنجاح');
+                location.reload();
+            }
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

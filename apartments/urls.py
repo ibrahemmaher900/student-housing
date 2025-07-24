@@ -22,6 +22,7 @@ urlpatterns = [
     path('my-wishlist/', views.my_wishlist, name='my_wishlist'),
     path('manage-bookings/', views.manage_bookings, name='manage_bookings'),
     path('booking/<int:pk>/<str:status>/', views.update_booking_status, name='update_booking_status'),
+    path('booking/<int:pk>/non_serious/', views.report_non_serious_booking, name='report_non_serious_booking'),
     # تم إزالة مسار الخريطة المستقلة
     
     # مسارات التنبيهات
@@ -43,6 +44,7 @@ urlpatterns = [
     path('comment/<int:comment_id>/reject/', views_comments.reject_comment, name='reject_comment'),
     
     # مسارات إدارة الشقق
+    path('owner/dashboard/', views.owner_dashboard, name='owner_dashboard'),
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/apartments/', views.admin_apartments, name='admin_apartments'),
     path('admin/apartments/<int:pk>/approve/', views.approve_apartment, name='approve_apartment'),

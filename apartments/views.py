@@ -632,6 +632,41 @@ def update_booking_status(request, pk, status):
     return redirect('manage_bookings')
 
 @login_required
+def report_non_serious_booking(request, pk):
+    booking = get_object_or_404(Booking, pk=pk)
+    
+    # التحقق من أن المستخدم هو مالك الشقة
+    if booking.apartment.owner != request.user:
+        messages.error(request, 'ليس لديك صلاحية للإبلاغ عن هذا الحجز.')
+        return redirect('owner_dashboard')
+    
+    booking.status = 'non_serious'
+    booking.save()
+    
+    # زيادة عداد عدم الجدية
+    student_profile = booking.student.profile
+    student_profile.non_serious_reports += 1
+    
+    if student_profile.non_serious_reports >= 3:
+        student_profile.is_banned = True
+        messages.success(request, 'تم الإبلاغ عن المستخدم وتم تجميد حسابه')
+    else:
+        messages.success(request, 'تم الإبلاغ عن المستخدم بنجاح')
+    
+    student_profile.save()
+    
+    # إرسال إشعار للطالب
+    Notification.objects.create(
+        user=booking.student,
+        notification_type='non_serious_booking',
+        message=f'تم الإبلاغ عنك كمستخدم غير جاد في حجز {booking.apartment.title}',
+        related_booking=booking,
+        related_apartment=booking.apartment
+    )
+    
+    return redirect('owner_dashboard')
+
+@login_required
 def toggle_wishlist(request, pk):
     apartment = get_object_or_404(Apartment, pk=pk)
     wishlist_item, created = Wishlist.objects.get_or_create(
@@ -770,3 +805,22 @@ def admin_dashboard(request):
         'recent_bookings': recent_bookings,
     }
     return render(request, 'apartments/admin_dashboard.html', context)
+
+@login_required
+def owner_dashboard(request):
+    if not hasattr(request.user, 'profile') or request.user.profile.user_type != 'owner':
+        messages.error(request, 'ليس لديك صلاحية للوصول لهذه الصفحة')
+        return redirect('home')
+    
+    apartments = Apartment.objects.filter(owner=request.user)
+    bookings = Booking.objects.filter(apartment__owner=request.user).order_by('-created_at')
+    
+    context = {
+        'apartments': apartments,
+        'bookings': bookings,
+        'total_apartments': apartments.count(),
+        'approved_apartments': apartments.filter(status='approved').count(),
+        'pending_bookings': bookings.filter(status='pending').count(),
+        'total_bookings': bookings.count(),
+    }
+    return render(request, 'apartments/owner_dashboard.html', context)

@@ -32,6 +32,11 @@
                         <a class="nav-link" href="{% url 'apartment_list' %}">استعرض الشقق</a>
                     </li>
                     {% if user.is_authenticated and user.profile.user_type == 'owner' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/apartments/owner/dashboard/">
+                            <i class="fas fa-tachometer-alt me-1"></i> لوحة التحكم
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="addPropertyDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-plus-circle me-1"></i> إضافة عقار
