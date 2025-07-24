@@ -47,7 +47,12 @@
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/users/profile/">{{ user.username }}</a>
+                            <a class="nav-link d-flex align-items-center" href="/users/profile/">
+                                <div class="profile-avatar me-2" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px;">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                {{ user.username }}
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/users/logout/">تسجيل الخروج</a>

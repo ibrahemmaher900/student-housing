@@ -1,38 +1,194 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}الملف الشخصي - سكن طالب{% endblock %}
+{% block title %}الملف الشخصي - {{ user.username }}{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg border-0 rounded-lg">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h3 class="mb-0 fw-bold">الملف الشخصي</h3>
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-4">
+            <!-- بطاقة المعلومات الأساسية -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px;">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <h4>{{ user.username }}</h4>
+                    <p class="text-muted">{{ user.profile.get_user_type_display }}</p>
+                    <div class="badge bg-success mb-2">نشط</div>
+                    <p class="small text-muted">عضو منذ {{ user.date_joined|date:"M Y" }}</p>
                 </div>
-                <div class="card-body p-4">
-                    <form method="POST">
+            </div>
+
+            <!-- إحصائيات سريعة -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6 class="mb-0">الإحصائيات</h6>
+                </div>
+                <div class="card-body">
+                    {% if user.profile.user_type == 'owner' %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>الشقق المضافة:</span>
+                        <strong>{{ user.apartment_set.count }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>الحجوزات المستلمة:</span>
+                        <strong>{{ user.apartment_set.all|length }}</strong>
+                    </div>
+                    {% else %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>الحجوزات:</span>
+                        <strong>{{ user.booking_set.count }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>المفضلات:</span>
+                        <strong>{{ user.wishlist_set.count }}</strong>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- معلومات الحساب -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">معلومات الحساب</h5>
+                    <span class="badge bg-info">محمي</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">اسم المستخدم</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">البريد الإلكتروني</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">الاسم الأول</label>
+                            <input type="text" class="form-control" value="{{ user.first_name|default:'غير محدد' }}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">الاسم الأخير</label>
+                            <input type="text" class="form-control" value="{{ user.last_name|default:'غير محدد' }}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">نوع الحساب</label>
+                            <input type="text" class="form-control" value="{{ user.profile.get_user_type_display }}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">تاريخ التسجيل</label>
+                            <input type="text" class="form-control" value="{{ user.date_joined|date:'d/m/Y' }}" readonly>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        هذه المعلومات محمية ولا يمكن تعديلها. للتغيير يرجى التواصل مع الإدارة.
+                    </div>
+                </div>
+            </div>
+
+            <!-- معلومات إضافية -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">معلومات إضافية</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="id_username" class="form-label">اسم المستخدم</label>
-                            {{ u_form.username }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone|default:'' }}" placeholder="01xxxxxxxxx">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">المدينة</label>
+                                <input type="text" name="city" class="form-control" value="{{ user.profile.city|default:'' }}" placeholder="القاهرة">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">نبذة شخصية</label>
+                                <textarea name="bio" class="form-control" rows="3" placeholder="اكتب نبذة عن نفسك...">{{ user.profile.bio|default:'' }}</textarea>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="id_email" class="form-label">البريد الإلكتروني</label>
-                            {{ u_form.email }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="id_user_type" class="form-label">نوع المستخدم</label>
-                            {{ p_form.user_type }}
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">حفظ التغييرات</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>حفظ التغييرات
+                        </button>
                     </form>
+                </div>
+            </div>
+
+            <!-- روابط سريعة -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">روابط سريعة</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if user.profile.user_type == 'owner' %}
+                        <div class="col-md-4 mb-2">
+                            <a href="/apartments/add/" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-plus me-2"></i>إضافة شقة
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/apartments/my-apartments/" class="btn btn-outline-success w-100">
+                                <i class="fas fa-building me-2"></i>شققي
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/apartments/manage-bookings/" class="btn btn-outline-info w-100">
+                                <i class="fas fa-calendar me-2"></i>الحجوزات
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-4 mb-2">
+                            <a href="/apartments/" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-search me-2"></i>البحث عن شقة
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/apartments/my-bookings/" class="btn btn-outline-success w-100">
+                                <i class="fas fa-calendar me-2"></i>حجوزاتي
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="/apartments/my-wishlist/" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-heart me-2"></i>المفضلات
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.profile-avatar {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+}
+</style>
 {% endblock %}
