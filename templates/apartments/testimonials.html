@@ -1,79 +1,81 @@
-<!-- قسم آراء المستخدمين -->
-<div class="container testimonials-section fade-in">
-    <div class="row mb-5">
-        <div class="col-12 text-center">
-            <h2 class="section-title d-inline-block">آراء المستخدمين</h2>
+<!-- قسم الشهادات -->
+<div class="container-fluid testimonials-section fade-in" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 80px 0; margin: 60px 0;">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="section-title d-inline-block">ماذا يقول عملاؤنا</h2>
+            </div>
         </div>
-    </div>
-    
-    <div class="row">
-        {% for rating in site_ratings %}
-        <div class="col-md-4 mb-4">
-            <div class="testimonial-card">
-                <div class="rating-stars text-center mb-3">
-                    {% for i in "12345"|make_list %}
-                        {% if forloop.counter <= rating.rating %}
-                            <i class="fas fa-star text-warning"></i>
-                        {% else %}
-                            <i class="far fa-star text-warning"></i>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <p class="testimonial-text">
-                    "{{ rating.review }}"
-                </p>
-                <div class="testimonial-author">
-                    <img src="{{ rating.user.profile.get_profile_picture_url }}" alt="صورة المستخدم">
-                    <div class="testimonial-author-info">
-                        <h5>{{ rating.user.get_full_name|default:rating.user.username }}</h5>
-                        <p>{{ rating.created_at|date:"j F Y" }}</p>
+
+        <div class="row">
+            {% for rating in site_ratings %}
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08); height: 100%; transition: all 0.3s ease;">
+                    <div class="testimonial-header" style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <div class="testimonial-avatar" style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-left: 15px;">
+                            {{ rating.user.username|first|upper }}
+                        </div>
+                        <div>
+                            <h5 style="margin: 0; font-weight: 600;">{{ rating.user.username }}</h5>
+                            <div class="rating-stars" style="color: #ffc107;">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= rating.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <p style="color: #6c757d; font-style: italic; line-height: 1.6; margin: 0;">
+                        "{{ rating.review }}"
+                    </p>
+                    <div class="testimonial-date" style="margin-top: 15px; font-size: 0.9rem; color: #adb5bd;">
+                        {{ rating.created_at|date:"d M Y" }}
                     </div>
                 </div>
             </div>
-        </div>
-        {% empty %}
-        <div class="col-md-4 mb-4">
-            <div class="testimonial-card">
-                <p class="testimonial-text">
-                    "ساعدني موقع سكن طالب في العثور على شقة مناسبة قريبة من جامعتي بسعر معقول. الموقع سهل الاستخدام والتواصل مع المالك كان سلساً."
-                </p>
-                <div class="testimonial-author">
-                    <img src="/static/img/hero-bg.jpg" alt="صورة الطالب">
-                    <div class="testimonial-author-info">
-                        <h5>أحمد محمد</h5>
-                        <p>طالب في جامعة الملك سعود</p>
-                    </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="no-testimonials" style="padding: 60px 20px;">
+                    <i class="fas fa-comments" style="font-size: 4rem; color: #dee2e6; margin-bottom: 20px;"></i>
+                    <h4 style="color: #6c757d;">لا توجد تقييمات بعد</h4>
+                    <p style="color: #adb5bd;">كن أول من يشارك تجربته مع منصة سكن طالب</p>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="testimonial-card">
-                <p class="testimonial-text">
-                    "وفرت الكثير من الوقت والجهد في البحث عن سكن. الصور والمعلومات المتوفرة على الموقع دقيقة جداً وساعدتني في اتخاذ القرار المناسب."
-                </p>
-                <div class="testimonial-author">
-                    <img src="/static/img/hero-bg.jpg" alt="صورة الطالبة">
-                    <div class="testimonial-author-info">
-                        <h5>سارة أحمد</h5>
-                        <p>طالبة في جامعة الأميرة نورة</p>
-                    </div>
-                </div>
+
+        {% if site_ratings %}
+        <div class="row mt-4">
+            <div class="col-12 text-center">
+                <a href="#" class="btn btn-outline-primary">عرض جميع التقييمات</a>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="testimonial-card">
-                <p class="testimonial-text">
-                    "كمالك عقار، ساعدني الموقع في تأجير شقتي بسرعة لطلاب جادين. النظام سهل الاستخدام والدعم الفني ممتاز."
-                </p>
-                <div class="testimonial-author">
-                    <img src="/static/img/hero-bg.jpg" alt="صورة المالك">
-                    <div class="testimonial-author-info">
-                        <h5>خالد العمري</h5>
-                        <p>مالك عقار</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+        {% endif %}
     </div>
 </div>
+
+<style>
+.testimonial-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+.rating-stars {
+    font-size: 0.9rem;
+}
+
+.testimonials-section .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+}
+</style>
