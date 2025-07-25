@@ -11,28 +11,41 @@ import os
 @login_required
 def profile(request):
     """عرض الملف الشخصي"""
-    # معالجة حذف الصورة عبر GET
-    if request.GET.get('action') == 'remove_picture':
-        request.user.profile.profile_picture = None
-        request.user.profile.save()
-        messages.success(request, 'تم حذف صورة البروفيل بنجاح')
-        return redirect('profile')
+    # إنشاء بروفيل إذا لم يكن موجود
+    if not hasattr(request.user, 'profile'):
+        Profile.objects.create(user=request.user)
+    
+
     
     if request.method == 'POST':
         action = request.POST.get('action')
         
         if action == 'update_picture':
             if 'profile_picture' in request.FILES:
+                # حذف الصورة القديمة
+                if request.user.profile.profile_picture:
+                    request.user.profile.profile_picture.delete(save=False)
+                
                 request.user.profile.profile_picture = request.FILES['profile_picture']
                 request.user.profile.save()
                 messages.success(request, 'تم تغيير صورة البروفيل بنجاح')
             return redirect('profile')
         
-        else:
-            request.user.profile.phone = request.POST.get('phone', '')
-            request.user.profile.city = request.POST.get('city', '')
-            request.user.profile.bio = request.POST.get('bio', '')
+        elif action == 'remove_picture':
+            if request.user.profile.profile_picture:
+                request.user.profile.profile_picture.delete(save=False)
+            request.user.profile.profile_picture = None
             request.user.profile.save()
+            messages.success(request, 'تم حذف صورة البروفيل بنجاح')
+            return redirect('profile')
+        
+        else:
+            # تحديث المعلومات
+            profile = request.user.profile
+            profile.phone = request.POST.get('phone', '').strip() or None
+            profile.city = request.POST.get('city', '').strip() or None
+            profile.bio = request.POST.get('bio', '').strip() or None
+            profile.save()
             
             messages.success(request, 'تم حفظ التغييرات بنجاح')
             return redirect('profile')

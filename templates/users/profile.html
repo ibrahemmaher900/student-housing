@@ -69,27 +69,27 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">اسم المستخدم</label>
-                            <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                            <div class="form-control bg-light">{{ user.username }}</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">البريد الإلكتروني</label>
-                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                            <div class="form-control bg-light">{{ user.email }}</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">الاسم الأول</label>
-                            <input type="text" class="form-control" value="{{ user.first_name|default:'غير محدد' }}" readonly>
+                            <div class="form-control bg-light">{{ user.first_name|default:'غير محدد' }}</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">الاسم الأخير</label>
-                            <input type="text" class="form-control" value="{{ user.last_name|default:'غير محدد' }}" readonly>
+                            <div class="form-control bg-light">{{ user.last_name|default:'غير محدد' }}</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">نوع الحساب</label>
-                            <input type="text" class="form-control" value="{{ user.profile.get_user_type_display }}" readonly>
+                            <div class="form-control bg-light">{{ user.profile.get_user_type_display }}</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">تاريخ التسجيل</label>
-                            <input type="text" class="form-control" value="{{ user.date_joined|date:'d/m/Y' }}" readonly>
+                            <div class="form-control bg-light">{{ user.date_joined|date:'d/m/Y' }}</div>
                         </div>
                     </div>
                     <div class="alert alert-info">
@@ -208,6 +208,14 @@
     background-color: #f8f9fa;
     border-color: #e9ecef;
 }
+
+.bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    color: #6c757d;
+}
 </style>
 
 <!-- Modal لتغيير صورة البروفيل -->
@@ -239,9 +247,13 @@
                             <i class="fas fa-upload me-2"></i>رفع الصورة
                         </button>
                         {% if user.profile.profile_picture %}
-                        <a href="?action=remove_picture" class="btn btn-outline-danger" onclick="return confirm('هل أنت متأكد؟')">
-                            <i class="fas fa-trash me-2"></i>حذف الصورة
-                        </a>
+                        <form method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="remove_picture">
+                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('هل أنت متأكد؟')">
+                                <i class="fas fa-trash me-2"></i>حذف الصورة
+                            </button>
+                        </form>
                         {% endif %}
                     </div>
                 </form>
