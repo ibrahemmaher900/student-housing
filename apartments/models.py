@@ -135,11 +135,7 @@ class ApartmentImage(models.Model):
     image = models.ImageField(upload_to='apartments/', verbose_name="الصورة")
     
     def save(self, *args, **kwargs):
-        try:
-            super().save(*args, **kwargs)
-        except Exception as e:
-            print(f"Error saving apartment image: {e}")
-            raise
+        super().save(*args, **kwargs)
     
     def __str__(self):
         return f"صورة لـ {self.apartment.title}"

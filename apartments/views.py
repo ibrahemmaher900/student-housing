@@ -316,55 +316,32 @@ def book_apartment(request, pk):
 
 @login_required
 def add_apartment(request):
-    """وظيفة لإضافة شقة جديدة"""
-    universities = University.objects.all()
-    
     if request.method == 'POST':
-        try:
-            # بيانات أساسية
-            title = request.POST.get('title', 'شقة للإيجار')
-            description = request.POST.get('description', '')
-            price = float(request.POST.get('price', 0) or 0)
-            apartment_type = request.POST.get('apartment_type', 'studio')
-            area = int(request.POST.get('area', 50) or 50)
-            bedrooms = int(request.POST.get('bedrooms', 1) or 1)
-            bathrooms = int(request.POST.get('bathrooms', 1) or 1)
-            address = request.POST.get('address', '')
-            distance_to_university = float(request.POST.get('distance_to_university', 0) or 0)
-            university_id = request.POST.get('university')
-            
-            # إنشاء الشقة
-            apartment = Apartment.objects.create(
-                title=title,
-                description=description,
-                price=price,
-                apartment_type=apartment_type,
-                area=area,
-                bedrooms=bedrooms,
-                bathrooms=bathrooms,
-                address=address,
-                distance_to_university=distance_to_university,
-                university_id=university_id,
-                owner=request.user,
-                status='pending',
-                furnished=request.POST.get('furnished') == 'on',
-                has_wifi=request.POST.get('has_wifi') == 'on',
-                has_ac=request.POST.get('has_ac') == 'on',
-                has_parking=request.POST.get('has_parking') == 'on'
-            )
-            
-            # حفظ الصور
-            images = request.FILES.getlist('images')
-            for image in images:
-                ApartmentImage.objects.create(apartment=apartment, image=image)
-            
-            messages.success(request, 'تم إضافة الشقة بنجاح!')
-            return redirect('my_apartments')
-            
-        except Exception as e:
-            messages.error(request, f'حدث خطأ: {str(e)}')
+        # بيانات مباشرة
+        apartment = Apartment(
+            title=request.POST.get('title', 'شقة'),
+            description=request.POST.get('description', ''),
+            price=request.POST.get('price', 0),
+            apartment_type='studio',
+            area=request.POST.get('area', 50),
+            bedrooms=1,
+            bathrooms=1,
+            address=request.POST.get('address', ''),
+            distance_to_university=request.POST.get('distance_to_university', 0),
+            university_id=request.POST.get('university'),
+            owner=request.user,
+            status='pending'
+        )
+        apartment.save()
+        
+        # حفظ الصور
+        for image in request.FILES.getlist('images'):
+            ApartmentImage.objects.create(apartment=apartment, image=image)
+        
+        messages.success(request, 'تم إضافة الشقة!')
+        return redirect('my_apartments')
     
-    return render(request, 'apartments/add_apartment.html', {'universities': universities})
+    return render(request, 'apartments/add_apartment_simple.html', {'universities': University.objects.all()})
 
 # تم إزالة الاسم المستعار لأننا نستخدم دالة واحدة فقط
 
