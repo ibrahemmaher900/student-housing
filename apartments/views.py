@@ -15,72 +15,46 @@ def is_admin(user):
     return user.is_staff or user.is_superuser
 
 def home(request):
-    from django.contrib.auth.models import User
-    from django.db.models import Count
-    from django.core.cache import cache
-    from .models import SiteRating
-    
-    # استخدام التخزين المؤقت للبيانات الثابتة
-    cache_key = 'home_page_data'
-    cached_data = cache.get(cache_key)
-    
-    if cached_data:
-        return render(request, 'apartments/home.html', cached_data)
-    
-    # الشقق المميزة
-    featured_apartments = Apartment.objects.select_related('university', 'owner').prefetch_related('images').filter(available=True, status='approved').order_by('-created_at')[:6]
-    
-    # إضافة معلومات الحجز المعتمد لكل شقة
-    for apartment in featured_apartments:
-        apartment.has_approved_booking = apartment.has_approved_booking()
-        if apartment.has_approved_booking:
-            approved_booking = apartment.get_approved_booking()
-            if approved_booking:
-                apartment.approved_booking_start = approved_booking.start_date
-                apartment.approved_booking_end = approved_booking.end_date
-    
-    # الجامعات
-    universities = University.objects.all()
-    
-    # إحصائيات المنصة
-    apartments_count = Apartment.objects.filter(status='approved').count()
-    universities_count = universities.count()
-    users_count = User.objects.count()
-    bookings_count = Booking.objects.filter(status='approved').count()
-    
-    # إحصائيات إضافية
     try:
-        students_count = User.objects.filter(profile__user_type='student').count()
-        owners_count = User.objects.filter(profile__user_type='owner').count()
-    except:
-        students_count = 0
-        owners_count = 0
-    
-    # الحصول على قائمة المفضلات للمستخدم الحالي
-    wishlist_apartments = []
-    if request.user.is_authenticated:
-        wishlist_apartments = Wishlist.objects.filter(user=request.user).values_list('apartment_id', flat=True)
-    
-    # الحصول على تقييمات الموقع المعتمدة
-    site_ratings = []
-    
-    context = {
-        'featured_apartments': featured_apartments,
-        'universities': universities,
-        'apartments_count': apartments_count,
-        'universities_count': universities_count,
-        'users_count': users_count,
-        'bookings_count': bookings_count,
-        'students_count': students_count,
-        'owners_count': owners_count,
-        'wishlist_apartments': wishlist_apartments,
-        'site_ratings': site_ratings,
-    }
-    
-    # حفظ في التخزين المؤقت لمدة 5 دقائق
-    cache.set(cache_key, context, 300)
-    
-    return render(request, 'apartments/home.html', context)
+        from django.contrib.auth.models import User
+        
+        # الشقق المميزة
+        featured_apartments = Apartment.objects.filter(available=True, status='approved')[:6]
+        
+        # الجامعات
+        universities = University.objects.all()
+        
+        # إحصائيات بسيطة
+        apartments_count = Apartment.objects.filter(status='approved').count()
+        universities_count = universities.count()
+        users_count = User.objects.count()
+        bookings_count = Booking.objects.filter(status='approved').count()
+        
+        # قائمة المفضلات
+        wishlist_apartments = []
+        if request.user.is_authenticated:
+            try:
+                wishlist_apartments = Wishlist.objects.filter(user=request.user).values_list('apartment_id', flat=True)
+            except:
+                wishlist_apartments = []
+        
+        context = {
+            'featured_apartments': featured_apartments,
+            'universities': universities,
+            'apartments_count': apartments_count,
+            'universities_count': universities_count,
+            'users_count': users_count,
+            'bookings_count': bookings_count,
+            'students_count': 0,
+            'owners_count': 0,
+            'wishlist_apartments': wishlist_apartments,
+            'site_ratings': [],
+        }
+        
+        return render(request, 'apartments/home.html', context)
+    except Exception as e:
+        # في حالة حدوث خطأ، عرض صفحة بسيطة
+        return render(request, 'apartments/home_simple.html', {'error': str(e)})
 
 def apartment_list(request):
     apartments = Apartment.objects.select_related('university', 'owner').prefetch_related('images').filter(available=True, status='approved')

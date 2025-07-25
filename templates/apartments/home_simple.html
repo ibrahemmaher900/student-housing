@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+
+{% block title %}سكن طالب{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="jumbotron">
+        <h1 class="display-4">مرحباً بك في سكن طالب</h1>
+        <p class="lead">منصة لإيجار الشقق للطلاب</p>
+        <hr class="my-4">
+        <p>ابحث عن السكن المناسب لك بالقرب من جامعتك</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'apartment_list' %}" role="button">تصفح الشقق</a>
+    </div>
+    
+    {% if error %}
+    <div class="alert alert-warning">
+        <strong>تنبيه:</strong> الموقع يعمل في الوضع المبسط حالياً
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
