@@ -12,8 +12,11 @@ import os
 def profile(request):
     """عرض الملف الشخصي"""
     # إنشاء بروفيل إذا لم يكن موجود
-    if not hasattr(request.user, 'profile'):
-        Profile.objects.create(user=request.user)
+    try:
+        if not hasattr(request.user, 'profile'):
+            Profile.objects.create(user=request.user)
+    except Exception as e:
+        print(f"Error creating profile: {e}")
     
 
     
@@ -22,30 +25,45 @@ def profile(request):
         
         if action == 'update_picture':
             if 'profile_picture' in request.FILES:
-                # حذف الصورة القديمة
-                if request.user.profile.profile_picture:
-                    request.user.profile.profile_picture.delete(save=False)
-                
-                request.user.profile.profile_picture = request.FILES['profile_picture']
-                request.user.profile.save()
+                try:
+                    # حذف الصورة القديمة
+                    if request.user.profile.profile_picture:
+                        request.user.profile.profile_picture.delete(save=False)
+                    
+                    request.user.profile.profile_picture = request.FILES['profile_picture']
+                    request.user.profile.save()
+                except Exception as e:
+                    messages.error(request, 'حدث خطأ في رفع الصورة')
+                    print(f"Error uploading profile picture: {e}")
+                    return redirect('profile')
                 messages.success(request, 'تم تغيير صورة البروفيل بنجاح')
             return redirect('profile')
         
         elif action == 'remove_picture':
-            if request.user.profile.profile_picture:
-                request.user.profile.profile_picture.delete(save=False)
-            request.user.profile.profile_picture = None
-            request.user.profile.save()
+            try:
+                if request.user.profile.profile_picture:
+                    request.user.profile.profile_picture.delete(save=False)
+                request.user.profile.profile_picture = None
+                request.user.profile.save()
+            except Exception as e:
+                messages.error(request, 'حدث خطأ في حذف الصورة')
+                print(f"Error removing profile picture: {e}")
+                return redirect('profile')
             messages.success(request, 'تم حذف صورة البروفيل بنجاح')
             return redirect('profile')
         
         else:
             # تحديث المعلومات
-            profile = request.user.profile
-            profile.phone = request.POST.get('phone', '').strip() or None
-            profile.city = request.POST.get('city', '').strip() or None
-            profile.bio = request.POST.get('bio', '').strip() or None
-            profile.save()
+            try:
+                profile = request.user.profile
+                profile.phone = request.POST.get('phone', '').strip() or None
+                profile.city = request.POST.get('city', '').strip() or None
+                profile.bio = request.POST.get('bio', '').strip() or None
+                profile.save()
+            except Exception as e:
+                messages.error(request, 'حدث خطأ في حفظ البيانات')
+                print(f"Error updating profile data: {e}")
+                return redirect('profile')
             
             messages.success(request, 'تم حفظ التغييرات بنجاح')
             return redirect('profile')

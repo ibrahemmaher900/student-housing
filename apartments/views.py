@@ -461,8 +461,14 @@ def add_apartment(request):
             
             # حفظ الصور
             images = request.FILES.getlist('images')
-            for image in images:
-                ApartmentImage.objects.create(apartment=apartment, image=image)
+            if images:
+                for image in images:
+                    try:
+                        ApartmentImage.objects.create(apartment=apartment, image=image)
+                    except Exception as e:
+                        print(f"Error saving image: {e}")
+            else:
+                messages.warning(request, 'لم يتم رفع أي صور. يمكنك إضافة صور لاحقاً.')
             
             # إرسال إشعار للمسؤولين
             from django.contrib.auth.models import User
@@ -503,8 +509,12 @@ def edit_apartment(request, pk):
             form.save()
             
             images = request.FILES.getlist('image')
-            for image in images:
-                ApartmentImage.objects.create(apartment=apartment, image=image)
+            if images:
+                for image in images:
+                    try:
+                        ApartmentImage.objects.create(apartment=apartment, image=image)
+                    except Exception as e:
+                        print(f"Error saving image: {e}")
             
             messages.success(request, 'تم تحديث معلومات الشقة بنجاح!')
             return redirect('apartment_detail', pk=apartment.pk)
