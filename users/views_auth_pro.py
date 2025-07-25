@@ -25,7 +25,14 @@ def login_pro(request):
             if not hasattr(user, 'profile'):
                 Profile.objects.create(user=user)
             
-            return redirect('home')
+            # توجيه حسب نوع المستخدم
+            try:
+                if hasattr(user, 'profile') and user.profile.user_type == 'owner':
+                    return redirect('owner_dashboard')
+                else:
+                    return redirect('home')
+            except:
+                return redirect('home')
         else:
             messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
     
