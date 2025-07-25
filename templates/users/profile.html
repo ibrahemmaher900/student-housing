@@ -10,8 +10,17 @@
             <!-- بطاقة المعلومات الأساسية -->
             <div class="card">
                 <div class="card-body text-center">
-                    <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px;">
-                        {{ user.username|first|upper }}
+                    <div class="profile-avatar-container position-relative mx-auto mb-3" style="width: 120px; height: 120px;">
+                        {% if user.profile.profile_picture %}
+                        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        {% else %}
+                        <div class="profile-avatar" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            {{ user.username|first|upper }}
+                        </div>
+                        {% endif %}
+                        <button class="btn btn-sm btn-primary position-absolute" style="bottom: 0; right: 0; border-radius: 50%; width: 35px; height: 35px; padding: 0;" data-bs-toggle="modal" data-bs-target="#profilePictureModal">
+                            <i class="fas fa-camera"></i>
+                        </button>
                     </div>
                     <h4>{{ user.username }}</h4>
                     <p class="text-muted">{{ user.profile.get_user_type_display }}</p>
@@ -96,23 +105,32 @@
                     <h5 class="mb-0">معلومات إضافية</h5>
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" id="profileForm">
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">رقم الهاتف</label>
-                                <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone|default:'' }}" placeholder="01xxxxxxxxx">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone|default:'' }}" placeholder="01xxxxxxxxx">
+                                </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">المدينة</label>
-                                <input type="text" name="city" class="form-control" value="{{ user.profile.city|default:'' }}" placeholder="القاهرة">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                    <input type="text" name="city" class="form-control" value="{{ user.profile.city|default:'' }}" placeholder="القاهرة">
+                                </div>
                             </div>
                             <div class="col-12 mb-3">
                                 <label class="form-label">نبذة شخصية</label>
-                                <textarea name="bio" class="form-control" rows="3" placeholder="اكتب نبذة عن نفسك...">{{ user.profile.bio|default:'' }}</textarea>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user-edit"></i></span>
+                                    <textarea name="bio" class="form-control" rows="3" placeholder="اكتب نبذة عن نفسك...">{{ user.profile.bio|default:'' }}</textarea>
+                                </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-save me-2"></i>حفظ التغييرات
                         </button>
                     </form>
@@ -191,4 +209,93 @@
     border-color: #e9ecef;
 }
 </style>
+
+<!-- Modal لتغيير صورة البروفيل -->
+<div class="modal fade" id="profilePictureModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تغيير صورة البروفيل</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <form method="post" enctype="multipart/form-data" id="profilePictureForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_picture">
+                    
+                    <div class="mb-3">
+                        <div class="profile-preview mx-auto mb-3" style="width: 150px; height: 150px; border-radius: 50%; border: 3px dashed #ddd; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                            <i class="fas fa-camera fa-2x text-muted"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <input type="file" class="form-control" name="profile_picture" accept="image/*" id="profilePictureInput" required>
+                        <small class="text-muted">يمكنك رفع صور JPG, PNG, GIF (أقصى حجم 5MB)</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>رفع الصورة
+                        </button>
+                        {% if user.profile.profile_picture %}
+                        <button type="button" class="btn btn-outline-danger" onclick="removeProfilePicture()">
+                            <i class="fas fa-trash me-2"></i>حذف الصورة
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// معاينة الصورة قبل الرفع
+document.getElementById('profilePictureInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.querySelector('.profile-preview');
+            preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// حذف صورة البروفيل
+function removeProfilePicture() {
+    if (confirm('هل أنت متأكد من حذف صورة البروفيل؟')) {
+        fetch('/users/profile/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=remove_picture'
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            }
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 {% endblock %}

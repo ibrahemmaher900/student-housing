@@ -11,7 +11,8 @@ class Profile(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', verbose_name="المستخدم")
     user_type = models.CharField(max_length=10, choices=USER_TYPE_CHOICES, default='student', verbose_name="نوع المستخدم")
-    phone_number = models.CharField(max_length=15, blank=True, null=True, verbose_name="رقم الهاتف")
+    phone = models.CharField(max_length=15, blank=True, null=True, verbose_name="رقم الهاتف")
+    city = models.CharField(max_length=100, blank=True, null=True, verbose_name="المدينة")
     university = models.ForeignKey('apartments.University', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="الجامعة")
     bio = models.TextField(blank=True, null=True, verbose_name="نبذة شخصية")
     profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.png', verbose_name="الصورة الشخصية")
