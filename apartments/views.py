@@ -148,17 +148,11 @@ def apartment_detail(request, pk):
     
     if request.user.is_authenticated:
         # التحقق من حجز المستخدم لهذه الشقة
-        user_booking = Booking.objects.filter(
+        user_has_booking = Booking.objects.filter(
             apartment=apartment,
-            student=request.user
-        ).first()
-        
-        if user_booking:
-            user_has_booking = True
-            user_booking_status = user_booking.status
-        else:
-            user_has_booking = False
-            user_booking_status = None
+            student=request.user,
+            status__in=['pending', 'approved']
+        ).exists()
         
         # التحقق من أن المستخدم هو المستأجر الفعلي للشقة (حجز معتمد حالي أو سابق)
         active_booking = Booking.objects.filter(
@@ -209,7 +203,6 @@ def apartment_detail(request, pk):
         'comments': comments,
         'ratings': ratings,
         'user_has_booking': user_has_booking,
-        'user_booking_status': user_booking_status,
         'is_in_wishlist': is_in_wishlist,
         'user_has_rating': user_has_rating,
         'user_has_active_booking_elsewhere': user_has_active_booking_elsewhere,
@@ -639,41 +632,6 @@ def update_booking_status(request, pk, status):
     return redirect('manage_bookings')
 
 @login_required
-def report_non_serious_booking(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
-    
-    # التحقق من أن المستخدم هو مالك الشقة
-    if booking.apartment.owner != request.user:
-        messages.error(request, 'ليس لديك صلاحية للإبلاغ عن هذا الحجز.')
-        return redirect('owner_dashboard')
-    
-    booking.status = 'non_serious'
-    booking.save()
-    
-    # زيادة عداد عدم الجدية
-    student_profile = booking.student.profile
-    student_profile.non_serious_reports += 1
-    
-    if student_profile.non_serious_reports >= 3:
-        student_profile.is_banned = True
-        messages.success(request, 'تم الإبلاغ عن المستخدم وتم تجميد حسابه')
-    else:
-        messages.success(request, 'تم الإبلاغ عن المستخدم بنجاح')
-    
-    student_profile.save()
-    
-    # إرسال إشعار للطالب
-    Notification.objects.create(
-        user=booking.student,
-        notification_type='non_serious_booking',
-        message=f'تم الإبلاغ عنك كمستخدم غير جاد في حجز {booking.apartment.title}',
-        related_booking=booking,
-        related_apartment=booking.apartment
-    )
-    
-    return redirect('owner_dashboard')
-
-@login_required
 def toggle_wishlist(request, pk):
     apartment = get_object_or_404(Apartment, pk=pk)
     wishlist_item, created = Wishlist.objects.get_or_create(
@@ -765,69 +723,3 @@ def reject_apartment(request, pk):
     
     messages.success(request, 'تم رفض الشقة بنجاح!')
     return redirect('admin_apartments')
-
-@login_required
-@user_passes_test(is_admin)
-def admin_dashboard(request):
-    from django.contrib.auth.models import User
-    
-    # الإحصائيات العامة
-    total_users = User.objects.count()
-    total_apartments = Apartment.objects.count()
-    pending_apartments = Apartment.objects.filter(status='pending').count()
-    total_bookings = Booking.objects.count()
-    
-    # تفاصيل المستخدمين
-    students_count = User.objects.filter(profile__user_type='student').count()
-    owners_count = User.objects.filter(profile__user_type='owner').count()
-    recent_students = User.objects.filter(profile__user_type='student').order_by('-date_joined')[:10]
-    recent_owners = User.objects.filter(profile__user_type='owner').order_by('-date_joined')[:10]
-    
-    # الشقق
-    approved_apartments = Apartment.objects.filter(status='approved').count()
-    rejected_apartments = Apartment.objects.filter(status='rejected').count()
-    pending_apartments_list = Apartment.objects.filter(status='pending').order_by('-created_at')[:10]
-    
-    # الحجوزات
-    approved_bookings = Booking.objects.filter(status='approved').count()
-    pending_bookings = Booking.objects.filter(status='pending').count()
-    rejected_bookings = Booking.objects.filter(status='rejected').count()
-    recent_bookings = Booking.objects.order_by('-created_at')[:10]
-    
-    context = {
-        'total_users': total_users,
-        'total_apartments': total_apartments,
-        'pending_apartments': pending_apartments,
-        'total_bookings': total_bookings,
-        'students_count': students_count,
-        'owners_count': owners_count,
-        'recent_students': recent_students,
-        'recent_owners': recent_owners,
-        'approved_apartments': approved_apartments,
-        'rejected_apartments': rejected_apartments,
-        'pending_apartments_list': pending_apartments_list,
-        'approved_bookings': approved_bookings,
-        'pending_bookings': pending_bookings,
-        'rejected_bookings': rejected_bookings,
-        'recent_bookings': recent_bookings,
-    }
-    return render(request, 'apartments/admin_dashboard.html', context)
-
-@login_required
-def owner_dashboard(request):
-    if not hasattr(request.user, 'profile') or request.user.profile.user_type != 'owner':
-        messages.error(request, 'ليس لديك صلاحية للوصول لهذه الصفحة')
-        return redirect('home')
-    
-    apartments = Apartment.objects.filter(owner=request.user)
-    bookings = Booking.objects.filter(apartment__owner=request.user).order_by('-created_at')
-    
-    context = {
-        'apartments': apartments,
-        'bookings': bookings,
-        'total_apartments': apartments.count(),
-        'approved_apartments': apartments.filter(status='approved').count(),
-        'pending_bookings': bookings.filter(status='pending').count(),
-        'total_bookings': bookings.count(),
-    }
-    return render(request, 'apartments/owner_dashboard.html', context)

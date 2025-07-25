@@ -22,7 +22,6 @@ urlpatterns = [
     path('my-wishlist/', views.my_wishlist, name='my_wishlist'),
     path('manage-bookings/', views.manage_bookings, name='manage_bookings'),
     path('booking/<int:pk>/<str:status>/', views.update_booking_status, name='update_booking_status'),
-    path('booking/<int:pk>/non_serious/', views.report_non_serious_booking, name='report_non_serious_booking'),
     # تم إزالة مسار الخريطة المستقلة
     
     # مسارات التنبيهات
