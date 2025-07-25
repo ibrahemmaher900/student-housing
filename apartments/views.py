@@ -703,15 +703,6 @@ def admin_dashboard(request):
 
 @login_required
 def owner_dashboard(request):
-    apartments = Apartment.objects.filter(owner=request.user)
-    bookings = Booking.objects.filter(apartment__owner=request.user)
-    
-    context = {
-        'apartments': apartments,
-        'bookings': bookings,
-        'total_apartments': apartments.count(),
-        'approved_apartments': apartments.filter(status='approved').count(),
-        'pending_bookings': bookings.filter(status='pending').count(),
-        'total_bookings': bookings.count(),
-    }
-    return render(request, 'apartments/owner_dashboard.html', context)
+    return render(request, 'apartments/owner_dashboard_simple.html', {
+        'user': request.user
+    })
