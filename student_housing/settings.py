@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-key-for-development-o
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Debug mode
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com').split(',')
 
@@ -50,7 +50,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'student_housing.security_middleware.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -60,7 +59,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
-    # 'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'student_housing.urls'
@@ -169,15 +167,15 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 # CSRF Protection
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Session Security
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = 'Strict'
-SESSION_COOKIE_AGE = 3600  # 1 hour
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_AGE = 86400  # 24 hours
 
 # Hide server information
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'

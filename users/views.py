@@ -19,8 +19,11 @@ def profile(request):
                 
                 # حذف الصورة القديمة
                 if request.user.profile.profile_picture:
-                    if os.path.isfile(request.user.profile.profile_picture.path):
-                        os.remove(request.user.profile.profile_picture.path)
+                    try:
+                        if os.path.isfile(request.user.profile.profile_picture.path):
+                            os.remove(request.user.profile.profile_picture.path)
+                    except:
+                        pass
                 
                 # حفظ الصورة الجديدة
                 request.user.profile.profile_picture = profile_picture
@@ -31,8 +34,11 @@ def profile(request):
         elif action == 'remove_picture':
             # حذف صورة البروفيل
             if request.user.profile.profile_picture:
-                if os.path.isfile(request.user.profile.profile_picture.path):
-                    os.remove(request.user.profile.profile_picture.path)
+                try:
+                    if os.path.isfile(request.user.profile.profile_picture.path):
+                        os.remove(request.user.profile.profile_picture.path)
+                except:
+                    pass
                 request.user.profile.profile_picture = None
                 request.user.profile.save()
                 messages.success(request, 'تم حذف صورة البروفيل بنجاح')
