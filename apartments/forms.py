@@ -28,13 +28,8 @@ class CommentForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
         }
 
-class ReplyForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['content']
-        widgets = {
-            'content': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
-        }
+# استخدام CommentForm للردود أيضاً
+ReplyForm = CommentForm
 
 class RatingForm(forms.ModelForm):
     class Meta:
