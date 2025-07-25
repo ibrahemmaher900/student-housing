@@ -253,6 +253,11 @@
 // تحديث المعلومات
 document.getElementById('profileUpdateForm').addEventListener('submit', function(e) {
     e.preventDefault();
+    
+    const btn = document.getElementById('saveBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الحفظ...';
+    btn.disabled = true;
+    
     const formData = new FormData(this);
     
     fetch('/users/profile/ajax/', {
@@ -266,15 +271,39 @@ document.getElementById('profileUpdateForm').addEventListener('submit', function
     .then(data => {
         if (data.success) {
             alert('تم حفظ التغييرات بنجاح');
+        } else {
+            alert('حدث خطأ: ' + (data.error || 'غير محدد'));
         }
+    })
+    .catch(error => {
+        alert('حدث خطأ في الاتصال');
+    })
+    .finally(() => {
+        btn.innerHTML = '<i class="fas fa-save me-2"></i>حفظ التغييرات';
+        btn.disabled = false;
     });
 });
 
 // رفع الصورة
 document.getElementById('profilePictureForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    const formData = new FormData();
+    
     const file = document.getElementById('profilePictureInput').files[0];
+    if (!file) {
+        alert('يرجى اختيار صورة');
+        return;
+    }
+    
+    if (file.size > 2 * 1024 * 1024) {
+        alert('حجم الصورة كبير جداً');
+        return;
+    }
+    
+    const btn = document.getElementById('uploadBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الرفع...';
+    btn.disabled = true;
+    
+    const formData = new FormData();
     formData.append('profile_picture', file);
     formData.append('action', 'update_picture');
     
@@ -288,8 +317,18 @@ document.getElementById('profilePictureForm').addEventListener('submit', functio
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            alert('تم تغيير الصورة بنجاح');
+            setTimeout(() => location.reload(), 500);
+        } else {
+            alert('حدث خطأ: ' + (data.error || 'غير محدد'));
         }
+    })
+    .catch(error => {
+        alert('حدث خطأ في الاتصال');
+    })
+    .finally(() => {
+        btn.innerHTML = '<i class="fas fa-upload me-2"></i>رفع الصورة';
+        btn.disabled = false;
     });
 });
 
@@ -317,10 +356,17 @@ function removeProfilePicture() {
             },
             body: 'action=remove_picture'
         })
-        .then(response => {
-            if (response.ok) {
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('تم حذف الصورة بنجاح');
                 location.reload();
+            } else {
+                alert('حدث خطأ في حذف الصورة');
             }
+        })
+        .catch(error => {
+            alert('حدث خطأ في الاتصال');
         });
     }
 }

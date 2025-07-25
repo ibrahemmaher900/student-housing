@@ -66,51 +66,39 @@ def profile(request):
 def profile_ajax(request):
     """معالجة طلبات AJAX للبروفيل"""
     if request.method == 'POST':
-        action = request.POST.get('action')
-        
-        if action == 'update_picture':
-            if 'profile_picture' in request.FILES:
-                profile_picture = request.FILES['profile_picture']
-                
-                # حذف الصورة القديمة
-                if request.user.profile.profile_picture:
-                    try:
-                        if os.path.isfile(request.user.profile.profile_picture.path):
-                            os.remove(request.user.profile.profile_picture.path)
-                    except:
-                        pass
-                
-                request.user.profile.profile_picture = profile_picture
-                request.user.profile.save()
-                return JsonResponse({'success': True})
-            return JsonResponse({'success': False})
-        
-        elif action == 'remove_picture':
-            if request.user.profile.profile_picture:
-                try:
-                    if os.path.isfile(request.user.profile.profile_picture.path):
-                        os.remove(request.user.profile.profile_picture.path)
-                except:
-                    pass
+        try:
+            action = request.POST.get('action')
+            
+            if action == 'update_picture':
+                if 'profile_picture' in request.FILES:
+                    profile_picture = request.FILES['profile_picture']
+                    request.user.profile.profile_picture = profile_picture
+                    request.user.profile.save(update_fields=['profile_picture'])
+                    return JsonResponse({'success': True})
+                return JsonResponse({'success': False, 'error': 'No file uploaded'})
+            
+            elif action == 'remove_picture':
                 request.user.profile.profile_picture = None
-                request.user.profile.save()
-            return JsonResponse({'success': True})
+                request.user.profile.save(update_fields=['profile_picture'])
+                return JsonResponse({'success': True})
+            
+            else:
+                # تحديث المعلومات الإضافية
+                phone = request.POST.get('phone', '').strip()
+                city = request.POST.get('city', '').strip()
+                bio = request.POST.get('bio', '').strip()
+                
+                request.user.profile.phone = phone
+                request.user.profile.city = city
+                request.user.profile.bio = bio
+                request.user.profile.save(update_fields=['phone', 'city', 'bio'])
+                
+                return JsonResponse({'success': True})
         
-        else:
-            # تحديث المعلومات الإضافية
-            phone = request.POST.get('phone', '')
-            city = request.POST.get('city', '')
-            bio = request.POST.get('bio', '')
-            
-            profile = request.user.profile
-            profile.phone = phone
-            profile.city = city
-            profile.bio = bio
-            profile.save()
-            
-            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
     
-    return JsonResponse({'success': False})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
 
 def view_profile(request, username):
     """عرض ملف شخصي لمستخدم آخر"""
