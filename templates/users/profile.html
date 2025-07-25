@@ -105,7 +105,7 @@
                     <h5 class="mb-0">معلومات إضافية</h5>
                 </div>
                 <div class="card-body">
-                    <form id="profileUpdateForm">
+                    <form method="post">
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -130,7 +130,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg" id="saveBtn">
+                        <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-save me-2"></i>حفظ التغييرات
                         </button>
                     </form>
@@ -219,7 +219,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center">
-                <form id="profilePictureForm">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     <div class="mb-3">
@@ -234,13 +234,14 @@
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary" id="uploadBtn">
+                        <input type="hidden" name="action" value="update_picture">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-upload me-2"></i>رفع الصورة
                         </button>
                         {% if user.profile.profile_picture %}
-                        <button type="button" class="btn btn-outline-danger" onclick="removeProfilePicture()">
+                        <a href="?action=remove_picture" class="btn btn-outline-danger" onclick="return confirm('هل أنت متأكد؟')">
                             <i class="fas fa-trash me-2"></i>حذف الصورة
-                        </button>
+                        </a>
                         {% endif %}
                     </div>
                 </form>

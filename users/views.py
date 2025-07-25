@@ -11,52 +11,28 @@ import os
 @login_required
 def profile(request):
     """عرض الملف الشخصي"""
+    # معالجة حذف الصورة عبر GET
+    if request.GET.get('action') == 'remove_picture':
+        request.user.profile.profile_picture = None
+        request.user.profile.save()
+        messages.success(request, 'تم حذف صورة البروفيل بنجاح')
+        return redirect('profile')
+    
     if request.method == 'POST':
         action = request.POST.get('action')
         
         if action == 'update_picture':
-            # تغيير صورة البروفيل
             if 'profile_picture' in request.FILES:
-                profile_picture = request.FILES['profile_picture']
-                
-                # حذف الصورة القديمة
-                if request.user.profile.profile_picture:
-                    try:
-                        if os.path.isfile(request.user.profile.profile_picture.path):
-                            os.remove(request.user.profile.profile_picture.path)
-                    except:
-                        pass
-                
-                # حفظ الصورة الجديدة
-                request.user.profile.profile_picture = profile_picture
+                request.user.profile.profile_picture = request.FILES['profile_picture']
                 request.user.profile.save()
                 messages.success(request, 'تم تغيير صورة البروفيل بنجاح')
             return redirect('profile')
         
-        elif action == 'remove_picture':
-            # حذف صورة البروفيل
-            if request.user.profile.profile_picture:
-                try:
-                    if os.path.isfile(request.user.profile.profile_picture.path):
-                        os.remove(request.user.profile.profile_picture.path)
-                except:
-                    pass
-                request.user.profile.profile_picture = None
-                request.user.profile.save()
-                messages.success(request, 'تم حذف صورة البروفيل بنجاح')
-            return redirect('profile')
-        
         else:
-            # تحديث المعلومات الإضافية
-            phone = request.POST.get('phone', '')
-            city = request.POST.get('city', '')
-            bio = request.POST.get('bio', '')
-            
-            profile = request.user.profile
-            profile.phone = phone
-            profile.city = city
-            profile.bio = bio
-            profile.save()
+            request.user.profile.phone = request.POST.get('phone', '')
+            request.user.profile.city = request.POST.get('city', '')
+            request.user.profile.bio = request.POST.get('bio', '')
+            request.user.profile.save()
             
             messages.success(request, 'تم حفظ التغييرات بنجاح')
             return redirect('profile')
