@@ -16,7 +16,6 @@ urlpatterns = [
     path('manage-bookings/', views.manage_bookings, name='manage_bookings'),
     path('booking/<int:pk>/<str:status>/', views.update_booking_status, name='update_booking_status'),
     
-    # مسارات التنبيهات
     path('notifications/', views_notifications.notifications_list, name='notifications_list'),
     path('notifications/<int:pk>/read/', views_notifications.mark_notification_as_read, name='mark_notification_as_read'),
     path('notifications/<int:pk>/delete/', views_notifications.delete_notification, name='delete_notification'),
