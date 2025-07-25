@@ -17,10 +17,18 @@ def is_admin(user):
 def home(request):
     from django.contrib.auth.models import User
     from django.db.models import Count
+    from django.core.cache import cache
     from .models import SiteRating
     
+    # استخدام التخزين المؤقت للبيانات الثابتة
+    cache_key = 'home_page_data'
+    cached_data = cache.get(cache_key)
+    
+    if cached_data:
+        return render(request, 'apartments/home.html', cached_data)
+    
     # الشقق المميزة
-    featured_apartments = Apartment.objects.filter(available=True, status='approved').order_by('-created_at')[:6]
+    featured_apartments = Apartment.objects.select_related('university', 'owner').prefetch_related('images').filter(available=True, status='approved').order_by('-created_at')[:6]
     
     # إضافة معلومات الحجز المعتمد لكل شقة
     for apartment in featured_apartments:
@@ -64,11 +72,15 @@ def home(request):
         'wishlist_apartments': wishlist_apartments,
         'site_ratings': site_ratings,
     }
+    
+    # حفظ في التخزين المؤقت لمدة 5 دقائق
+    cache.set(cache_key, context, 300)
+    
     return render(request, 'apartments/home.html', context)
 
 def apartment_list(request):
-    apartments = Apartment.objects.filter(available=True, status='approved')
-    universities = University.objects.all()
+    apartments = Apartment.objects.select_related('university', 'owner').prefetch_related('images').filter(available=True, status='approved')
+    universities = University.objects.all().only('id', 'name')
     
     # فلترة البحث
     university = request.GET.get('university')
