@@ -1,5 +1,5 @@
 from django import forms
-from .models import Apartment, ApartmentImage, Booking, University, Comment
+from .models import Apartment, ApartmentImage, Booking, University, Comment, Rating
 
 class ApartmentForm(forms.ModelForm):
     class Meta:
@@ -26,6 +26,23 @@ class CommentForm(forms.ModelForm):
         fields = ['content']
         widgets = {
             'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'اكتب تعليقك هنا...'})
+        }
+
+class ReplyForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 2, 'placeholder': 'اكتب ردك هنا...'})
+        }
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['rating', 'review']
+        widgets = {
+            'rating': forms.Select(choices=[(i, i) for i in range(1, 6)]),
+            'review': forms.Textarea(attrs={'rows': 3, 'placeholder': 'اكتب تقييمك هنا...'})
         }
 
 class BookingForm(forms.ModelForm):
