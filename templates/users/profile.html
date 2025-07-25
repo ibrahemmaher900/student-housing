@@ -250,6 +250,49 @@
 </div>
 
 <script>
+// تحديث المعلومات
+document.getElementById('profileUpdateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('/users/profile/ajax/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('تم حفظ التغييرات بنجاح');
+        }
+    });
+});
+
+// رفع الصورة
+document.getElementById('profilePictureForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData();
+    const file = document.getElementById('profilePictureInput').files[0];
+    formData.append('profile_picture', file);
+    formData.append('action', 'update_picture');
+    
+    fetch('/users/profile/ajax/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+});
+
 // معاينة الصورة قبل الرفع
 document.getElementById('profilePictureInput').addEventListener('change', function(e) {
     const file = e.target.files[0];
@@ -266,7 +309,7 @@ document.getElementById('profilePictureInput').addEventListener('change', functi
 // حذف صورة البروفيل
 function removeProfilePicture() {
     if (confirm('هل أنت متأكد من حذف صورة البروفيل؟')) {
-        fetch('/users/profile/', {
+        fetch('/users/profile/ajax/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
