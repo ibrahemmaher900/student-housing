@@ -67,32 +67,44 @@ def home(request):
     return render(request, 'apartments/home.html', context)
 
 def apartment_list(request):
-    search_form = ApartmentSearchForm(request.GET)
     apartments = Apartment.objects.filter(available=True, status='approved')
+    universities = University.objects.all()
     
-    if search_form.is_valid():
-        university = search_form.cleaned_data.get('university')
-        min_price = search_form.cleaned_data.get('min_price')
-        max_price = search_form.cleaned_data.get('max_price')
-        apartment_type = search_form.cleaned_data.get('apartment_type')
-        bedrooms = search_form.cleaned_data.get('bedrooms')
-        furnished = search_form.cleaned_data.get('furnished')
-        has_wifi = search_form.cleaned_data.get('has_wifi')
-        
-        if university:
-            apartments = apartments.filter(university=university)
-        if min_price:
-            apartments = apartments.filter(price__gte=min_price)
-        if max_price:
-            apartments = apartments.filter(price__lte=max_price)
-        if apartment_type:
-            apartments = apartments.filter(apartment_type=apartment_type)
-        if bedrooms:
-            apartments = apartments.filter(bedrooms__gte=bedrooms)
-        if furnished:
-            apartments = apartments.filter(furnished=True)
-        if has_wifi:
-            apartments = apartments.filter(has_wifi=True)
+    # فلترة البحث
+    university = request.GET.get('university')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    apartment_type = request.GET.get('apartment_type')
+    bedrooms = request.GET.get('bedrooms')
+    furnished = request.GET.get('furnished')
+    has_wifi = request.GET.get('has_wifi')
+    has_ac = request.GET.get('has_ac')
+    
+    if university:
+        apartments = apartments.filter(university_id=university)
+    if min_price:
+        try:
+            apartments = apartments.filter(price__gte=float(min_price))
+        except ValueError:
+            pass
+    if max_price:
+        try:
+            apartments = apartments.filter(price__lte=float(max_price))
+        except ValueError:
+            pass
+    if apartment_type:
+        apartments = apartments.filter(apartment_type=apartment_type)
+    if bedrooms:
+        try:
+            apartments = apartments.filter(bedrooms__gte=int(bedrooms))
+        except ValueError:
+            pass
+    if furnished:
+        apartments = apartments.filter(furnished=True)
+    if has_wifi:
+        apartments = apartments.filter(has_wifi=True)
+    if has_ac:
+        apartments = apartments.filter(has_ac=True)
     
     # الترتيب
     sort_param = request.GET.get('sort')
@@ -120,7 +132,7 @@ def apartment_list(request):
     
     context = {
         'page_obj': page_obj,
-        'search_form': search_form,
+        'universities': universities,
         'wishlist_apartments': wishlist_apartments,
     }
     return render(request, 'apartments/apartment_list.html', context)
