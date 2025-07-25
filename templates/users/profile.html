@@ -10,17 +10,8 @@
             <!-- بطاقة المعلومات الأساسية -->
             <div class="card">
                 <div class="card-body text-center">
-                    <div class="profile-avatar-container position-relative mx-auto mb-3" style="width: 120px; height: 120px;">
-                        {% if user.profile.profile_picture %}
-                        <img src="{{ user.profile.profile_picture.url }}" alt="{{ user.username }}" class="profile-avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                        {% else %}
-                        <div class="profile-avatar" style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                            {{ user.username|first|upper }}
-                        </div>
-                        {% endif %}
-                        <button class="btn btn-sm btn-primary position-absolute" style="bottom: 0; right: 0; border-radius: 50%; width: 35px; height: 35px; padding: 0;" data-bs-toggle="modal" data-bs-target="#profilePictureModal">
-                            <i class="fas fa-camera"></i>
-                        </button>
+                    <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px;">
+                        {{ user.username|first|upper }}
                     </div>
                     <h4>{{ user.username }}</h4>
                     <p class="text-muted">{{ user.profile.get_user_type_display }}</p>
@@ -69,27 +60,27 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">اسم المستخدم</label>
-                            <div class="form-control bg-light">{{ user.username }}</div>
+                            <input type="text" class="form-control" value="{{ user.username }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">البريد الإلكتروني</label>
-                            <div class="form-control bg-light">{{ user.email }}</div>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">الاسم الأول</label>
-                            <div class="form-control bg-light">{{ user.first_name|default:'غير محدد' }}</div>
+                            <input type="text" class="form-control" value="{{ user.first_name|default:'غير محدد' }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">الاسم الأخير</label>
-                            <div class="form-control bg-light">{{ user.last_name|default:'غير محدد' }}</div>
+                            <input type="text" class="form-control" value="{{ user.last_name|default:'غير محدد' }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">نوع الحساب</label>
-                            <div class="form-control bg-light">{{ user.profile.get_user_type_display }}</div>
+                            <input type="text" class="form-control" value="{{ user.profile.get_user_type_display }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label text-muted">تاريخ التسجيل</label>
-                            <div class="form-control bg-light">{{ user.date_joined|date:'d/m/Y' }}</div>
+                            <input type="text" class="form-control" value="{{ user.date_joined|date:'d/m/Y' }}" readonly>
                         </div>
                     </div>
                     <div class="alert alert-info">
@@ -110,27 +101,18 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">رقم الهاتف</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                    <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone|default:'' }}" placeholder="01xxxxxxxxx">
-                                </div>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone|default:'' }}" placeholder="01xxxxxxxxx">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">المدينة</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                                    <input type="text" name="city" class="form-control" value="{{ user.profile.city|default:'' }}" placeholder="القاهرة">
-                                </div>
+                                <input type="text" name="city" class="form-control" value="{{ user.profile.city|default:'' }}" placeholder="القاهرة">
                             </div>
                             <div class="col-12 mb-3">
                                 <label class="form-label">نبذة شخصية</label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-user-edit"></i></span>
-                                    <textarea name="bio" class="form-control" rows="3" placeholder="اكتب نبذة عن نفسك...">{{ user.profile.bio|default:'' }}</textarea>
-                                </div>
+                                <textarea name="bio" class="form-control" rows="3" placeholder="اكتب نبذة عن نفسك...">{{ user.profile.bio|default:'' }}</textarea>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-2"></i>حفظ التغييرات
                         </button>
                     </form>
@@ -208,195 +190,5 @@
     background-color: #f8f9fa;
     border-color: #e9ecef;
 }
-
-.bg-light {
-    background-color: #f8f9fa !important;
-    border: 1px solid #dee2e6;
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.375rem;
-    color: #6c757d;
-}
 </style>
-
-<!-- Modal لتغيير صورة البروفيل -->
-<div class="modal fade" id="profilePictureModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">تغيير صورة البروفيل</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <div class="mb-3">
-                        <div class="profile-preview mx-auto mb-3" style="width: 150px; height: 150px; border-radius: 50%; border: 3px dashed #ddd; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
-                            <i class="fas fa-camera fa-2x text-muted"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <input type="file" class="form-control" name="profile_picture" accept="image/*" id="profilePictureInput" required>
-                        <small class="text-muted">يمكنك رفع صور JPG, PNG, GIF (أقصى 2MB)</small>
-                    </div>
-                    
-                    <div class="d-grid gap-2">
-                        <input type="hidden" name="action" value="update_picture">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-upload me-2"></i>رفع الصورة
-                        </button>
-                        {% if user.profile.profile_picture %}
-                        <form method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="remove_picture">
-                            <button type="submit" class="btn btn-outline-danger" onclick="return confirm('هل أنت متأكد؟')">
-                                <i class="fas fa-trash me-2"></i>حذف الصورة
-                            </button>
-                        </form>
-                        {% endif %}
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-// تحديث المعلومات
-document.getElementById('profileUpdateForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const btn = document.getElementById('saveBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الحفظ...';
-    btn.disabled = true;
-    
-    const formData = new FormData(this);
-    
-    fetch('/users/profile/ajax/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('تم حفظ التغييرات بنجاح');
-        } else {
-            alert('حدث خطأ: ' + (data.error || 'غير محدد'));
-        }
-    })
-    .catch(error => {
-        alert('حدث خطأ في الاتصال');
-    })
-    .finally(() => {
-        btn.innerHTML = '<i class="fas fa-save me-2"></i>حفظ التغييرات';
-        btn.disabled = false;
-    });
-});
-
-// رفع الصورة
-document.getElementById('profilePictureForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const file = document.getElementById('profilePictureInput').files[0];
-    if (!file) {
-        alert('يرجى اختيار صورة');
-        return;
-    }
-    
-    if (file.size > 2 * 1024 * 1024) {
-        alert('حجم الصورة كبير جداً');
-        return;
-    }
-    
-    const btn = document.getElementById('uploadBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الرفع...';
-    btn.disabled = true;
-    
-    const formData = new FormData();
-    formData.append('profile_picture', file);
-    formData.append('action', 'update_picture');
-    
-    fetch('/users/profile/ajax/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken')
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('تم تغيير الصورة بنجاح');
-            setTimeout(() => location.reload(), 500);
-        } else {
-            alert('حدث خطأ: ' + (data.error || 'غير محدد'));
-        }
-    })
-    .catch(error => {
-        alert('حدث خطأ في الاتصال');
-    })
-    .finally(() => {
-        btn.innerHTML = '<i class="fas fa-upload me-2"></i>رفع الصورة';
-        btn.disabled = false;
-    });
-});
-
-// معاينة الصورة قبل الرفع
-document.getElementById('profilePictureInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.querySelector('.profile-preview');
-            preview.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// حذف صورة البروفيل
-function removeProfilePicture() {
-    if (confirm('هل أنت متأكد من حذف صورة البروفيل؟')) {
-        fetch('/users/profile/ajax/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'action=remove_picture'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('تم حذف الصورة بنجاح');
-                location.reload();
-            } else {
-                alert('حدث خطأ في حذف الصورة');
-            }
-        })
-        .catch(error => {
-            alert('حدث خطأ في الاتصال');
-        });
-    }
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-</script>
 {% endblock %}

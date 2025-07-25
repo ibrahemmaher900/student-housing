@@ -17,18 +17,10 @@ def is_admin(user):
 def home(request):
     from django.contrib.auth.models import User
     from django.db.models import Count
-    from django.core.cache import cache
     from .models import SiteRating
     
-    # استخدام التخزين المؤقت للبيانات الثابتة
-    cache_key = 'home_page_data'
-    cached_data = cache.get(cache_key)
-    
-    if cached_data:
-        return render(request, 'apartments/home.html', cached_data)
-    
     # الشقق المميزة
-    featured_apartments = Apartment.objects.select_related('university', 'owner').prefetch_related('images').filter(available=True, status='approved').order_by('-created_at')[:6]
+    featured_apartments = Apartment.objects.filter(available=True, status='approved').order_by('-created_at')[:6]
     
     # إضافة معلومات الحجز المعتمد لكل شقة
     for apartment in featured_apartments:
@@ -72,51 +64,35 @@ def home(request):
         'wishlist_apartments': wishlist_apartments,
         'site_ratings': site_ratings,
     }
-    
-    # حفظ في التخزين المؤقت لمدة 5 دقائق
-    cache.set(cache_key, context, 300)
-    
     return render(request, 'apartments/home.html', context)
 
 def apartment_list(request):
-    apartments = Apartment.objects.select_related('university', 'owner').prefetch_related('images').filter(available=True, status='approved')
-    universities = University.objects.all().only('id', 'name')
+    search_form = ApartmentSearchForm(request.GET)
+    apartments = Apartment.objects.filter(available=True, status='approved')
     
-    # فلترة البحث
-    university = request.GET.get('university')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
-    apartment_type = request.GET.get('apartment_type')
-    bedrooms = request.GET.get('bedrooms')
-    furnished = request.GET.get('furnished')
-    has_wifi = request.GET.get('has_wifi')
-    has_ac = request.GET.get('has_ac')
-    
-    if university:
-        apartments = apartments.filter(university_id=university)
-    if min_price:
-        try:
-            apartments = apartments.filter(price__gte=float(min_price))
-        except ValueError:
-            pass
-    if max_price:
-        try:
-            apartments = apartments.filter(price__lte=float(max_price))
-        except ValueError:
-            pass
-    if apartment_type:
-        apartments = apartments.filter(apartment_type=apartment_type)
-    if bedrooms:
-        try:
-            apartments = apartments.filter(bedrooms__gte=int(bedrooms))
-        except ValueError:
-            pass
-    if furnished:
-        apartments = apartments.filter(furnished=True)
-    if has_wifi:
-        apartments = apartments.filter(has_wifi=True)
-    if has_ac:
-        apartments = apartments.filter(has_ac=True)
+    if search_form.is_valid():
+        university = search_form.cleaned_data.get('university')
+        min_price = search_form.cleaned_data.get('min_price')
+        max_price = search_form.cleaned_data.get('max_price')
+        apartment_type = search_form.cleaned_data.get('apartment_type')
+        bedrooms = search_form.cleaned_data.get('bedrooms')
+        furnished = search_form.cleaned_data.get('furnished')
+        has_wifi = search_form.cleaned_data.get('has_wifi')
+        
+        if university:
+            apartments = apartments.filter(university=university)
+        if min_price:
+            apartments = apartments.filter(price__gte=min_price)
+        if max_price:
+            apartments = apartments.filter(price__lte=max_price)
+        if apartment_type:
+            apartments = apartments.filter(apartment_type=apartment_type)
+        if bedrooms:
+            apartments = apartments.filter(bedrooms__gte=bedrooms)
+        if furnished:
+            apartments = apartments.filter(furnished=True)
+        if has_wifi:
+            apartments = apartments.filter(has_wifi=True)
     
     # الترتيب
     sort_param = request.GET.get('sort')
@@ -144,7 +120,7 @@ def apartment_list(request):
     
     context = {
         'page_obj': page_obj,
-        'universities': universities,
+        'search_form': search_form,
         'wishlist_apartments': wishlist_apartments,
     }
     return render(request, 'apartments/apartment_list.html', context)
@@ -316,32 +292,175 @@ def book_apartment(request, pk):
 
 @login_required
 def add_apartment(request):
-    if request.method == 'POST':
-        # بيانات مباشرة
-        apartment = Apartment(
-            title=request.POST.get('title', 'شقة'),
-            description=request.POST.get('description', ''),
-            price=request.POST.get('price', 0),
-            apartment_type='studio',
-            area=request.POST.get('area', 50),
-            bedrooms=1,
-            bathrooms=1,
-            address=request.POST.get('address', ''),
-            distance_to_university=request.POST.get('distance_to_university', 0),
-            university_id=request.POST.get('university'),
-            owner=request.user,
-            status='pending'
-        )
-        apartment.save()
-        
-        # حفظ الصور
-        for image in request.FILES.getlist('images'):
-            ApartmentImage.objects.create(apartment=apartment, image=image)
-        
-        messages.success(request, 'تم إضافة الشقة!')
-        return redirect('my_apartments')
+    """وظيفة لإضافة شقة جديدة"""
     
-    return render(request, 'apartments/add_apartment_simple.html', {'universities': University.objects.all()})
+    # الحصول على قائمة الجامعات
+    universities = University.objects.all()
+    
+    if request.method == 'POST':
+        try:
+            # معالجة الحقول المنطقية
+            apartment_type = request.POST.get('apartment_type', 'studio')
+            furnished = request.POST.get('furnished') == 'yes'
+            has_wifi = request.POST.get('has_wifi') == 'on'
+            has_ac = request.POST.get('has_ac') == 'on'
+            has_kitchen = request.POST.get('has_kitchen') == 'on'
+            has_washer = request.POST.get('has_washer') == 'on'
+            has_fridge = request.POST.get('has_fridge') == 'on'
+            has_private_bathroom = request.POST.get('has_private_bathroom') == 'on'
+            has_balcony = request.POST.get('has_balcony') == 'on'
+            has_parking = request.POST.get('has_parking') == 'on'
+            whatsapp_available = request.POST.get('whatsapp_available') == 'yes'
+            bills_included = request.POST.get('bills_included') == 'yes'
+            
+            # تحديد عدد الغرف والحمامات
+            bedrooms = int(request.POST.get('rooms', 1) or 1)
+            bathrooms = 1
+            
+            # تحديد المساحة
+            area = int(request.POST.get('area', 0) or 0)
+            if apartment_type == 'room':
+                area = int(request.POST.get('room_area', 0) or 0)
+            elif apartment_type == 'bed':
+                area = int(request.POST.get('shared_room_area', 0) or 0)
+            
+            # تحديد الطابق
+            floor = int(request.POST.get('floor', 0) or 0)
+            if apartment_type == 'room':
+                floor = int(request.POST.get('room_floor', 0) or 0)
+            elif apartment_type == 'bed':
+                floor = int(request.POST.get('shared_room_floor', 0) or 0)
+            
+            # تحديد عدد الأشخاص
+            max_people = int(request.POST.get('max_people', 1) or 1)
+            if apartment_type == 'room':
+                max_people = int(request.POST.get('room_max_people', 1) or 1)
+            elif apartment_type == 'bed':
+                max_people = 1  # سرير واحد = شخص واحد
+            
+            # إنشاء عنوان مناسب
+            city = request.POST.get('city', '')
+            district = request.POST.get('district', '')
+            title = f"شقة في {district}, {city}"
+            if apartment_type == 'room':
+                title = f"غرفة في {district}, {city}"
+            elif apartment_type == 'bed':
+                title = f"سرير مشترك في {district}, {city}"
+            
+            # معالجة القيم الرقمية
+            try:
+                price = float(request.POST.get('price', 0))
+            except (ValueError, TypeError):
+                price = 0
+                
+            try:
+                distance_to_university = float(request.POST.get('distance_to_university', 0))
+            except (ValueError, TypeError):
+                distance_to_university = 0
+                
+            try:
+                deposit = float(request.POST.get('deposit', 0))
+            except (ValueError, TypeError):
+                deposit = 0
+                
+            try:
+                walking_time = int(request.POST.get('walking_time') or 0)
+                if walking_time <= 0:
+                    walking_time = None
+            except (ValueError, TypeError):
+                walking_time = None
+                
+            try:
+                driving_time = int(request.POST.get('driving_time') or 0)
+                if driving_time <= 0:
+                    driving_time = None
+            except (ValueError, TypeError):
+                driving_time = None
+                
+            # معالجة الإحداثيات
+            try:
+                latitude = float(request.POST.get('latitude') or 0)
+                if latitude == 0:
+                    latitude = None
+            except (ValueError, TypeError):
+                latitude = None
+                
+            try:
+                longitude = float(request.POST.get('longitude') or 0)
+                if longitude == 0:
+                    longitude = None
+            except (ValueError, TypeError):
+                longitude = None
+            
+            # إنشاء شقة جديدة بالبيانات الأساسية
+            apartment = Apartment(
+                title=title,
+                description=request.POST.get('additional_description', ''),
+                price=price,
+                apartment_type=apartment_type,
+                area=area,
+                bedrooms=bedrooms,
+                bathrooms=bathrooms,
+                address=request.POST.get('address', ''),
+                distance_to_university=distance_to_university,
+                walking_time=walking_time,
+                driving_time=driving_time,
+                university_id=request.POST.get('university'),
+                owner=request.user,
+                status='pending',
+                furnished=furnished,
+                has_wifi=has_wifi,
+                has_ac=has_ac,
+                has_kitchen=has_kitchen,
+                has_washer=has_washer,
+                has_fridge=has_fridge,
+                has_private_bathroom=has_private_bathroom,
+                has_balcony=has_balcony,
+                has_parking=has_parking,
+                max_people=max_people,
+                floor=floor,
+                conditions=request.POST.get('conditions', ''),
+                additional_description=request.POST.get('additional_description', ''),
+                contact_name=request.POST.get('contact_name', ''),
+                phone=request.POST.get('phone', ''),
+                whatsapp_available=whatsapp_available,
+                advertiser_type=request.POST.get('advertiser_type', 'owner'),
+                additional_contact=request.POST.get('additional_contact', ''),
+                google_maps_link=request.POST.get('google_maps_link', ''),
+                gender=request.POST.get('gender', 'all'),
+                payment_method=request.POST.get('payment_method', 'monthly'),
+                deposit=deposit,
+                bills_included=bills_included,
+                available=True
+            )
+            apartment.save()
+            
+            # حفظ الصور
+            images = request.FILES.getlist('images')
+            for image in images:
+                ApartmentImage.objects.create(apartment=apartment, image=image)
+            
+            # إرسال إشعار للمسؤولين
+            from django.contrib.auth.models import User
+            admins = User.objects.filter(is_staff=True) | User.objects.filter(is_superuser=True)
+            for admin in admins:
+                Notification.objects.create(
+                    user=admin,
+                    notification_type='apartment_pending',
+                    message=f'تم إضافة شقة جديدة "{apartment.title}" بواسطة {request.user.username} وتحتاج إلى موافقة',
+                    related_apartment=apartment
+                )
+            
+            # إظهار رسالة نجاح
+            messages.success(request, 'تم إضافة الشقة بنجاح! سيتم نشرها بعد مراجعتها من قبل الإدارة.')
+            return redirect('my_apartments')
+            
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            messages.error(request, 'حدث خطأ أثناء إضافة الشقة. الرجاء المحاولة مرة أخرى.')
+    
+    return render(request, 'apartments/add_apartment.html', {'universities': universities})
 
 # تم إزالة الاسم المستعار لأننا نستخدم دالة واحدة فقط
 
@@ -360,12 +479,8 @@ def edit_apartment(request, pk):
             form.save()
             
             images = request.FILES.getlist('image')
-            if images:
-                for image in images:
-                    try:
-                        ApartmentImage.objects.create(apartment=apartment, image=image)
-                    except Exception as e:
-                        print(f"Error saving image: {e}")
+            for image in images:
+                ApartmentImage.objects.create(apartment=apartment, image=image)
             
             messages.success(request, 'تم تحديث معلومات الشقة بنجاح!')
             return redirect('apartment_detail', pk=apartment.pk)
