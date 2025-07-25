@@ -1,0 +1,311 @@
+/* تحسينات إضافية للموقع */
+
+/* تحسين الظلال */
+.card, .btn, .form-control, .alert {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* تحسين الألوان */
+:root {
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-secondary: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --border-radius: 12px;
+}
+
+/* تحسين الأزرار */
+.btn {
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--gradient-secondary);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--gradient-secondary);
+    filter: brightness(1.1);
+}
+
+/* تحسين النماذج */
+.form-control {
+    border-radius: var(--border-radius);
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #6c757d;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+    transform: scale(1.02);
+}
+
+/* تحسين البطاقات */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* تحسين التنبيهات */
+.alert {
+    border: none;
+    border-radius: var(--border-radius);
+    border-left: 4px solid;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-left-color: #28a745;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border-left-color: #17a2b8;
+}
+
+/* تحسين الجداول */
+.table {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+}
+
+.table thead th {
+    background: var(--gradient-secondary);
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+
+/* تحسين شريط التنقل */
+.navbar {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    background: var(--gradient-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* تحسين القوائم المنسدلة */
+.dropdown-menu {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+.dropdown-item:hover {
+    background: var(--gradient-secondary);
+    color: white;
+    transform: translateX(5px);
+}
+
+/* تحسين الصور */
+img {
+    transition: all 0.3s ease;
+}
+
+img:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* تحسين التذييل */
+footer {
+    background: var(--gradient-secondary) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="1" fill="white" opacity="0.1"/></svg>');
+    animation: float 20s ease-in-out infinite;
+}
+
+/* تحسين الرسوم المتحركة */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* تطبيق الرسوم المتحركة */
+.animate-slide-up {
+    animation: slideInUp 0.6s ease forwards;
+}
+
+.animate-slide-right {
+    animation: slideInRight 0.6s ease forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* تحسين التمرير */
+html {
+    scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-secondary);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #495057;
+}
+
+/* تحسين التركيز */
+*:focus {
+    outline: 2px solid #6c757d;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* تحسين الطباعة */
+@media print {
+    * {
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    .btn {
+        border: 1px solid #000 !important;
+    }
+}
+
+/* تحسين الوضع المظلم */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #1a202c;
+        --text-color: #e2e8f0;
+        --card-bg: #2d3748;
+    }
+    
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+    }
+    
+    .card {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+    }
+    
+    .navbar {
+        background: rgba(26, 32, 44, 0.95) !important;
+    }
+}
+
+/* تحسين إمكانية الوصول */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* تحسين الأداء */
+.will-change {
+    will-change: transform, opacity;
+}
+
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
