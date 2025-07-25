@@ -703,24 +703,15 @@ def admin_dashboard(request):
 
 @login_required
 def owner_dashboard(request):
-    try:
-        # إنشاء بروفايل إذا لم يكن موجود
-        if not hasattr(request.user, 'profile'):
-            from users.models import Profile
-            Profile.objects.create(user=request.user, user_type='owner')
-        
-        apartments = Apartment.objects.filter(owner=request.user)
-        bookings = Booking.objects.filter(apartment__owner=request.user).order_by('-created_at')
-        
-        context = {
-            'apartments': apartments,
-            'bookings': bookings,
-            'total_apartments': apartments.count(),
-            'approved_apartments': apartments.filter(status='approved').count(),
-            'pending_bookings': bookings.filter(status='pending').count(),
-            'total_bookings': bookings.count(),
-        }
-        return render(request, 'apartments/owner_dashboard.html', context)
-    except Exception as e:
-        messages.error(request, 'حدث خطأ في تحميل لوحة التحكم')
-        return redirect('home')
+    apartments = Apartment.objects.filter(owner=request.user)
+    bookings = Booking.objects.filter(apartment__owner=request.user)
+    
+    context = {
+        'apartments': apartments,
+        'bookings': bookings,
+        'total_apartments': apartments.count(),
+        'approved_apartments': apartments.filter(status='approved').count(),
+        'pending_bookings': bookings.filter(status='pending').count(),
+        'total_bookings': bookings.count(),
+    }
+    return render(request, 'apartments/owner_dashboard.html', context)
