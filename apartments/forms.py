@@ -28,21 +28,20 @@ class CommentForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
         }
 
-class ApartmentSearchForm(forms.Form):
-    university = forms.ModelChoiceField(
-        queryset=University.objects.all(),
-        required=False,
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-    min_price = forms.DecimalField(required=False)
-    max_price = forms.DecimalField(required=False)
-
-class CommentForm(forms.ModelForm):
+class ReplyForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['content']
         widgets = {
-            'content': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
+        }
+
+class RatingForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['stars', 'review']
+        widgets = {
+            'review': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
         }
 
 class ApartmentSearchForm(forms.Form):
