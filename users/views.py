@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.http import JsonResponse
+from .models import Profile
 from .forms import UserUpdateForm, ProfileUpdateForm
 import os
 
@@ -67,19 +68,29 @@ def profile_ajax(request):
     """معالجة طلبات AJAX للبروفيل"""
     if request.method == 'POST':
         try:
+            # إنشاء بروفيل إذا لم يكن موجود
+            profile, created = Profile.objects.get_or_create(user=request.user)
+            
             action = request.POST.get('action')
             
             if action == 'update_picture':
                 if 'profile_picture' in request.FILES:
                     profile_picture = request.FILES['profile_picture']
-                    request.user.profile.profile_picture = profile_picture
-                    request.user.profile.save(update_fields=['profile_picture'])
+                    
+                    # فحص حجم الملف
+                    if profile_picture.size > 2 * 1024 * 1024:  # 2MB
+                        return JsonResponse({'success': False, 'error': 'حجم الصورة كبير جداً'})
+                    
+                    profile.profile_picture = profile_picture
+                    profile.save()
                     return JsonResponse({'success': True})
-                return JsonResponse({'success': False, 'error': 'No file uploaded'})
+                return JsonResponse({'success': False, 'error': 'لم يتم رفع ملف'})
             
             elif action == 'remove_picture':
-                request.user.profile.profile_picture = None
-                request.user.profile.save(update_fields=['profile_picture'])
+                if profile.profile_picture:
+                    profile.profile_picture.delete()
+                profile.profile_picture = None
+                profile.save()
                 return JsonResponse({'success': True})
             
             else:
@@ -88,17 +99,19 @@ def profile_ajax(request):
                 city = request.POST.get('city', '').strip()
                 bio = request.POST.get('bio', '').strip()
                 
-                request.user.profile.phone = phone
-                request.user.profile.city = city
-                request.user.profile.bio = bio
-                request.user.profile.save(update_fields=['phone', 'city', 'bio'])
+                profile.phone = phone or None
+                profile.city = city or None
+                profile.bio = bio or None
+                profile.save()
                 
                 return JsonResponse({'success': True})
         
         except Exception as e:
+            import traceback
+            print(traceback.format_exc())
             return JsonResponse({'success': False, 'error': str(e)})
     
-    return JsonResponse({'success': False, 'error': 'Invalid request'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 def view_profile(request, username):
     """عرض ملف شخصي لمستخدم آخر"""

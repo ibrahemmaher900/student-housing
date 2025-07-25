@@ -15,7 +15,7 @@ class Profile(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True, verbose_name="المدينة")
     university = models.ForeignKey('apartments.University', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="الجامعة")
     bio = models.TextField(blank=True, null=True, verbose_name="نبذة شخصية")
-    profile_picture = models.ImageField(upload_to='profile_pics/', default='profile_pics/default.png', verbose_name="الصورة الشخصية")
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, verbose_name="الصورة الشخصية")
     non_serious_reports = models.IntegerField(default=0, verbose_name="عدد الإبلاغات عن عدم الجدية")
     is_banned = models.BooleanField(default=False, verbose_name="محظور من الحجز")
     
@@ -44,4 +44,5 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
