@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.files.storage import default_storage
+from django.http import JsonResponse
 from .forms import UserUpdateForm, ProfileUpdateForm
 import os
 
@@ -60,6 +61,56 @@ def profile(request):
             return redirect('profile')
     
     return render(request, 'users/profile.html')
+
+@login_required
+def profile_ajax(request):
+    """معالجة طلبات AJAX للبروفيل"""
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'update_picture':
+            if 'profile_picture' in request.FILES:
+                profile_picture = request.FILES['profile_picture']
+                
+                # حذف الصورة القديمة
+                if request.user.profile.profile_picture:
+                    try:
+                        if os.path.isfile(request.user.profile.profile_picture.path):
+                            os.remove(request.user.profile.profile_picture.path)
+                    except:
+                        pass
+                
+                request.user.profile.profile_picture = profile_picture
+                request.user.profile.save()
+                return JsonResponse({'success': True})
+            return JsonResponse({'success': False})
+        
+        elif action == 'remove_picture':
+            if request.user.profile.profile_picture:
+                try:
+                    if os.path.isfile(request.user.profile.profile_picture.path):
+                        os.remove(request.user.profile.profile_picture.path)
+                except:
+                    pass
+                request.user.profile.profile_picture = None
+                request.user.profile.save()
+            return JsonResponse({'success': True})
+        
+        else:
+            # تحديث المعلومات الإضافية
+            phone = request.POST.get('phone', '')
+            city = request.POST.get('city', '')
+            bio = request.POST.get('bio', '')
+            
+            profile = request.user.profile
+            profile.phone = phone
+            profile.city = city
+            profile.bio = bio
+            profile.save()
+            
+            return JsonResponse({'success': True})
+    
+    return JsonResponse({'success': False})
 
 def view_profile(request, username):
     """عرض ملف شخصي لمستخدم آخر"""

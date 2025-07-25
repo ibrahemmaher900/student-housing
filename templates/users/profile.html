@@ -105,7 +105,7 @@
                     <h5 class="mb-0">معلومات إضافية</h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" id="profileForm">
+                    <form id="profileUpdateForm">
                         {% csrf_token %}
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -130,7 +130,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-primary btn-lg" id="saveBtn">
                             <i class="fas fa-save me-2"></i>حفظ التغييرات
                         </button>
                     </form>
@@ -219,9 +219,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center">
-                <form method="post" enctype="multipart/form-data" id="profilePictureForm">
+                <form id="profilePictureForm">
                     {% csrf_token %}
-                    <input type="hidden" name="action" value="update_picture">
                     
                     <div class="mb-3">
                         <div class="profile-preview mx-auto mb-3" style="width: 150px; height: 150px; border-radius: 50%; border: 3px dashed #ddd; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
@@ -231,11 +230,11 @@
                     
                     <div class="mb-3">
                         <input type="file" class="form-control" name="profile_picture" accept="image/*" id="profilePictureInput" required>
-                        <small class="text-muted">يمكنك رفع صور JPG, PNG, GIF (أقصى حجم 5MB)</small>
+                        <small class="text-muted">يمكنك رفع صور JPG, PNG, GIF (أقصى 2MB)</small>
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="uploadBtn">
                             <i class="fas fa-upload me-2"></i>رفع الصورة
                         </button>
                         {% if user.profile.profile_picture %}
