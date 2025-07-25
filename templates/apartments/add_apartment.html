@@ -248,8 +248,12 @@
                         </div>
                     </div>
                     
-                    <form method="post" enctype="multipart/form-data" action="{% url 'add_apartment' %}" id="apartment-form" class="p-4">
+                    <form method="post" enctype="multipart/form-data" id="apartment-form" class="p-4">
                         {% csrf_token %}
+                        <input type="hidden" name="title" value="شقة للإيجار">
+                        <input type="hidden" name="description" value="">
+                        <input type="hidden" name="bedrooms" value="1">
+                        <input type="hidden" name="bathrooms" value="1">
                         
                         <!-- القسم 1: المعلومات الأساسية -->
                         <div class="form-step" id="form-step-1">

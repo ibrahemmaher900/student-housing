@@ -317,178 +317,52 @@ def book_apartment(request, pk):
 @login_required
 def add_apartment(request):
     """وظيفة لإضافة شقة جديدة"""
-    
-    # الحصول على قائمة الجامعات
     universities = University.objects.all()
     
     if request.method == 'POST':
         try:
-            # معالجة الحقول المنطقية
+            # بيانات أساسية
+            title = request.POST.get('title', 'شقة للإيجار')
+            description = request.POST.get('description', '')
+            price = float(request.POST.get('price', 0) or 0)
             apartment_type = request.POST.get('apartment_type', 'studio')
-            furnished = request.POST.get('furnished') == 'yes'
-            has_wifi = request.POST.get('has_wifi') == 'on'
-            has_ac = request.POST.get('has_ac') == 'on'
-            has_kitchen = request.POST.get('has_kitchen') == 'on'
-            has_washer = request.POST.get('has_washer') == 'on'
-            has_fridge = request.POST.get('has_fridge') == 'on'
-            has_private_bathroom = request.POST.get('has_private_bathroom') == 'on'
-            has_balcony = request.POST.get('has_balcony') == 'on'
-            has_parking = request.POST.get('has_parking') == 'on'
-            whatsapp_available = request.POST.get('whatsapp_available') == 'yes'
-            bills_included = request.POST.get('bills_included') == 'yes'
+            area = int(request.POST.get('area', 50) or 50)
+            bedrooms = int(request.POST.get('bedrooms', 1) or 1)
+            bathrooms = int(request.POST.get('bathrooms', 1) or 1)
+            address = request.POST.get('address', '')
+            distance_to_university = float(request.POST.get('distance_to_university', 0) or 0)
+            university_id = request.POST.get('university')
             
-            # تحديد عدد الغرف والحمامات
-            bedrooms = int(request.POST.get('rooms', 1) or 1)
-            bathrooms = 1
-            
-            # تحديد المساحة
-            area = int(request.POST.get('area', 0) or 0)
-            if apartment_type == 'room':
-                area = int(request.POST.get('room_area', 0) or 0)
-            elif apartment_type == 'bed':
-                area = int(request.POST.get('shared_room_area', 0) or 0)
-            
-            # تحديد الطابق
-            floor = int(request.POST.get('floor', 0) or 0)
-            if apartment_type == 'room':
-                floor = int(request.POST.get('room_floor', 0) or 0)
-            elif apartment_type == 'bed':
-                floor = int(request.POST.get('shared_room_floor', 0) or 0)
-            
-            # تحديد عدد الأشخاص
-            max_people = int(request.POST.get('max_people', 1) or 1)
-            if apartment_type == 'room':
-                max_people = int(request.POST.get('room_max_people', 1) or 1)
-            elif apartment_type == 'bed':
-                max_people = 1  # سرير واحد = شخص واحد
-            
-            # إنشاء عنوان مناسب
-            city = request.POST.get('city', '')
-            district = request.POST.get('district', '')
-            title = f"شقة في {district}, {city}"
-            if apartment_type == 'room':
-                title = f"غرفة في {district}, {city}"
-            elif apartment_type == 'bed':
-                title = f"سرير مشترك في {district}, {city}"
-            
-            # معالجة القيم الرقمية
-            try:
-                price = float(request.POST.get('price', 0))
-            except (ValueError, TypeError):
-                price = 0
-                
-            try:
-                distance_to_university = float(request.POST.get('distance_to_university', 0))
-            except (ValueError, TypeError):
-                distance_to_university = 0
-                
-            try:
-                deposit = float(request.POST.get('deposit', 0))
-            except (ValueError, TypeError):
-                deposit = 0
-                
-            try:
-                walking_time = int(request.POST.get('walking_time') or 0)
-                if walking_time <= 0:
-                    walking_time = None
-            except (ValueError, TypeError):
-                walking_time = None
-                
-            try:
-                driving_time = int(request.POST.get('driving_time') or 0)
-                if driving_time <= 0:
-                    driving_time = None
-            except (ValueError, TypeError):
-                driving_time = None
-                
-            # معالجة الإحداثيات
-            try:
-                latitude = float(request.POST.get('latitude') or 0)
-                if latitude == 0:
-                    latitude = None
-            except (ValueError, TypeError):
-                latitude = None
-                
-            try:
-                longitude = float(request.POST.get('longitude') or 0)
-                if longitude == 0:
-                    longitude = None
-            except (ValueError, TypeError):
-                longitude = None
-            
-            # إنشاء شقة جديدة بالبيانات الأساسية
-            apartment = Apartment(
+            # إنشاء الشقة
+            apartment = Apartment.objects.create(
                 title=title,
-                description=request.POST.get('additional_description', ''),
+                description=description,
                 price=price,
                 apartment_type=apartment_type,
                 area=area,
                 bedrooms=bedrooms,
                 bathrooms=bathrooms,
-                address=request.POST.get('address', ''),
+                address=address,
                 distance_to_university=distance_to_university,
-                walking_time=walking_time,
-                driving_time=driving_time,
-                university_id=request.POST.get('university'),
+                university_id=university_id,
                 owner=request.user,
                 status='pending',
-                furnished=furnished,
-                has_wifi=has_wifi,
-                has_ac=has_ac,
-                has_kitchen=has_kitchen,
-                has_washer=has_washer,
-                has_fridge=has_fridge,
-                has_private_bathroom=has_private_bathroom,
-                has_balcony=has_balcony,
-                has_parking=has_parking,
-                max_people=max_people,
-                floor=floor,
-                conditions=request.POST.get('conditions', ''),
-                additional_description=request.POST.get('additional_description', ''),
-                contact_name=request.POST.get('contact_name', ''),
-                phone=request.POST.get('phone', ''),
-                whatsapp_available=whatsapp_available,
-                advertiser_type=request.POST.get('advertiser_type', 'owner'),
-                additional_contact=request.POST.get('additional_contact', ''),
-                google_maps_link=request.POST.get('google_maps_link', ''),
-                gender=request.POST.get('gender', 'all'),
-                payment_method=request.POST.get('payment_method', 'monthly'),
-                deposit=deposit,
-                bills_included=bills_included,
-                available=True
+                furnished=request.POST.get('furnished') == 'on',
+                has_wifi=request.POST.get('has_wifi') == 'on',
+                has_ac=request.POST.get('has_ac') == 'on',
+                has_parking=request.POST.get('has_parking') == 'on'
             )
-            apartment.save()
             
             # حفظ الصور
             images = request.FILES.getlist('images')
-            if images:
-                for image in images:
-                    try:
-                        ApartmentImage.objects.create(apartment=apartment, image=image)
-                    except Exception as e:
-                        print(f"Error saving image: {e}")
-            else:
-                messages.warning(request, 'لم يتم رفع أي صور. يمكنك إضافة صور لاحقاً.')
+            for image in images:
+                ApartmentImage.objects.create(apartment=apartment, image=image)
             
-            # إرسال إشعار للمسؤولين
-            from django.contrib.auth.models import User
-            admins = User.objects.filter(is_staff=True) | User.objects.filter(is_superuser=True)
-            for admin in admins:
-                Notification.objects.create(
-                    user=admin,
-                    notification_type='apartment_pending',
-                    message=f'تم إضافة شقة جديدة "{apartment.title}" بواسطة {request.user.username} وتحتاج إلى موافقة',
-                    related_apartment=apartment
-                )
-            
-            # إظهار رسالة نجاح
-            messages.success(request, 'تم إضافة الشقة بنجاح! سيتم نشرها بعد مراجعتها من قبل الإدارة.')
+            messages.success(request, 'تم إضافة الشقة بنجاح!')
             return redirect('my_apartments')
             
         except Exception as e:
-            import traceback
-            print(traceback.format_exc())
-            messages.error(request, 'حدث خطأ أثناء إضافة الشقة. الرجاء المحاولة مرة أخرى.')
+            messages.error(request, f'حدث خطأ: {str(e)}')
     
     return render(request, 'apartments/add_apartment.html', {'universities': universities})
 
