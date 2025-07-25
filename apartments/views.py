@@ -49,8 +49,12 @@ def home(request):
     bookings_count = Booking.objects.filter(status='approved').count()
     
     # إحصائيات إضافية
-    students_count = User.objects.filter(profile__user_type='student').count()
-    owners_count = User.objects.filter(profile__user_type='owner').count()
+    try:
+        students_count = User.objects.filter(profile__user_type='student').count()
+        owners_count = User.objects.filter(profile__user_type='owner').count()
+    except:
+        students_count = 0
+        owners_count = 0
     
     # الحصول على قائمة المفضلات للمستخدم الحالي
     wishlist_apartments = []
@@ -58,10 +62,7 @@ def home(request):
         wishlist_apartments = Wishlist.objects.filter(user=request.user).values_list('apartment_id', flat=True)
     
     # الحصول على تقييمات الموقع المعتمدة
-    try:
-        site_ratings = SiteRating.objects.filter(is_approved=True, review__isnull=False).exclude(review='').order_by('-created_at')[:3]
-    except:
-        site_ratings = []
+    site_ratings = []
     
     context = {
         'featured_apartments': featured_apartments,
@@ -703,6 +704,26 @@ def admin_dashboard(request):
 
 @login_required
 def owner_dashboard(request):
-    return render(request, 'apartments/owner_dashboard_simple.html', {
-        'user': request.user
-    })
+    # إنشاء بروفايل إذا لم يكن موجود
+    from users.models import Profile
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    
+    try:
+        apartments = Apartment.objects.filter(owner=request.user)
+        bookings = Booking.objects.filter(apartment__owner=request.user)
+        
+        context = {
+            'apartments': apartments,
+            'bookings': bookings,
+            'total_apartments': apartments.count(),
+            'approved_apartments': apartments.filter(status='approved').count(),
+            'pending_bookings': bookings.filter(status='pending').count(),
+            'total_bookings': bookings.count(),
+        }
+        return render(request, 'apartments/owner_dashboard.html', context)
+    except Exception as e:
+        # في حالة حدوث خطأ، عرض صفحة مبسطة
+        return render(request, 'apartments/owner_dashboard_simple.html', {
+            'user': request.user,
+            'error': str(e)
+        })

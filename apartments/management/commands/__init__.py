@@ -1,1 +1,1 @@
-# هذا الملف ضروري لاكتشاف حزمة commands
+# Management commands
