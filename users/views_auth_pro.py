@@ -20,19 +20,12 @@ def login_pro(request):
             if not remember:
                 request.session.set_expiry(0)
             
-            # التحقق من نوع المستخدم
-            try:
-                profile = user.profile
-                user_type = profile.user_type
-                
-                # توجيه المستخدم بناءً على نوعه
-                if user_type == 'owner':
-                    return redirect('my_apartments')  # صفحة شققي
-                else:
-                    return redirect('home')  # الصفحة الرئيسية
-            except Exception as e:
-                # في حالة حدوث خطأ، توجيه إلى الصفحة الرئيسية
-                return redirect('home')
+            # إنشاء بروفيل إذا لم يكن موجود
+            from .models import Profile
+            if not hasattr(user, 'profile'):
+                Profile.objects.create(user=user)
+            
+            return redirect('home')
         else:
             messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
     
@@ -71,8 +64,9 @@ def register_pro(request):
         # إنشاء المستخدم
         user = User.objects.create_user(username=username, email=email, password=password1)
         
-        # تحديث نوع المستخدم
-        profile = user.profile
+        # إنشاء أو تحديث البروفيل
+        from .models import Profile
+        profile, created = Profile.objects.get_or_create(user=user)
         profile.user_type = user_type
         profile.save()
         
