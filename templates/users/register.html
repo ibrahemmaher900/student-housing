@@ -1,411 +1,301 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إنشاء حساب جديد - سكن طالب</title>
-    {% load static %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 0;
-        }
+{% extends 'base/base.html' %}
 
-        .register-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            max-width: 900px;
-            width: 100%;
-            min-height: 600px;
-        }
+{% block title %}سكن طالب{% endblock %}
 
-        .register-left {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            color: white;
-            padding: 60px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
+{% block extra_css %}
+<style>
+    .auth-container {
+        max-width: 550px;
+        margin: 0 auto;
+    }
+    
+    .auth-card {
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: none;
+    }
+    
+    .auth-header {
+        background-color: #FF5A5F;
+        padding: 30px 20px;
+        text-align: center;
+        color: white;
+    }
+    
+    .auth-header h3 {
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+    
+    .auth-body {
+        padding: 30px;
+    }
+    
+    .auth-form .form-control {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+    }
+    
+    .auth-form .form-control:focus {
+        border-color: #FF5A5F;
+        box-shadow: 0 0 0 0.2rem rgba(255, 90, 95, 0.25);
+    }
+    
+    .auth-btn {
+        background-color: #FF5A5F;
+        border-color: #FF5A5F;
+        padding: 12px;
+        font-weight: 600;
+        border-radius: 8px;
+        width: 100%;
+    }
+    
+    .auth-btn:hover {
+        background-color: #FF4146;
+        border-color: #FF4146;
+    }
+    
+    .auth-footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+    }
+    
+    .auth-icon {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #FF5A5F;
+    }
+    
+    .form-check-input:checked {
+        background-color: #FF5A5F;
+        border-color: #FF5A5F;
+    }
+    
+    .user-type-selector {
+        display: flex;
+        margin-bottom: 20px;
+    }
+    
+    .user-type-option {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .user-type-option:first-child {
+        margin-left: 10px;
+    }
+    
+    .user-type-option.active {
+        border-color: #FF5A5F;
+        background-color: rgba(255, 90, 95, 0.1);
+    }
+    
+    .user-type-option i {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #767676;
+    }
+    
+    .user-type-option.active i {
+        color: #FF5A5F;
+    }
+    
+    .user-type-option h5 {
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    
+    .user-type-option p {
+        font-size: 12px;
+        color: #767676;
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
 
-        .register-left::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="60" r="1" fill="white" opacity="0.1"/><circle cx="90" cy="40" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            animation: float 20s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        .register-left h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .register-left p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            line-height: 1.6;
-            position: relative;
-            z-index: 2;
-        }
-
-        .register-right {
-            padding: 60px 40px;
-        }
-
-        .register-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .register-header h3 {
-            color: #333;
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .register-header p {
-            color: #666;
-            font-size: 1rem;
-        }
-
-        .form-floating {
-            margin-bottom: 20px;
-        }
-
-        .form-floating .form-control {
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 20px 15px 8px 15px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .form-floating .form-control:focus {
-            border-color: #6c757d;
-            box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
-            background: white;
-        }
-
-        .form-floating label {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .user-type-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .user-type-option {
-            position: relative;
-        }
-
-        .user-type-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .user-type-option label {
-            display: block;
-            padding: 20px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .user-type-option input[type="radio"]:checked + label {
-            border-color: #6c757d;
-            background: #6c757d;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
-        }
-
-        .user-type-option .icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .user-type-option .title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .user-type-option .description {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .btn-register {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: white;
-            width: 100%;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
-            color: white;
-        }
-
-        .login-link {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #e9ecef;
-        }
-
-        .login-link a {
-            color: #6c757d;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.3s ease;
-        }
-
-        .login-link a:hover {
-            color: #495057;
-        }
-
-        .alert {
-            border-radius: 12px;
-            border: none;
-            margin-bottom: 20px;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .register-container {
-                margin: 10px;
-                border-radius: 15px;
-            }
-            
-            .register-left {
-                padding: 40px 20px;
-                min-height: 200px;
-            }
-            
-            .register-left h2 {
-                font-size: 2rem;
-            }
-            
-            .register-right {
-                padding: 40px 20px;
-            }
-            
-            .user-type-selector {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .features-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 30px;
-        }
-
-        .features-list li {
-            padding: 8px 0;
-            position: relative;
-            padding-right: 25px;
-        }
-
-        .features-list li::before {
-            content: '✓';
-            position: absolute;
-            right: 0;
-            color: #28a745;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <div class="register-container">
-        <div class="row g-0 h-100">
-            <div class="col-lg-5 d-none d-lg-block">
-                <div class="register-left h-100">
-                    <div>
-                        <h2>مرحباً بك في سكن طالب</h2>
-                        <p>انضم إلى آلاف الطلاب ومالكي العقارات الذين يثقون بمنصتنا للعثور على السكن المثالي</p>
-                        
-                        <ul class="features-list">
-                            <li>بحث سهل وسريع عن السكن</li>
-                            <li>شقق قريبة من جامعتك</li>
-                            <li>أسعار مناسبة للطلاب</li>
-                            <li>تواصل مباشر مع المالكين</li>
-                            <li>حجز آمن ومضمون</li>
-                        </ul>
-                    </div>
-                </div>
+{% block content %}
+<div class="auth-container my-5">
+    <div class="card auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fas fa-user-plus fa-2x"></i>
             </div>
-            
-            <div class="col-lg-7">
-                <div class="register-right">
-                    <div class="register-header">
-                        <h3>إنشاء حساب جديد</h3>
-                        <p>املأ البيانات التالية لإنشاء حسابك</p>
+            <h3>إنشاء حساب جديد</h3>
+        </div>
+        <div class="auth-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }}">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-
-                    <form method="post" id="registerForm">
-                        {% csrf_token %}
-                        
-                        <div class="form-floating">
-                            <input type="text" class="form-control" id="username" name="username" placeholder="اسم المستخدم" required>
-                            <label for="username">اسم المستخدم</label>
-                        </div>
-
-                        <div class="form-floating">
-                            <input type="email" class="form-control" id="email" name="email" placeholder="البريد الإلكتروني" required>
-                            <label for="email">البريد الإلكتروني</label>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="الاسم الأول">
-                                    <label for="first_name">الاسم الأول</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="last_name" name="last_name" placeholder="الاسم الأخير">
-                                    <label for="last_name">الاسم الأخير</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-floating">
-                            <input type="password" class="form-control" id="password1" name="password1" placeholder="كلمة المرور" required>
-                            <label for="password1">كلمة المرور</label>
-                        </div>
-
-                        <div class="form-floating">
-                            <input type="password" class="form-control" id="password2" name="password2" placeholder="تأكيد كلمة المرور" required>
-                            <label for="password2">تأكيد كلمة المرور</label>
-                        </div>
-
-                        <div class="user-type-selector">
-                            <div class="user-type-option">
-                                <input type="radio" id="student" name="user_type" value="student" checked>
-                                <label for="student">
-                                    <i class="fas fa-user-graduate icon"></i>
-                                    <div class="title">طالب</div>
-                                    <div class="description">أبحث عن سكن</div>
-                                </label>
-                            </div>
-                            <div class="user-type-option">
-                                <input type="radio" id="owner" name="user_type" value="owner">
-                                <label for="owner">
-                                    <i class="fas fa-home icon"></i>
-                                    <div class="title">مالك عقار</div>
-                                    <div class="description">أملك شقق للإيجار</div>
-                                </label>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-register">
-                            <i class="fas fa-user-plus me-2"></i>
-                            إنشاء الحساب
-                        </button>
-                    </form>
-
-                    <div class="login-link">
-                        <p>لديك حساب بالفعل؟ <a href="{% url 'login' %}">تسجيل الدخول</a></p>
+                {% endfor %}
+            {% endif %}
+            
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                
+                <div class="user-type-selector">
+                    <div class="user-type-option active" data-value="student" onclick="selectUserType('student')">
+                        <i class="fas fa-user-graduate"></i>
+                        <h5>طالب</h5>
+                        <p>أبحث عن سكن قريب من جامعتي</p>
+                    </div>
+                    <div class="user-type-option" data-value="owner" onclick="selectUserType('owner')">
+                        <i class="fas fa-home"></i>
+                        <h5>مالك عقار</h5>
+                        <p>أريد تأجير شقتي للطلاب</p>
                     </div>
                 </div>
+                
+                <input type="hidden" name="user_type" id="user_type" value="student">
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">اسم المستخدم</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.username }}
+                            </div>
+                            {% if form.username.errors %}
+                            <div class="text-danger">
+                                {% for error in form.username.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">البريد الإلكتروني</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                {{ form.email }}
+                            </div>
+                            {% if form.email.errors %}
+                            <div class="text-danger">
+                                {% for error in form.email.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_first_name" class="form-label">الاسم الأول</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.first_name }}
+                            </div>
+                            {% if form.first_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.first_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_last_name" class="form-label">الاسم الأخير</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.last_name }}
+                            </div>
+                            {% if form.last_name.errors %}
+                            <div class="text-danger">
+                                {% for error in form.last_name.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">كلمة المرور</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password1 }}
+                            </div>
+                            {% if form.password1.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password1.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">تأكيد كلمة المرور</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password2 }}
+                            </div>
+                            {% if form.password2.errors %}
+                            <div class="text-danger">
+                                {% for error in form.password2.errors %}
+                                {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                    <label class="form-check-label" for="agreeTerms">أوافق على الشروط والأحكام</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary auth-btn">إنشاء حساب</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>لديك حساب بالفعل؟ <a href="{% url 'login' %}">تسجيل الدخول</a></p>
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // تحسين تجربة المستخدم
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('registerForm');
-            const inputs = form.querySelectorAll('.form-control');
-            
-            // إضافة تأثيرات للحقول
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.classList.add('focused');
-                });
-                
-                input.addEventListener('blur', function() {
-                    if (!this.value) {
-                        this.parentElement.classList.remove('focused');
-                    }
-                });
-            });
-            
-            // التحقق من تطابق كلمات المرور
-            const password1 = document.getElementById('password1');
-            const password2 = document.getElementById('password2');
-            
-            function checkPasswords() {
-                if (password1.value && password2.value) {
-                    if (password1.value !== password2.value) {
-                        password2.setCustomValidity('كلمات المرور غير متطابقة');
-                    } else {
-                        password2.setCustomValidity('');
-                    }
-                }
+{% block extra_js %}
+<script>
+    function selectUserType(type) {
+        // تحديث قيمة الحقل المخفي
+        document.getElementById('user_type').value = type;
+        
+        // تحديث التصميم
+        const options = document.querySelectorAll('.user-type-option');
+        options.forEach(option => {
+            if (option.getAttribute('data-value') === type) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
             }
-            
-            password1.addEventListener('input', checkPasswords);
-            password2.addEventListener('input', checkPasswords);
         });
-    </script>
-</body>
-</html>
+    }
+</script>
+{% endblock %}

@@ -9,7 +9,7 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #E74E55 100%);
   color: white;
   padding: 120px 0;
   margin-bottom: 40px;
@@ -76,11 +76,9 @@
 .stats-section {
   padding: 80px 0;
   background: white;
-  margin: 60px auto;
+  margin: 60px 0;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  max-width: 1200px;
-  text-align: center;
 }
 
 .stat-card {
@@ -247,7 +245,7 @@
 }
 
 .university-card:hover .overlay {
-  background: linear-gradient(rgba(108, 117, 125, 0.8), rgba(73, 80, 87, 0.9));
+  background: linear-gradient(rgba(255, 90, 95, 0.8), rgba(231, 78, 85, 0.9));
 }
 
 /* How It Works Section */
@@ -284,7 +282,7 @@
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #E74E55 100%);
   color: white;
   padding: 60px 40px;
   border-radius: 20px;

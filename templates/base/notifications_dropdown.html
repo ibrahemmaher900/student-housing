@@ -1,374 +1,65 @@
 <!-- قائمة التنبيهات المنسدلة -->
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="fas fa-bell"></i>
-        <span class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationCount" style="display: none;">
-            0
-        </span>
-    </a>
-    <div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
-        <div class="dropdown-header d-flex justify-content-between align-items-center">
-            <span>التنبيهات</span>
-            <button class="btn btn-sm btn-link p-0" onclick="markAllAsRead()">
-                <small>تحديد الكل كمقروء</small>
+<div class="dropdown-menu dropdown-menu-end notifications-dropdown" aria-labelledby="notificationsDropdown" style="width: 350px; max-height: 450px; overflow-y: auto;">
+    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom sticky-top bg-primary text-white">
+        <h6 class="mb-0 fw-bold">التنبيهات</h6>
+        <div>
+            <button type="button" class="btn btn-sm btn-outline-light me-1" id="refresh-notifications" title="تحديث">
+                <i class="fas fa-sync-alt"></i>
             </button>
+            {% if unread_notifications_count > 0 %}
+            <a href="{% url 'mark_all_read' %}" class="btn btn-sm btn-light" title="تعليم الكل كمقروء">
+                <i class="fas fa-check-double"></i>
+            </a>
+            {% endif %}
         </div>
-        <div class="dropdown-divider"></div>
-        <div id="notificationsList">
-            <div class="dropdown-item-text text-center text-muted py-3">
-                <i class="fas fa-bell-slash fa-2x mb-2"></i>
-                <div>لا توجد تنبيهات</div>
-            </div>
-        </div>
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item text-center" href="/apartments/notifications/">
-            <small>عرض جميع التنبيهات</small>
-        </a>
     </div>
-</li>
-
-<style>
-.notifications-dropdown {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    border: none;
-    border-radius: 10px;
-}
-
-.notification-item {
-    padding: 12px 16px;
-    border-bottom: 1px solid #f1f3f4;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
-
-.notification-item:hover {
-    background-color: #f8f9fa;
-}
-
-.notification-item.unread {
-    background-color: #e3f2fd;
-    border-left: 3px solid #2196f3;
-}
-
-.notification-badge {
-    font-size: 0.7rem;
-    min-width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.notification-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 12px;
-    font-size: 16px;
-}
-
-.notification-content {
-    flex: 1;
-    min-width: 0;
-}
-
-.notification-title {
-    font-weight: 600;
-    font-size: 14px;
-    margin-bottom: 4px;
-    color: #333;
-}
-
-.notification-message {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.4;
-    margin-bottom: 4px;
-}
-
-.notification-time {
-    font-size: 11px;
-    color: #999;
-}
-
-.notification-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.notification-actions .btn {
-    font-size: 11px;
-    padding: 4px 8px;
-}
-</style>
-
-<script>
-let notificationUpdateInterval;
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadNotifications();
-    startNotificationUpdates();
-});
-
-function startNotificationUpdates() {
-    // تحديث التنبيهات كل 30 ثانية
-    notificationUpdateInterval = setInterval(loadNotifications, 30000);
-}
-
-function loadNotifications() {
-    fetch('/apartments/notifications/recent/')
-        .then(response => response.json())
-        .then(data => {
-            updateNotificationBadge(data.unread_count);
-            updateNotificationsList(data.notifications);
-        })
-        .catch(error => console.error('Error loading notifications:', error));
-}
-
-function updateNotificationBadge(count) {
-    const badge = document.getElementById('notificationCount');
-    if (count > 0) {
-        badge.textContent = count > 99 ? '99+' : count;
-        badge.style.display = 'flex';
-    } else {
-        badge.style.display = 'none';
-    }
-}
-
-function updateNotificationsList(notifications) {
-    const container = document.getElementById('notificationsList');
     
-    if (notifications.length === 0) {
-        container.innerHTML = `
-            <div class="dropdown-item-text text-center text-muted py-3">
-                <i class="fas fa-bell-slash fa-2x mb-2"></i>
-                <div>لا توجد تنبيهات</div>
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = notifications.map(notification => `
-        <div class="notification-item ${!notification.is_read ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
-            <div class="d-flex">
-                <div class="notification-icon ${getNotificationIconClass(notification.notification_type)}">
-                    <i class="${getNotificationIcon(notification.notification_type)}"></i>
+    <div id="notifications-container">
+        {% if user_notifications %}
+            {% for notification in user_notifications %}
+            <a href="{% url 'mark_notification_as_read' notification.id %}" class="dropdown-item py-3 border-bottom notification-item {% if not notification.is_read %}unread{% endif %}" data-id="{{ notification.id }}">
+                <div class="notification-header-row d-flex align-items-center mb-2">
+                    <div class="notification-icon rounded-circle me-2 
+                        {% if notification.notification_type == 'booking_request' %}bg-primary
+                        {% elif notification.notification_type == 'booking_approved' %}bg-success
+                        {% elif notification.notification_type == 'booking_rejected' %}bg-danger
+                        {% elif 'apartment_approved' == notification.notification_type %}bg-success
+                        {% elif 'apartment_rejected' == notification.notification_type %}bg-danger
+                        {% elif 'apartment_pending' == notification.notification_type %}bg-warning
+                        {% elif 'non_serious_booking' == notification.notification_type %}bg-warning text-dark
+                        {% elif 'user_banned' == notification.notification_type %}bg-dark
+                        {% else %}bg-info{% endif %} text-white p-2">
+                        <i class="fas 
+                            {% if 'booking' in notification.notification_type %}fa-calendar-check
+                            {% elif 'apartment' in notification.notification_type %}fa-home
+                            {% elif 'user_banned' in notification.notification_type %}fa-ban
+                            {% elif 'comment' in notification.notification_type %}fa-comment
+                            {% else %}fa-bell{% endif %}"></i>
+                    </div>
+                    <div class="fw-bold">{{ notification.get_notification_type_display }}</div>
+                    {% if not notification.is_read %}
+                    <div class="ms-auto">
+                        <span class="badge bg-danger rounded-circle p-1" style="width: 10px; height: 10px;"></span>
+                    </div>
+                    {% endif %}
                 </div>
-                <div class="notification-content">
-                    <div class="notification-title">${getNotificationTitle(notification.notification_type)}</div>
-                    <div class="notification-message">${notification.message}</div>
-                    <div class="notification-time">${formatTime(notification.created_at)}</div>
-                    ${getNotificationActions(notification)}
+                <div class="notification-body">
+                    <p class="mb-2 small">{{ notification.message|truncatechars:100 }}</p>
+                    <div class="text-muted small">{{ notification.created_at|timesince }}</div>
                 </div>
+            </a>
+            {% endfor %}
+            
+            <div class="text-center p-2">
+                <a href="{% url 'notifications_list' %}" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-list me-1"></i> عرض جميع التنبيهات
+                </a>
             </div>
+        {% else %}
+        <div class="text-center p-4 text-muted">
+            <i class="fas fa-bell-slash fa-2x mb-2"></i>
+            <p>لا توجد تنبيهات جديدة</p>
         </div>
-    `).join('');
-}
-
-function getNotificationIcon(type) {
-    const icons = {
-        'booking_request': 'fas fa-calendar-plus',
-        'booking_approved': 'fas fa-check-circle',
-        'booking_rejected': 'fas fa-times-circle',
-        'apartment_approved': 'fas fa-home',
-        'apartment_rejected': 'fas fa-home',
-        'new_comment': 'fas fa-comment',
-        'comment_reply': 'fas fa-reply',
-        'rating_added': 'fas fa-star',
-        'user_banned': 'fas fa-user-slash',
-        'apartment_pending': 'fas fa-clock'
-    };
-    return icons[type] || 'fas fa-bell';
-}
-
-function getNotificationIconClass(type) {
-    const classes = {
-        'booking_request': 'bg-primary text-white',
-        'booking_approved': 'bg-success text-white',
-        'booking_rejected': 'bg-danger text-white',
-        'apartment_approved': 'bg-success text-white',
-        'apartment_rejected': 'bg-danger text-white',
-        'new_comment': 'bg-info text-white',
-        'comment_reply': 'bg-info text-white',
-        'rating_added': 'bg-warning text-white',
-        'user_banned': 'bg-danger text-white',
-        'apartment_pending': 'bg-warning text-white'
-    };
-    return classes[type] || 'bg-secondary text-white';
-}
-
-function getNotificationTitle(type) {
-    const titles = {
-        'booking_request': 'طلب حجز جديد',
-        'booking_approved': 'تم قبول الحجز',
-        'booking_rejected': 'تم رفض الحجز',
-        'apartment_approved': 'تم قبول الشقة',
-        'apartment_rejected': 'تم رفض الشقة',
-        'new_comment': 'تعليق جديد',
-        'comment_reply': 'رد على التعليق',
-        'rating_added': 'تقييم جديد',
-        'user_banned': 'تم حظر المستخدم',
-        'apartment_pending': 'شقة تنتظر الموافقة'
-    };
-    return titles[type] || 'تنبيه';
-}
-
-function getNotificationActions(notification) {
-    let actions = '';
-    
-    if (notification.notification_type === 'booking_request' && notification.related_booking) {
-        actions = `
-            <div class="notification-actions">
-                <button class="btn btn-success btn-sm" onclick="updateBookingStatus(${notification.related_booking}, 'approve')">قبول</button>
-                <button class="btn btn-danger btn-sm" onclick="updateBookingStatus(${notification.related_booking}, 'reject')">رفض</button>
-            </div>
-        `;
-    } else if (notification.notification_type === 'apartment_pending' && notification.related_apartment) {
-        actions = `
-            <div class="notification-actions">
-                <button class="btn btn-success btn-sm" onclick="approveApartment(${notification.related_apartment})">موافقة</button>
-                <button class="btn btn-danger btn-sm" onclick="rejectApartment(${notification.related_apartment})">رفض</button>
-            </div>
-        `;
-    }
-    
-    return actions;
-}
-
-function markAsRead(notificationId) {
-    fetch(`/apartments/notifications/${notificationId}/read/api/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadNotifications();
-        }
-    });
-}
-
-function markAllAsRead() {
-    fetch('/apartments/notifications/mark-all-read/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadNotifications();
-        }
-    });
-}
-
-function updateBookingStatus(bookingId, status) {
-    fetch(`/apartments/booking/${bookingId}/${status}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            loadNotifications();
-            showToast('تم تحديث حالة الحجز بنجاح');
-        }
-    });
-}
-
-function approveApartment(apartmentId) {
-    fetch(`/apartments/admin/apartments/${apartmentId}/approve/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            loadNotifications();
-            showToast('تمت الموافقة على الشقة');
-        }
-    });
-}
-
-function rejectApartment(apartmentId) {
-    fetch(`/apartments/admin/apartments/${apartmentId}/reject/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            loadNotifications();
-            showToast('تم رفض الشقة');
-        }
-    });
-}
-
-function formatTime(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now - date;
-    
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    
-    if (minutes < 1) return 'الآن';
-    if (minutes < 60) return `منذ ${minutes} دقيقة`;
-    if (hours < 24) return `منذ ${hours} ساعة`;
-    if (days < 7) return `منذ ${days} يوم`;
-    
-    return date.toLocaleDateString('ar-EG');
-}
-
-function showToast(message) {
-    // إنشاء toast بسيط
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #28a745;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 5px;
-        z-index: 9999;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-</script>
+        {% endif %}
+    </div>
+</div>
