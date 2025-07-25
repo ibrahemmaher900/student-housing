@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'corsheaders',
     'csp',
-    'axes',
+    # 'axes',
     
     # Local apps
     'apartments',
@@ -142,14 +142,13 @@ LOGIN_URL = 'login'
 # django-allauth settings
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
-    # 'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# Updated allauth settings
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 # Email settings
