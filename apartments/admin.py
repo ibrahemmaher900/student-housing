@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import University, Apartment, ApartmentImage, Booking, Wishlist, Comment, Notification, Rating
+from .models import University, Apartment, ApartmentImage, Booking, Wishlist, Comment, Notification, Rating, SiteRating
 
 class ApartmentImageInline(admin.TabularInline):
     model = ApartmentImage
@@ -84,6 +84,22 @@ class RatingAdmin(admin.ModelAdmin):
         self.message_user(request, f'تم رفض {queryset.count()} تقييم بنجاح')
     reject_ratings.short_description = 'رفض التقييمات المحددة'
 
+class SiteRatingAdmin(admin.ModelAdmin):
+    list_display = ('user', 'rating', 'is_approved', 'created_at')
+    list_filter = ('rating', 'is_approved', 'created_at')
+    search_fields = ('user__username', 'review')
+    actions = ['approve_site_ratings', 'reject_site_ratings']
+    
+    def approve_site_ratings(self, request, queryset):
+        queryset.update(is_approved=True)
+        self.message_user(request, f'تم اعتماد {queryset.count()} تقييم موقع بنجاح')
+    approve_site_ratings.short_description = 'اعتماد تقييمات الموقع المحددة'
+    
+    def reject_site_ratings(self, request, queryset):
+        queryset.update(is_approved=False)
+        self.message_user(request, f'تم رفض {queryset.count()} تقييم موقع بنجاح')
+    reject_site_ratings.short_description = 'رفض تقييمات الموقع المحددة'
+
 admin.site.register(University)
 admin.site.register(Apartment, ApartmentAdmin)
 admin.site.register(ApartmentImage)
@@ -92,3 +108,4 @@ admin.site.register(Wishlist, WishlistAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Notification, NotificationAdmin)
 admin.site.register(Rating, RatingAdmin)
+admin.site.register(SiteRating, SiteRatingAdmin)

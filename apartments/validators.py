@@ -51,3 +51,39 @@ def validate_file(upload):
     validate_file_extension(upload)
     validate_file_size(upload)
     validate_file_type(upload)
+
+def validate_phone_number(value):
+    """التحقق من صحة رقم الهاتف المصري"""
+    import re
+    if not value:
+        return
+    pattern = r'^(\+20|0)?1[0125]\d{8}$'
+    if not re.match(pattern, value):
+        raise ValidationError('رقم الهاتف غير صحيح. يجب أن يكون رقم هاتف مصري صحيح.')
+
+def validate_price(value):
+    """التحقق من صحة السعر"""
+    if value <= 0:
+        raise ValidationError('السعر يجب أن يكون أكبر من صفر.')
+    if value > 100000:
+        raise ValidationError('السعر مرتفع جداً. يجب أن يكون أقل من 100,000 جنيه.')
+
+def validate_area(value):
+    """التحقق من صحة المساحة"""
+    if value <= 0:
+        raise ValidationError('المساحة يجب أن تكون أكبر من صفر.')
+    if value > 1000:
+        raise ValidationError('المساحة كبيرة جداً. يجب أن تكون أقل من 1000 متر مربع.')
+
+def validate_coordinates(latitude, longitude):
+    """التحقق من صحة الإحداثيات"""
+    if latitude and longitude:
+        if not (-90 <= latitude <= 90):
+            raise ValidationError('خط العرض يجب أن يكون بين -90 و 90.')
+        if not (-180 <= longitude <= 180):
+            raise ValidationError('خط الطول يجب أن يكون بين -180 و 180.')
+
+def validate_rating(value):
+    """التحقق من صحة التقييم"""
+    if not (1 <= value <= 5):
+        raise ValidationError('التقييم يجب أن يكون بين 1 و 5 نجوم.')

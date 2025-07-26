@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""
+إصلاح دوال لوحات التحكم المفقودة
+"""
+
+dashboard_functions = '''
+
+@login_required
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    """لوحة تحكم المسؤول"""
+    from django.contrib.auth.models import User
+    from django.db.models import Count
+    
+    # الإحصائيات العامة
+    total_users = User.objects.count()
+    total_apartments = Apartment.objects.count()
+    pending_apartments = Apartment.objects.filter(status='pending').count()
+    approved_apartments = Apartment.objects.filter(status='approved').count()
+    rejected_apartments = Apartment.objects.filter(status='rejected').count()
+    total_bookings = Booking.objects.count()
+    pending_bookings = Booking.objects.filter(status='pending').count()
+    approved_bookings = Booking.objects.filter(status='approved').count()
+    rejected_bookings = Booking.objects.filter(status='rejected').count()
+    
+    # إحصائيات المستخدمين
+    students_count = User.objects.filter(profile__user_type='student').count()
+    owners_count = User.objects.filter(profile__user_type='owner').count()
+    
+    # المستخدمون الجدد
+    recent_students = User.objects.filter(profile__user_type='student').order_by('-date_joined')[:10]
+    recent_owners = User.objects.filter(profile__user_type='owner').order_by('-date_joined')[:10]
+    
+    # الشقق التي تنتظر الموافقة
+    pending_apartments_list = Apartment.objects.filter(status='pending').order_by('-created_at')[:10]
+    
+    # الحجوزات الحديثة
+    recent_bookings = Booking.objects.order_by('-created_at')[:10]
+    
+    context = {
+        'total_users': total_users,
+        'total_apartments': total_apartments,
+        'pending_apartments': pending_apartments,
+        'approved_apartments': approved_apartments,
+        'rejected_apartments': rejected_apartments,
+        'total_bookings': total_bookings,
+        'pending_bookings': pending_bookings,
+        'approved_bookings': approved_bookings,
+        'rejected_bookings': rejected_bookings,
+        'students_count': students_count,
+        'owners_count': owners_count,
+        'recent_students': recent_students,
+        'recent_owners': recent_owners,
+        'pending_apartments_list': pending_apartments_list,
+        'recent_bookings': recent_bookings,
+    }
+    return render(request, 'apartments/admin_dashboard.html', context)
+
+@login_required
+def owner_dashboard(request):
+    """لوحة تحكم مالك العقار"""
+    # شقق المالك
+    apartments = Apartment.objects.filter(owner=request.user)
+    total_apartments = apartments.count()
+    approved_apartments = apartments.filter(status='approved').count()
+    pending_apartments = apartments.filter(status='pending').count()
+    rejected_apartments = apartments.filter(status='rejected').count()
+    
+    # حجوزات شقق المالك
+    bookings = Booking.objects.filter(apartment__owner=request.user).order_by('-created_at')
+    total_bookings = bookings.count()
+    pending_bookings = bookings.filter(status='pending').count()
+    approved_bookings = bookings.filter(status='approved').count()
+    rejected_bookings = bookings.filter(status='rejected').count()
+    
+    context = {
+        'apartments': apartments,
+        'total_apartments': total_apartments,
+        'approved_apartments': approved_apartments,
+        'pending_apartments': pending_apartments,
+        'rejected_apartments': rejected_apartments,
+        'bookings': bookings,
+        'total_bookings': total_bookings,
+        'pending_bookings': pending_bookings,
+        'approved_bookings': approved_bookings,
+        'rejected_bookings': rejected_bookings,
+    }
+    return render(request, 'apartments/owner_dashboard.html', context)
+'''
+
+if __name__ == "__main__":
+    import os
+    
+    views_file = "apartments/views.py"
+    
+    # قراءة محتوى الملف الحالي
+    with open(views_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    # إضافة الدوال إذا لم تكن موجودة
+    if 'def admin_dashboard(' not in content:
+        with open(views_file, 'a', encoding='utf-8') as f:
+            f.write(dashboard_functions)
+        print("تم إضافة دوال لوحات التحكم بنجاح!")
+    else:
+        print("دوال لوحات التحكم موجودة بالفعل!")
