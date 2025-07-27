@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.conf import settings
 from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 from .models import Apartment, ApartmentImage, Booking, University, Wishlist, Notification, Comment
 from .forms import ApartmentForm, ApartmentImageForm, BookingForm, ApartmentSearchForm, CommentForm
 import json
@@ -562,6 +563,7 @@ def manage_bookings(request):
     return render(request, 'apartments/manage_bookings.html', context)
 
 @login_required
+@require_http_methods(["POST"])
 def update_booking_status(request, pk, status):
     booking = get_object_or_404(Booking, pk=pk)
     
@@ -629,7 +631,15 @@ def update_booking_status(request, pk, status):
         )
         student_notification.save()
     
-    return redirect('manage_bookings')
+    # إرجاع JSON response للـ AJAX requests
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.content_type == 'application/json':
+        return JsonResponse({
+            'success': True,
+            'message': 'تم تحديث حالة الحجز بنجاح',
+            'status': booking.status
+        })
+    
+    return redirect('owner_dashboard')
 
 @login_required
 def toggle_wishlist(request, pk):
@@ -688,6 +698,7 @@ def admin_apartments(request):
 
 @login_required
 @user_passes_test(is_admin)
+@require_http_methods(["POST"])
 def approve_apartment(request, pk):
     apartment = get_object_or_404(Apartment, pk=pk)
     apartment.status = 'approved'
@@ -702,11 +713,15 @@ def approve_apartment(request, pk):
     )
     notification.save()
     
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': 'تمت الموافقة على الشقة بنجاح'})
+    
     messages.success(request, 'تمت الموافقة على الشقة بنجاح!')
     return redirect('admin_apartments')
 
 @login_required
 @user_passes_test(is_admin)
+@require_http_methods(["POST"])
 def reject_apartment(request, pk):
     apartment = get_object_or_404(Apartment, pk=pk)
     apartment.status = 'rejected'
@@ -720,6 +735,9 @@ def reject_apartment(request, pk):
         related_apartment=apartment
     )
     notification.save()
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'success': True, 'message': 'تم رفض الشقة بنجاح'})
     
     messages.success(request, 'تم رفض الشقة بنجاح!')
     return redirect('admin_apartments')
@@ -805,3 +823,63 @@ def owner_dashboard(request):
         'rejected_bookings': rejected_bookings,
     }
     return render(request, 'apartments/owner_dashboard.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def report_non_serious_booking(request, pk):
+    booking = get_object_or_404(Booking, pk=pk)
+    
+    # التحقق من أن المستخدم هو مالك الشقة
+    if booking.apartment.owner != request.user:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'message': 'ليس لديك صلاحية'})
+        messages.error(request, 'ليس لديك صلاحية لهذا الإجراء.')
+        return redirect('owner_dashboard')
+    
+    booking.status = 'non_serious'
+    
+    # زيادة عداد عدم الجدية
+    student_profile = booking.student.profile
+    student_profile.non_serious_reports += 1
+    
+    notification_message = f'تم الإبلاغ عنك كمستخدم غير جاد في حجز {booking.apartment.title}'
+    
+    if student_profile.non_serious_reports >= 3:
+        student_profile.is_banned = True
+        notification_message += '. تم تجميد حسابك بسبب تكرار عدم الجدية.'
+        
+        # إرسال إشعار للمسؤولين
+        from django.contrib.auth.models import User
+        admins = User.objects.filter(is_staff=True) | User.objects.filter(is_superuser=True)
+        for admin in admins:
+            Notification.objects.create(
+                user=admin,
+                notification_type='user_banned',
+                message=f'تم تجميد حساب {booking.student.username} بسبب تكرار عدم الجدية.',
+            )
+    
+    student_profile.save()
+    booking.save()
+    
+    # إنشاء تنبيه للطالب
+    Notification.objects.create(
+        user=booking.student,
+        notification_type='non_serious_booking',
+        message=notification_message,
+        related_booking=booking,
+        related_apartment=booking.apartment
+    )
+    
+    # إعادة الشقة للحالة المتاحة
+    apartment = booking.apartment
+    apartment.available = True
+    apartment.save()
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': 'تم الإبلاغ بنجاح'
+        })
+    
+    messages.success(request, 'تم الإبلاغ عن المستخدم بنجاح.')
+    return redirect('owner_dashboard')

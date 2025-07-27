@@ -62,14 +62,13 @@
                                 <td>
                                     {% if booking.status == 'pending' %}
                                     <div class="btn-group">
-                                        <a href="{% url 'update_booking_status' booking.id 'approve' %}" class="btn btn-sm btn-success">موافقة</a>
-                                        <a href="{% url 'update_booking_status' booking.id 'reject' %}" class="btn btn-sm btn-danger">رفض</a>
+                                        <button class="btn btn-sm btn-success" onclick="updateBookingStatus({{ booking.id }}, 'approve')">موافقة</button>
+                                        <button class="btn btn-sm btn-danger" onclick="updateBookingStatus({{ booking.id }}, 'reject')">رفض</button>
                                     </div>
                                     {% elif booking.status == 'approved' %}
                                     <div class="btn-group">
                                         <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
-                                        <a href="{% url 'update_booking_status' booking.id 'non_serious' %}" class="btn btn-sm btn-warning" onclick="return confirm('هل أنت متأكد من الإبلاغ عن هذا المستخدم كغير جاد في الحجز؟ سيتم إعادة الشقة للحالة المتاحة.')">
-                                        الإبلاغ عن عدم الجدية</a>
+                                        <button class="btn btn-sm btn-warning" onclick="reportNonSerious({{ booking.id }})">الإبلاغ عن عدم الجدية</button>
                                     </div>
                                     {% else %}
                                     <a href="{% url 'apartment_detail' booking.apartment.id %}" class="btn btn-sm btn-outline-primary">عرض الشقة</a>
@@ -88,4 +87,68 @@
         </div>
     </div>
 </div>
+
+<script>
+function updateBookingStatus(bookingId, status) {
+    if (confirm(`هل أنت متأكد من ${status === 'approve' ? 'قبول' : 'رفض'} هذا الحجز؟`)) {
+        fetch(`/apartments/booking/${bookingId}/${status}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('حدث خطأ في تحديث الحجز');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ في الاتصال');
+        });
+    }
+}
+
+function reportNonSerious(bookingId) {
+    if (confirm('هل أنت متأكد من الإبلاغ عن هذا المستخدم كغير جاد؟ سيتم تجميد حسابه بعد 3 بلاغات.')) {
+        fetch(`/apartments/booking/${bookingId}/non_serious/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('تم الإبلاغ بنجاح');
+                location.reload();
+            } else {
+                alert('حدث خطأ في الإبلاغ');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ في الاتصال');
+        });
+    }
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 {% endblock %}

@@ -169,12 +169,19 @@ function updateBookingStatus(bookingId, status) {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
             }
         })
         .then(response => {
             if (response.ok) {
                 location.reload();
+            } else {
+                alert('حدث خطأ في تحديث الحجز');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ في الاتصال');
         });
     }
 }
@@ -185,13 +192,20 @@ function reportNonSerious(bookingId) {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
             }
         })
         .then(response => {
             if (response.ok) {
                 alert('تم الإبلاغ بنجاح');
                 location.reload();
+            } else {
+                alert('حدث خطأ في الإبلاغ');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ في الاتصال');
         });
     }
 }
