@@ -1,5 +1,4 @@
 {% extends 'base/base.html' %}
-{% load static %}
 
 {% block title %}لوحة تحكم المالك{% endblock %}
 
@@ -7,151 +6,162 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-12">
-            <h1><i class="fas fa-tachometer-alt me-2"></i>لوحة تحكم المالك</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">مرحباً {{ user.username }}</h2>
+                <span class="badge bg-success fs-6">مالك عقار</span>
+            </div>
         </div>
     </div>
-
+    
     <!-- الإحصائيات -->
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h4>{{ total_apartments }}</h4>
-                    <p class="mb-0">إجمالي الشقق</p>
+                <div class="card-body text-center">
+                    <i class="fas fa-home fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ total_apartments }}</h3>
+                    <p class="mb-0">إجمالي الإعلانات</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h4>{{ approved_apartments }}</h4>
-                    <p class="mb-0">شقق معتمدة</p>
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ approved_apartments }}</h3>
+                    <p class="mb-0">الإعلانات المعتمدة</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h4>{{ pending_bookings }}</h4>
-                    <p class="mb-0">حجوزات في الانتظار</p>
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ pending_bookings }}</h3>
+                    <p class="mb-0">الحجوزات المعلقة</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 mb-3">
             <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h4>{{ total_bookings }}</h4>
-                    <p class="mb-0">إجمالي الحجوزات</p>
+                <div class="card-body text-center">
+                    <i class="fas fa-eye fa-2x mb-2"></i>
+                    <h3 class="mb-0">{{ total_views }}</h3>
+                    <p class="mb-0">إجمالي المشاهدات</p>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- شققي -->
+    
+    <!-- الإجراءات السريعة -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between">
-                    <h5><i class="fas fa-home me-2"></i>شققي</h5>
-                    <a href="/apartments/add/" class="btn btn-primary btn-sm">إضافة شقة جديدة</a>
+                <div class="card-header">
+                    <h5 class="mb-0">الإجراءات السريعة</h5>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>العنوان</th>
-                                    <th>السعر</th>
-                                    <th>الحالة</th>
-                                    <th>المشاهدات</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for apartment in apartments %}
-                                <tr>
-                                    <td>{{ apartment.title }}</td>
-                                    <td>{{ apartment.price }} جنيه</td>
-                                    <td>
-                                        {% if apartment.status == 'approved' %}
-                                        <span class="badge bg-success">معتمدة</span>
-                                        {% elif apartment.status == 'pending' %}
-                                        <span class="badge bg-warning">في الانتظار</span>
-                                        {% else %}
-                                        <span class="badge bg-danger">مرفوضة</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ apartment.views_count }}</td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="/apartments/{{ apartment.id }}/" class="btn btn-sm btn-outline-info">عرض</a>
-                                            <a href="/apartments/{{ apartment.id }}/edit/" class="btn btn-sm btn-outline-primary">تعديل</a>
-                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteApartment({{ apartment.id }})">حذف</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'add_apartment' %}" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-plus me-2"></i>
+                                إضافة إعلان جديد
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'my_apartments' %}" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-home me-2"></i>
+                                إدارة إعلاناتي
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'manage_bookings' %}" class="btn btn-warning btn-lg w-100">
+                                <i class="fas fa-calendar me-2"></i>
+                                إدارة الحجوزات
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{% url 'notifications_list' %}" class="btn btn-info btn-lg w-100">
+                                <i class="fas fa-bell me-2"></i>
+                                التنبيهات
+                                {% if notifications %}
+                                    <span class="badge bg-danger">{{ notifications.count }}</span>
+                                {% endif %}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- الحجوزات -->
+    
+    <!-- التنبيهات الحديثة -->
+    {% if notifications %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">آخر التنبيهات</h5>
+                </div>
+                <div class="card-body">
+                    {% for notification in notifications %}
+                    <div class="alert alert-info d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-bell me-2"></i>
+                            {{ notification.message }}
+                        </div>
+                        <small class="text-muted">{{ notification.created_at|timesince }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- آخر الحجوزات -->
+    {% if bookings %}
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h5><i class="fas fa-calendar me-2"></i>الحجوزات</h5>
+                    <h5 class="mb-0">آخر الحجوزات</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>الإعلان</th>
                                     <th>الطالب</th>
-                                    <th>الشقة</th>
-                                    <th>تاريخ البداية</th>
-                                    <th>تاريخ النهاية</th>
+                                    <th>تاريخ الطلب</th>
                                     <th>الحالة</th>
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for booking in bookings %}
+                                {% for booking in bookings|slice:":5" %}
                                 <tr>
+                                    <td>
+                                        <a href="{% url 'apartment_detail' booking.apartment.pk %}">
+                                            {{ booking.apartment.title }}
+                                        </a>
+                                    </td>
                                     <td>{{ booking.student.username }}</td>
-                                    <td>{{ booking.apartment.title|truncatechars:30 }}</td>
-                                    <td>{{ booking.start_date }}</td>
-                                    <td>{{ booking.end_date }}</td>
+                                    <td>{{ booking.created_at|date:"d/m/Y" }}</td>
                                     <td>
                                         {% if booking.status == 'pending' %}
-                                        <span class="badge bg-warning">في الانتظار</span>
+                                            <span class="badge bg-warning">معلق</span>
                                         {% elif booking.status == 'approved' %}
-                                        <span class="badge bg-success">معتمد</span>
+                                            <span class="badge bg-success">معتمد</span>
                                         {% elif booking.status == 'rejected' %}
-                                        <span class="badge bg-danger">مرفوض</span>
+                                            <span class="badge bg-danger">مرفوض</span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         {% if booking.status == 'pending' %}
-                                        <div class="btn-group" role="group">
-                                            <form method="post" action="{% url 'update_booking_status' booking.id 'approve' %}" style="display: inline;">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('هل أنت متأكد من قبول هذا الحجز؟')">قبول</button>
-                                            </form>
-                                            <form method="post" action="{% url 'update_booking_status' booking.id 'reject' %}" style="display: inline;">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من رفض هذا الحجز؟')">رفض</button>
-                                            </form>
-                                        </div>
-                                        {% elif booking.status == 'approved' %}
-                                        <form method="post" action="{% url 'report_non_serious_booking' booking.id %}" style="display: inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('هل أنت متأكد من الإبلاغ عن هذا المستخدم؟')">إبلاغ عن عدم الجدية</button>
-                                        </form>
+                                            <a href="{% url 'update_booking_status' booking.pk 'approve' %}" class="btn btn-sm btn-success">موافقة</a>
+                                            <a href="{% url 'update_booking_status' booking.pk 'reject' %}" class="btn btn-sm btn-danger">رفض</a>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -163,96 +173,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
-
-<script>
-function deleteApartment(apartmentId) {
-    if (confirm('هل أنت متأكد من حذف هذه الشقة؟')) {
-        window.location.href = `/apartments/${apartmentId}/delete/`;
-    }
-}
-
-function updateBookingStatus(bookingId, status) {
-    if (confirm(`هل أنت متأكد من ${status === 'approve' ? 'قبول' : 'رفض'} هذا الحجز؟`)) {
-        const csrfToken = getCookie('csrftoken');
-        
-        fetch(`/apartments/booking/${bookingId}/${status}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                alert(data.message || 'تم تحديث الحجز بنجاح');
-                location.reload();
-            } else {
-                alert(data.message || 'حدث خطأ');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('حدث خطأ في الاتصال');
-        });
-    }
-}
-
-function reportNonSerious(bookingId) {
-    if (confirm('هل أنت متأكد من الإبلاغ عن هذا المستخدم كغير جاد؟ سيتم تجميد حسابه بعد 3 بلاغات.')) {
-        const csrfToken = getCookie('csrftoken');
-        
-        fetch(`/apartments/booking/${bookingId}/non_serious/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrfToken,
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-            credentials: 'same-origin'
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .then(data => {
-            if (data.success) {
-                alert(data.message || 'تم الإبلاغ بنجاح');
-                location.reload();
-            } else {
-                alert(data.message || 'حدث خطأ');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('حدث خطأ في الاتصال');
-        });
-    }
-}
-
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-</script>
 {% endblock %}

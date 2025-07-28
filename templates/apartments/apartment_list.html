@@ -1,75 +1,175 @@
 {% extends 'base/base.html' %}
-{% load static %}
 
-{% block title %}قائمة الشقق - سكن طالب{% endblock %}
+{% block title %}استعراض الشقق{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="mb-4">الشقق المتاحة</h1>
+    <!-- فلاتر البحث -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">فلاتر البحث</h5>
         </div>
-    </div>
-
-    <!-- نموذج البحث -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <form method="get" class="row g-3">
-                        <div class="col-md-3">
-                            {{ search_form.university }}
-                        </div>
-                        <div class="col-md-2">
-                            {{ search_form.min_price }}
-                        </div>
-                        <div class="col-md-2">
-                            {{ search_form.max_price }}
-                        </div>
-                        <div class="col-md-2">
-                            {{ search_form.apartment_type }}
-                        </div>
-                        <div class="col-md-2">
-                            {{ search_form.bedrooms }}
-                        </div>
-                        <div class="col-md-1">
-                            <button type="submit" class="btn btn-primary w-100">بحث</button>
-                        </div>
-                    </form>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">الجامعة</label>
+                    <select name="university" class="form-select">
+                        <option value="">جميع الجامعات</option>
+                        {% for university in universities %}
+                            <option value="{{ university.id }}" {% if filters.university == university.id|stringformat:"s" %}selected{% endif %}>
+                                {{ university.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">السعر من</label>
+                    <input type="number" name="min_price" class="form-control" placeholder="500" value="{{ filters.min_price }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">السعر إلى</label>
+                    <input type="number" name="max_price" class="form-control" placeholder="2000" value="{{ filters.max_price }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">نوع السكن</label>
+                    <select name="apartment_type" class="form-select">
+                        <option value="">جميع الأنواع</option>
+                        <option value="studio" {% if filters.apartment_type == 'studio' %}selected{% endif %}>شقة كاملة</option>
+                        <option value="room" {% if filters.apartment_type == 'room' %}selected{% endif %}>غرفة خاصة</option>
+                        <option value="bed" {% if filters.apartment_type == 'bed' %}selected{% endif %}>سرير مشترك</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">نوع المستخدم</label>
+                    <select name="gender" class="form-select">
+                        <option value="">الجميع</option>
+                        <option value="male" {% if filters.gender == 'male' %}selected{% endif %}>طلاب فقط</option>
+                        <option value="female" {% if filters.gender == 'female' %}selected{% endif %}>طالبات فقط</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">بحث</button>
+                </div>
+            </form>
+            
+            <!-- فلاتر المرافق -->
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="furnished" id="furnished" {% if filters.furnished %}checked{% endif %}>
+                        <label class="form-check-label" for="furnished">مفروش</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="has_wifi" id="has_wifi" {% if filters.has_wifi %}checked{% endif %}>
+                        <label class="form-check-label" for="has_wifi">واي فاي</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="has_ac" id="has_ac" {% if filters.has_ac %}checked{% endif %}>
+                        <label class="form-check-label" for="has_ac">مكيف</label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- قائمة الشقق -->
-    <div class="row">
+    
+    <!-- نتائج البحث -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>نتائج البحث ({{ page_obj.paginator.count }} إعلان)</h4>
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary active" id="grid-view">
+                <i class="fas fa-th"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary" id="list-view">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- عرض الشقق -->
+    <div class="row" id="apartments-container">
         {% for apartment in page_obj %}
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4 apartment-card">
             <div class="card h-100">
                 {% if apartment.images.first %}
-                <img src="{{ apartment.images.first.image.url }}" class="card-img-top" alt="{{ apartment.title }}">
+                    <img src="{{ apartment.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ apartment.title }}">
                 {% else %}
-                <div class="bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 220px;">
-                    <p class="m-0">لا توجد صورة</p>
-                </div>
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-home fa-3x text-muted"></i>
+                    </div>
                 {% endif %}
                 
                 <div class="card-body">
-                    <h5 class="card-title">{{ apartment.title }}</h5>
-                    <p class="card-text text-muted">{{ apartment.address }}</p>
-                    <p class="card-text price">{{ apartment.price }} جنيه/شهر</p>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title">{{ apartment.title }}</h5>
+                        <div class="text-end">
+                            {% if apartment.apartment_type == 'studio' %}
+                                <span class="badge bg-warning">شقة</span>
+                            {% elif apartment.apartment_type == 'room' %}
+                                <span class="badge bg-primary">غرفة</span>
+                            {% elif apartment.apartment_type == 'bed' %}
+                                <span class="badge bg-success">سرير</span>
+                            {% endif %}
+                        </div>
+                    </div>
                     
-                    <div class="apartment-features">
-                        <span class="feature-badge">{{ apartment.get_apartment_type_display }}</span>
-                        {% if apartment.furnished %}<span class="feature-badge">مفروش</span>{% endif %}
-                        {% if apartment.has_wifi %}<span class="feature-badge">واي فاي</span>{% endif %}
+                    <p class="card-text text-muted">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ apartment.address|truncatechars:50 }}
+                    </p>
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <small class="text-muted">السعر</small>
+                            <div class="fw-bold text-success">{{ apartment.price }} ر.س</div>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">المساحة</small>
+                            <div class="fw-bold">{{ apartment.area }} م²</div>
+                        </div>
+                        <div class="col-4">
+                            <small class="text-muted">المشاهدات</small>
+                            <div class="fw-bold">{{ apartment.views_count }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- المرافق -->
+                    <div class="mb-3">
+                        {% if apartment.furnished %}
+                            <span class="badge bg-light text-dark me-1"><i class="fas fa-couch"></i> مفروش</span>
+                        {% endif %}
+                        {% if apartment.has_wifi %}
+                            <span class="badge bg-light text-dark me-1"><i class="fas fa-wifi"></i> واي فاي</span>
+                        {% endif %}
+                        {% if apartment.has_ac %}
+                            <span class="badge bg-light text-dark me-1"><i class="fas fa-snowflake"></i> مكيف</span>
+                        {% endif %}
+                        {% if apartment.has_parking %}
+                            <span class="badge bg-light text-dark me-1"><i class="fas fa-car"></i> موقف</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- نوع المستخدم -->
+                    <div class="mb-3">
+                        {% if apartment.gender == 'male' %}
+                            <span class="badge bg-primary"><i class="fas fa-male"></i> طلاب فقط</span>
+                        {% elif apartment.gender == 'female' %}
+                            <span class="badge bg-danger"><i class="fas fa-female"></i> طالبات فقط</span>
+                        {% else %}
+                            <span class="badge bg-success"><i class="fas fa-users"></i> الجميع</span>
+                        {% endif %}
                     </div>
                 </div>
                 
-                <div class="card-footer bg-white border-top-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">{{ apartment.university.name }}</small>
-                        <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-outline-primary btn-sm">عرض التفاصيل</a>
+                <div class="card-footer">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'apartment_detail' apartment.pk %}" class="btn btn-primary">
+                            <i class="fas fa-eye me-1"></i>عرض التفاصيل
+                        </a>
+                        {% if user.is_authenticated %}
+                            <button class="btn btn-outline-danger btn-sm" onclick="toggleWishlist({{ apartment.pk }})">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -77,46 +177,79 @@
         {% empty %}
         <div class="col-12">
             <div class="alert alert-info text-center">
-                <h4>لا توجد شقق متاحة</h4>
-                <p>لم يتم العثور على شقق تطابق معايير البحث الخاصة بك.</p>
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <h4>لا توجد نتائج</h4>
+                <p>لم يتم العثور على شقق تطابق معايير البحث المحددة</p>
             </div>
         </div>
         {% endfor %}
     </div>
-
+    
     <!-- الترقيم -->
     {% if page_obj.has_other_pages %}
-    <div class="row">
-        <div class="col-12">
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">السابق</a>
-                    </li>
-                    {% endif %}
-                    
-                    {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">السابق</a>
+                </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
                     <li class="page-item active">
                         <span class="page-link">{{ num }}</span>
                     </li>
-                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
                     <li class="page-item">
                         <a class="page-link" href="?page={{ num }}">{{ num }}</a>
                     </li>
-                    {% endif %}
-                    {% endfor %}
-                    
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">التالي</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
-    </div>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">التالي</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
     {% endif %}
 </div>
+
+<script>
+// تبديل العرض بين الشبكة والقائمة
+document.getElementById('list-view').addEventListener('click', function() {
+    document.querySelectorAll('.apartment-card').forEach(function(card) {
+        card.className = 'col-12 mb-3 apartment-card';
+    });
+    this.classList.add('active');
+    document.getElementById('grid-view').classList.remove('active');
+});
+
+document.getElementById('grid-view').addEventListener('click', function() {
+    document.querySelectorAll('.apartment-card').forEach(function(card) {
+        card.className = 'col-md-4 mb-4 apartment-card';
+    });
+    this.classList.add('active');
+    document.getElementById('list-view').classList.remove('active');
+});
+
+// إضافة/إزالة من المفضلات
+function toggleWishlist(apartmentId) {
+    fetch(`/apartments/${apartmentId}/wishlist/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // تحديث أيقونة القلب
+            location.reload();
+        }
+    });
+}
+</script>
 {% endblock %}
