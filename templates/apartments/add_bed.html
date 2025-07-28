@@ -1,104 +1,132 @@
 {% extends 'base/base.html' %}
 
-{% block title %}إضافة سرير{% endblock %}
+{% block title %}إضافة سرير للإيجار{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <h2>إضافة سرير للإيجار</h2>
-    
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="hidden" name="apartment_type" value="bed">
-        
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">العنوان</label>
-                    <input type="text" name="title" class="form-control" placeholder="سرير للإيجار" required>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-bed me-2"></i>إضافة سرير للإيجار</h4>
                 </div>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">السعر (ريال/شهر)</label>
-                    <input type="number" name="price" class="form-control" required>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="apartment_type" value="bed">
+                        
+                        <!-- معلومات أساسية -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">عنوان الإعلان</label>
+                                <input type="text" name="title" class="form-control" placeholder="سرير في غرفة مشتركة" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">السعر الشهري (ريال)</label>
+                                <input type="number" name="price" class="form-control" placeholder="400" required>
+                            </div>
+                        </div>
+                        
+                        <!-- مساحة الغرفة المشتركة والجامعة -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">مساحة الغرفة المشتركة (متر مربع)</label>
+                                <input type="number" name="area" class="form-control" placeholder="12" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الجامعة القريبة</label>
+                                <select name="university" class="form-control" required>
+                                    <option value="">اختر الجامعة</option>
+                                    {% for university in universities %}
+                                        <option value="{{ university.id }}">{{ university.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- الموقع -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">العنوان التفصيلي</label>
+                                <input type="text" name="address" class="form-control" placeholder="الحي، الشارع، رقم المبنى" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">المسافة من الجامعة (كم)</label>
+                                <input type="number" step="0.1" name="distance_to_university" class="form-control" placeholder="1.5">
+                            </div>
+                        </div>
+                        
+                        <!-- وصف السرير والغرفة -->
+                        <div class="mb-3">
+                            <label class="form-label">وصف السرير والغرفة المشتركة</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="اكتب وصف مفصل عن السرير، الغرفة المشتركة، عدد الأسرة الأخرى، والشروط..."></textarea>
+                        </div>
+                        
+                        <!-- المرافق المتاحة -->
+                        <div class="mb-3">
+                            <label class="form-label">المرافق المتاحة:</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="furnished" class="form-check-input" id="furnished">
+                                        <label class="form-check-label" for="furnished">
+                                            <i class="fas fa-bed me-1"></i>سرير مفروش
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_wifi" class="form-check-input" id="has_wifi">
+                                        <label class="form-check-label" for="has_wifi">
+                                            <i class="fas fa-wifi me-1"></i>إنترنت واي فاي
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_ac" class="form-check-input" id="has_ac">
+                                        <label class="form-check-label" for="has_ac">
+                                            <i class="fas fa-snowflake me-1"></i>مكيف هواء
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_parking" class="form-check-input" id="has_parking">
+                                        <label class="form-check-label" for="has_parking">
+                                            <i class="fas fa-car me-1"></i>موقف سيارة
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- تنبيه خاص بالسرير -->
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>ملاحظة:</strong> هذا الإعلان خاص بسرير واحد في غرفة مشتركة. تأكد من ذكر عدد الأسرة الأخرى في الغرفة وأي شروط خاصة.
+                        </div>
+                        
+                        <!-- صور السرير والغرفة -->
+                        <div class="mb-4">
+                            <label class="form-label">صور السرير والغرفة المشتركة</label>
+                            <input type="file" name="images" class="form-control" multiple accept="image/*" required>
+                            <div class="form-text">يمكنك رفع عدة صور للسرير والغرفة المشتركة (الحد الأقصى 10 صور)</div>
+                        </div>
+                        
+                        <!-- أزرار التحكم -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'my_apartments' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i>إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-plus me-1"></i>إضافة السرير
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-        
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">مساحة الغرفة المشتركة (متر مربع)</label>
-                    <input type="number" name="area" class="form-control" placeholder="15">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">الجامعة</label>
-                    <select name="university" class="form-control" required>
-                        <option value="">اختر الجامعة</option>
-                        {% for university in universities %}
-                            <option value="{{ university.id }}">{{ university.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">العنوان</label>
-                    <input type="text" name="address" class="form-control" required>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label">المسافة من الجامعة (كم)</label>
-                    <input type="number" step="0.1" name="distance_to_university" class="form-control">
-                </div>
-            </div>
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">الوصف</label>
-            <textarea name="description" class="form-control" rows="3" placeholder="وصف السرير والغرفة المشتركة"></textarea>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input type="checkbox" name="furnished" class="form-check-input">
-                    <label class="form-check-label">مفروش</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input type="checkbox" name="has_wifi" class="form-check-input">
-                    <label class="form-check-label">واي فاي</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input type="checkbox" name="has_ac" class="form-check-input">
-                    <label class="form-check-label">مكيف</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check">
-                    <input type="checkbox" name="has_parking" class="form-check-input">
-                    <label class="form-check-label">موقف سيارة</label>
-                </div>
-            </div>
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">الصور</label>
-            <input type="file" name="images" class="form-control" multiple accept="image/*" required>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">إضافة السرير</button>
-        <a href="{% url 'my_apartments' %}" class="btn btn-secondary">إلغاء</a>
-    </form>
+    </div>
 </div>
 {% endblock %}
