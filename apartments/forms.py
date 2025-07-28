@@ -1,5 +1,5 @@
 from django import forms
-from .models import Apartment, ApartmentImage, Booking, University, Comment, Rating
+from .models import Apartment, ApartmentImage, Booking, University, Comment
 
 class ApartmentForm(forms.ModelForm):
     class Meta:
@@ -96,18 +96,9 @@ class ReplyForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 2, 'class': 'form-control', 'placeholder': 'اكتب ردك هنا...'}),
         }
 
-class RatingForm(forms.ModelForm):
-    class Meta:
-        model = Rating
-        fields = ['stars', 'review']
-        labels = {
-            'stars': 'التقييم',
-            'review': 'المراجعة',
-        }
-        widgets = {
-            'stars': forms.RadioSelect(attrs={'class': 'rating-input'}),
-            'review': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': 'اكتب مراجعتك هنا...'}),
-        }
+class RatingForm(forms.Form):
+    rating = forms.IntegerField(min_value=1, max_value=5)
+    review = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 
 class ApartmentSearchForm(forms.Form):
     university = forms.ModelChoiceField(
