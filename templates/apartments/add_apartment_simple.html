@@ -37,7 +37,21 @@
                         
                         <div class="mb-3">
                             <label class="form-label">العنوان التفصيلي</label>
-                            <input type="text" name="address" class="form-control" placeholder="الحي، الشارع، رقم المبنى" required>
+                            <input type="text" name="address" id="address-input" class="form-control" placeholder="الحي، الشارع، رقم المبنى" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">تحديد الموقع على الخريطة</label>
+                            <div id="location-map" style="height: 300px; border-radius: 10px;"></div>
+                            <div class="row g-3 mt-2">
+                                <div class="col-md-6">
+                                    <label class="form-label">خط العرض</label>
+                                    <input type="text" name="latitude" id="latitude" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">خط الطول</label>
+                                    <input type="text" name="longitude" id="longitude" class="form-control" readonly>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="row">
@@ -115,4 +129,55 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- TomTom Maps SDK -->
+<link rel="stylesheet" href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps.css" />
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/maps/maps-web.min.js"></script>
+<script src="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.23.0/services/services-web.min.js"></script>
+<script>
+    let map, marker;
+    function setMapLocation(lat, lng) {
+        if (!map) return;
+        map.setCenter([lng, lat]);
+        if (marker) marker.remove();
+        marker = new tt.Marker().setLngLat([lng, lat]).addTo(map);
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+    }
+    function geocodeAddress(address) {
+        tt.services.fuzzySearch({
+            key: 'qQv8Qv6Qv8Qv6Qv8Qv6Qv8Qv6Qv6Qv8Q', // استخدم مفتاح TomTom الخاص بك
+            query: address,
+            language: 'ar',
+            limit: 1
+        })
+        .go()
+        .then(function(response) {
+            if (response.results && response.results.length > 0) {
+                const pos = response.results[0].position;
+                setMapLocation(pos.lat, pos.lon);
+            }
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        map = tt.map({
+            key: 'qQv8Qv6Qv8Qv6Qv8Qv6Qv8Qv6Qv6Qv8Q', // استخدم مفتاح TomTom الخاص بك
+            container: 'location-map',
+            center: [31.2357, 30.0444],
+            zoom: 12,
+            language: 'ar',
+        });
+        map.addControl(new tt.FullscreenControl());
+        map.addControl(new tt.NavigationControl());
+        // عند الكتابة في العنوان
+        document.getElementById('address-input').addEventListener('change', function() {
+            const address = this.value;
+            if (address.length > 3) {
+                geocodeAddress(address);
+            }
+        });
+    });
+</script>
 {% endblock %}
