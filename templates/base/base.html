@@ -32,11 +32,17 @@
                 </ul>
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="/users/profile/">{{ user.username }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/users/logout/">تسجيل الخروج</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="ownerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ownerDropdown">
+                                <li><a class="dropdown-item" href="/apartments/add/">إضافة شقة</a></li>
+                                <li><a class="dropdown-item" href="/owner/dashboard/">لوحة تحكم المالك</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="/users/profile/">الملف الشخصي</a></li>
+                                <li><a class="dropdown-item" href="/users/logout/">تسجيل الخروج</a></li>
+                            </ul>
                         </li>
                     {% else %}
                         <li class="nav-item">
