@@ -84,25 +84,34 @@
                                 <input type="text" name="title" class="form-control" placeholder="مثال: شقة مفروشة للطلاب" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">السعر الشهري (ريال)</label>
+                                <label class="form-label">السعر الشهري (جنيه مصري)</label>
                                 <input type="number" name="price" class="form-control" placeholder="1500" required>
                             </div>
                         </div>
                         
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label" id="area-label">المساحة (متر مربع)</label>
                                 <input type="number" name="area" class="form-control" placeholder="80" required>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">الجامعة القريبة</label>
-                                <select name="university" class="form-control" required>
-                                    <option value="">اختر الجامعة</option>
-                                    {% for university in universities %}
-                                        <option value="{{ university.id }}">{{ university.name }}</option>
-                                    {% endfor %}
-                                </select>
+                            <div class="col-md-4">
+                                <label class="form-label" id="max-people-label">عدد الأفراد المسموح</label>
+                                <input type="number" name="max_people" class="form-control" placeholder="2" min="1" required>
                             </div>
+                            <div class="col-md-4" id="room-people-container" style="display: none;">
+                                <label class="form-label">عدد الأشخاص في الغرفة</label>
+                                <input type="number" name="room_people_count" class="form-control" placeholder="4" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">الجامعة القريبة</label>
+                            <select name="university" class="form-control" required>
+                                <option value="">اختر الجامعة</option>
+                                {% for university in universities %}
+                                    <option value="{{ university.id }}">{{ university.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         
                         <!-- نوع المستخدم المطلوب -->
@@ -278,9 +287,8 @@
 let map;
 let marker;
 
-// تهيئة الخريطة
 function initMap() {
-    const defaultLocation = { lat: 24.7136, lng: 46.6753 };
+    const defaultLocation = { lat: 30.0444, lng: 31.2357 }; // القاهرة
     
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 12,
@@ -326,34 +334,12 @@ function getAddressFromCoordinates(lat, lng) {
     });
 }
 
-function searchAddress() {
-    const address = document.getElementById('address').value;
-    if (!address) return;
-    
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: address }, (results, status) => {
-        if (status === "OK" && results[0]) {
-            const location = results[0].geometry.location;
-            map.setCenter(location);
-            marker.setPosition(location);
-            updateLocationInputs(location.lat(), location.lng());
-        }
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    const addressInput = document.getElementById('address');
-    let searchTimeout;
-    
-    addressInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(searchAddress, 1000);
-    });
-    
-    // تحديث النصوص حسب نوع السكن المختار
     const apartmentTypes = document.querySelectorAll('input[name="apartment_type"]');
     const titleInput = document.querySelector('input[name="title"]');
     const areaLabel = document.getElementById('area-label');
+    const maxPeopleLabel = document.getElementById('max-people-label');
+    const roomPeopleContainer = document.getElementById('room-people-container');
     const descriptionTextarea = document.getElementById('description');
     
     apartmentTypes.forEach(function(radio) {
@@ -361,14 +347,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (this.value === 'studio') {
                 titleInput.placeholder = 'مثال: شقة مفروشة للطلاب';
                 areaLabel.textContent = 'مساحة الشقة (متر مربع)';
+                maxPeopleLabel.textContent = 'عدد الأفراد المسموح';
+                roomPeopleContainer.style.display = 'none';
                 descriptionTextarea.placeholder = 'اكتب وصف مفصل عن الشقة، المرافق المتاحة، والشروط...';
             } else if (this.value === 'room') {
                 titleInput.placeholder = 'مثال: غرفة مفروشة في شقة مشتركة';
                 areaLabel.textContent = 'مساحة الغرفة (متر مربع)';
+                maxPeopleLabel.textContent = 'عدد الأفراد في الغرفة';
+                roomPeopleContainer.style.display = 'none';
                 descriptionTextarea.placeholder = 'اكتب وصف مفصل عن الغرفة، المرافق المتاحة، والشروط...';
             } else if (this.value === 'bed') {
                 titleInput.placeholder = 'مثال: سرير في غرفة مشتركة';
                 areaLabel.textContent = 'مساحة الغرفة المشتركة (متر مربع)';
+                maxPeopleLabel.textContent = 'عدد الأسرة المتاحة';
+                roomPeopleContainer.style.display = 'block';
                 descriptionTextarea.placeholder = 'اكتب وصف مفصل عن السرير، الغرفة المشتركة، عدد الأسرة الأخرى، والشروط...';
             }
         });
