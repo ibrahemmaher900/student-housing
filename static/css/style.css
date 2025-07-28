@@ -1,145 +1,74 @@
-:root {
-  --primary-color: #FF5A5F;
-  --secondary-color: #00A699;
-  --dark-color: #484848;
-  --light-color: #767676;
-  --bg-color: #F7F7F7;
-  --white-color: #FFFFFF;
-}
-
+/* أنماط عامة */
 body {
-  font-family: 'Tajawal', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--dark-color);
-  line-height: 1.6;
-}
-
-.navbar {
-  background-color: var(--white-color);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-  padding: 15px 0;
-}
-
-.navbar-brand {
-  font-weight: bold;
-  color: var(--primary-color) !important;
-  font-size: 24px;
-}
-
-.nav-link {
-  color: var(--dark-color) !important;
-  font-weight: 500;
-  padding: 8px 16px !important;
-}
-
-.nav-link:hover {
-  color: var(--primary-color) !important;
-}
-
-.btn-primary {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.btn-primary:hover {
-  background-color: #E74E55;
-  border-color: #E74E55;
-}
-
-.btn-outline-primary {
-  color: var(--primary-color);
-  border-color: var(--primary-color);
-}
-
-.btn-outline-primary:hover {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
 }
 
 .card {
-  border-radius: 12px;
-  overflow: hidden;
-  border: none;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
 }
 
-.card-img-top {
-  height: 220px;
-  object-fit: cover;
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
 }
 
-.card-title {
-  font-weight: 600;
-  font-size: 18px;
+.navbar-brand {
+    font-weight: bold;
 }
 
-.card-text.price {
-  color: var(--primary-color);
-  font-weight: 600;
-  font-size: 18px;
+/* أنماط الشقق */
+.apartment-card {
+    margin-bottom: 20px;
 }
 
-.footer {
-  background-color: var(--white-color);
-  padding: 60px 0 30px;
-  margin-top: 80px;
-  border-top: 1px solid #EBEBEB;
+.apartment-image {
+    height: 200px;
+    object-fit: cover;
 }
 
-.footer h5 {
-  font-weight: 600;
-  margin-bottom: 20px;
+/* تحسين الأداء */
+.lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s;
 }
 
-.footer a {
-  color: var(--dark-color);
-  text-decoration: none;
+.lazy-load.loaded {
+    opacity: 1;
 }
 
-.footer a:hover {
-  color: var(--primary-color);
-}
-
-.badge {
-  padding: 6px 12px;
-  font-weight: 500;
-  border-radius: 30px;
-}
-
-.apartment-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.feature-badge {
-  background-color: #F7F7F7;
-  color: var(--dark-color);
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-}
-
-.form-control {
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #EBEBEB;
-}
-
-.form-control:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 1px var(--primary-color);
-}
-
+/* أنماط responsive */
 @media (max-width: 768px) {
-  .card-img-top {
-    height: 180px;
-  }
+    .container {
+        padding: 0 15px;
+    }
+}
+
+/* أنماط صفحات الخطأ */
+.error-page {
+    padding: 50px 0;
+}
+
+.error-page h1 {
+    font-size: 8rem;
+    font-weight: bold;
+}
+
+/* تحسين الخرائط */
+#map {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* أنماط العملة */
+.currency::after {
+    content: " ج.م";
+    color: #28a745;
+    font-weight: bold;
 }
