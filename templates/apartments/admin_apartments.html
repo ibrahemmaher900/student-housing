@@ -80,12 +80,18 @@
                                                         <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary me-2">
                                                             <i class="fas fa-eye me-1"></i> عرض
                                                         </a>
-                                                        <button class="btn btn-sm btn-success me-2" onclick="updateApartmentStatus({{ apartment.id }}, 'approve')">
-                                                            <i class="fas fa-check me-1"></i> موافقة
-                                                        </button>
-                                                        <button class="btn btn-sm btn-danger" onclick="updateApartmentStatus({{ apartment.id }}, 'reject')">
-                                                            <i class="fas fa-times me-1"></i> رفض
-                                                        </button>
+                                                        <form method="post" action="{% url 'approve_apartment' apartment.id %}" style="display: inline;">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-success me-2">
+                                                                <i class="fas fa-check me-1"></i> موافقة
+                                                            </button>
+                                                        </form>
+                                                        <form method="post" action="{% url 'reject_apartment' apartment.id %}" style="display: inline;">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                                <i class="fas fa-times me-1"></i> رفض
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -204,9 +210,12 @@
                                                         <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary me-2">
                                                             <i class="fas fa-eye me-1"></i> عرض
                                                         </a>
-                                                        <button class="btn btn-sm btn-success" onclick="updateApartmentStatus({{ apartment.id }}, 'approve')">
-                                                            <i class="fas fa-check me-1"></i> موافقة
-                                                        </button>
+                                                        <form method="post" action="{% url 'approve_apartment' apartment.id %}" style="display: inline;">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fas fa-check me-1"></i> موافقة
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -230,18 +239,29 @@
 function updateApartmentStatus(apartmentId, status) {
     const action = status === 'approve' ? 'اعتماد' : 'رفض';
     if (confirm(`هل أنت متأكد من ${action} هذه الشقة؟`)) {
+        const csrfToken = getCookie('csrftoken');
+        
         fetch(`/apartments/admin/apartments/${apartmentId}/${status}/`, {
             method: 'POST',
             headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            }
+                'X-CSRFToken': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            credentials: 'same-origin'
         })
         .then(response => {
             if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .then(data => {
+            if (data.success) {
+                alert(data.message || `تم ${action} الشقة بنجاح`);
                 location.reload();
             } else {
-                alert(`حدث خطأ في ${action} الشقة`);
+                alert(data.message || `حدث خطأ في ${action} الشقة`);
             }
         })
         .catch(error => {

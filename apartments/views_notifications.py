@@ -15,9 +15,20 @@ def mark_notification_as_read(request, pk):
     notification = get_object_or_404(Notification, pk=pk, user=request.user)
     notification.is_read = True
     notification.save()
-    
+
+    # توجيه حسب نوع الإشعار
     if notification.related_apartment:
         return redirect('apartment_detail', pk=notification.related_apartment.pk)
+    elif notification.related_booking:
+        # توجيه حسب نوع المستخدم
+        if hasattr(request.user, 'profile') and getattr(request.user.profile, 'user_type', None) == 'owner':
+            return redirect('manage_bookings')
+        else:
+            return redirect('my_bookings')
+    elif notification.related_comment:
+        # توجيه لتعليق (صفحة الشقة مع تمرير التعليق)
+        return redirect('apartment_detail', pk=notification.related_comment.apartment.pk)
+    # يمكن إضافة أنواع أخرى لاحقاً
     return redirect('notifications_list')
 
 @login_required
@@ -44,7 +55,23 @@ def mark_notification_as_read_api(request, pk):
     notification = get_object_or_404(Notification, pk=pk, user=request.user)
     notification.is_read = True
     notification.save()
-    return JsonResponse({'success': True})
+
+    # تحديد الرابط المناسب
+    url = None
+    if notification.related_apartment:
+        from django.urls import reverse
+        url = reverse('apartment_detail', kwargs={'pk': notification.related_apartment.pk})
+    elif notification.related_booking:
+        from django.urls import reverse
+        if hasattr(request.user, 'profile') and getattr(request.user.profile, 'user_type', None) == 'owner':
+            url = reverse('manage_bookings')
+        else:
+            url = reverse('my_bookings')
+    elif notification.related_comment:
+        from django.urls import reverse
+        url = reverse('apartment_detail', kwargs={'pk': notification.related_comment.apartment.pk})
+    # يمكن إضافة أنواع أخرى لاحقاً
+    return JsonResponse({'success': True, 'redirect_url': url})
 
 @login_required
 def get_recent_notifications(request):
