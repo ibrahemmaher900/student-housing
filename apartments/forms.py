@@ -1,5 +1,5 @@
 from django import forms
-from .models import Apartment, ApartmentImage, Booking, University, Comment, Rating
+from .models import Apartment, ApartmentImage, Booking, University, Comment
 
 class ApartmentForm(forms.ModelForm):
     class Meta:
@@ -25,7 +25,7 @@ class ApartmentSearchForm(forms.Form):
     university = forms.ModelChoiceField(queryset=University.objects.all(), required=False)
     min_price = forms.IntegerField(required=False)
     max_price = forms.IntegerField(required=False)
-    apartment_type = forms.ChoiceField(choices=[('', 'جميع الأنواع')] + Apartment.APARTMENT_TYPE_CHOICES, required=False)
+    apartment_type = forms.ChoiceField(choices=[('', 'جميع الأنواع'), ('studio', 'شقة'), ('room', 'غرفة'), ('bed', 'سرير')], required=False)
     bedrooms = forms.IntegerField(required=False)
     furnished = forms.BooleanField(required=False)
     has_wifi = forms.BooleanField(required=False)
@@ -37,5 +37,9 @@ class CommentForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
         }
+
+class RatingForm(forms.Form):
+    rating = forms.IntegerField(min_value=1, max_value=5)
+    review = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 
 ReplyForm = CommentForm
