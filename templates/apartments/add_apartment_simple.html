@@ -7,8 +7,8 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">
-                    <h3>إضافة شقة جديدة</h3>
+                <div class="card-header bg-warning text-dark">
+                    <h3><i class="fas fa-home me-2"></i>إضافة شقة جديدة</h3>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
@@ -16,28 +16,28 @@
                         
                         <div class="mb-3">
                             <label class="form-label">عنوان الإعلان</label>
-                            <input type="text" name="title" class="form-control" required>
+                            <input type="text" name="title" class="form-control" placeholder="شقة مفروشة للطلاب" required>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">وصف الشقة</label>
-                            <textarea name="description" class="form-control" rows="3"></textarea>
+                            <textarea name="description" class="form-control" rows="3" placeholder="اكتب وصف مفصل عن الشقة والمرافق المتاحة..."></textarea>
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">السعر الشهري</label>
-                                <input type="number" name="price" class="form-control" required>
+                                <label class="form-label">السعر الشهري (ريال)</label>
+                                <input type="number" name="price" class="form-control" placeholder="1500" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">المساحة (م²)</label>
-                                <input type="number" name="area" class="form-control" required>
+                                <label class="form-label">المساحة (متر مربع)</label>
+                                <input type="number" name="area" class="form-control" placeholder="80" required>
                             </div>
                         </div>
                         
                         <div class="mb-3">
-                            <label class="form-label">العنوان</label>
-                            <input type="text" name="address" class="form-control" required>
+                            <label class="form-label">العنوان التفصيلي</label>
+                            <input type="text" name="address" class="form-control" placeholder="الحي، الشارع، رقم المبنى" required>
                         </div>
                         
                         <div class="row">
@@ -51,17 +51,64 @@
                                 </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">المسافة للجامعة (كم)</label>
-                                <input type="number" name="distance_to_university" class="form-control" step="0.1" required>
+                                <label class="form-label">المسافة من الجامعة (كم)</label>
+                                <input type="number" name="distance_to_university" class="form-control" step="0.1" placeholder="3.5">
+                            </div>
+                        </div>
+                        
+                        <!-- المرافق المتاحة -->
+                        <div class="mb-3">
+                            <label class="form-label">المرافق المتاحة:</label>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="furnished" class="form-check-input" id="furnished">
+                                        <label class="form-check-label" for="furnished">
+                                            <i class="fas fa-couch me-1"></i>مفروشة
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_wifi" class="form-check-input" id="has_wifi">
+                                        <label class="form-check-label" for="has_wifi">
+                                            <i class="fas fa-wifi me-1"></i>واي فاي
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_ac" class="form-check-input" id="has_ac">
+                                        <label class="form-check-label" for="has_ac">
+                                            <i class="fas fa-snowflake me-1"></i>مكيف
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_parking" class="form-check-input" id="has_parking">
+                                        <label class="form-check-label" for="has_parking">
+                                            <i class="fas fa-car me-1"></i>موقف سيارة
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">صور الشقة</label>
                             <input type="file" name="images" class="form-control" multiple accept="image/*" required>
+                            <div class="form-text">يمكنك رفع عدة صور للشقة</div>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary">إضافة الشقة</button>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'my_apartments' %}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times me-1"></i>إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-plus me-1"></i>إضافة الشقة
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
