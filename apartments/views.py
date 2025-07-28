@@ -91,10 +91,6 @@ def add_apartment(request):
         try:
             apartment_type = request.POST.get('apartment_type', 'studio')
             
-            # معالجة الإحداثيات
-            latitude = request.POST.get('latitude')
-            longitude = request.POST.get('longitude')
-            
             apartment = Apartment(
                 title=request.POST.get('title', 'شقة'),
                 description=request.POST.get('description', ''),
@@ -106,15 +102,24 @@ def add_apartment(request):
                 address=request.POST.get('address', ''),
                 distance_to_university=float(request.POST.get('distance_to_university', 0) or 0),
                 university_id=request.POST.get('university'),
+                gender=request.POST.get('gender', 'all'),
                 furnished=request.POST.get('furnished') == 'on',
                 has_wifi=request.POST.get('has_wifi') == 'on',
                 has_ac=request.POST.get('has_ac') == 'on',
+                has_kitchen=request.POST.get('has_kitchen') == 'on',
+                has_washer=request.POST.get('has_washer') == 'on',
+                has_fridge=request.POST.get('has_fridge') == 'on',
+                has_private_bathroom=request.POST.get('has_private_bathroom') == 'on',
+                has_balcony=request.POST.get('has_balcony') == 'on',
                 has_parking=request.POST.get('has_parking') == 'on',
+                bills_included=request.POST.get('bills_included') == 'on',
                 owner=request.user,
                 status='pending'
             )
             
-            # حفظ الإحداثيات إذا كانت متاحة
+            # حفظ الإحداثيات
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
             if latitude and longitude:
                 try:
                     apartment.latitude = float(latitude)

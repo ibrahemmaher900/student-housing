@@ -13,6 +13,12 @@
 .map-container {
     margin: 20px 0;
 }
+.gender-selection {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 15px 0;
+}
 </style>
 {% endblock %}
 
@@ -99,6 +105,37 @@
                             </div>
                         </div>
                         
+                        <!-- نوع المستخدم المطلوب -->
+                        <div class="gender-selection mb-4">
+                            <label class="form-label">نوع المستخدم المطلوب:</label>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="radio" name="gender" value="male" id="male" class="form-check-input" checked>
+                                        <label class="form-check-label" for="male">
+                                            <i class="fas fa-male me-2 text-primary"></i>طلاب فقط
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="radio" name="gender" value="female" id="female" class="form-check-input">
+                                        <label class="form-check-label" for="female">
+                                            <i class="fas fa-female me-2 text-danger"></i>طالبات فقط
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="radio" name="gender" value="all" id="all" class="form-check-input">
+                                        <label class="form-check-label" for="all">
+                                            <i class="fas fa-users me-2 text-success"></i>الجميع
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <!-- الموقع والخريطة -->
                         <div class="mb-3">
                             <label class="form-label">العنوان التفصيلي</label>
@@ -126,10 +163,10 @@
                         </div>
                         
                         <!-- المرافق المتاحة -->
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label class="form-label">المرافق المتاحة:</label>
                             <div class="row">
-                                <div class="col-md-3">
+                                <div class="col-md-3 mb-2">
                                     <div class="form-check">
                                         <input type="checkbox" name="furnished" class="form-check-input" id="furnished">
                                         <label class="form-check-label" for="furnished">
@@ -137,7 +174,7 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 mb-2">
                                     <div class="form-check">
                                         <input type="checkbox" name="has_wifi" class="form-check-input" id="has_wifi">
                                         <label class="form-check-label" for="has_wifi">
@@ -145,7 +182,7 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 mb-2">
                                     <div class="form-check">
                                         <input type="checkbox" name="has_ac" class="form-check-input" id="has_ac">
                                         <label class="form-check-label" for="has_ac">
@@ -153,11 +190,59 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_kitchen" class="form-check-input" id="has_kitchen">
+                                        <label class="form-check-label" for="has_kitchen">
+                                            <i class="fas fa-utensils me-1"></i>مطبخ
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_washer" class="form-check-input" id="has_washer">
+                                        <label class="form-check-label" for="has_washer">
+                                            <i class="fas fa-tshirt me-1"></i>غسالة
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_fridge" class="form-check-input" id="has_fridge">
+                                        <label class="form-check-label" for="has_fridge">
+                                            <i class="fas fa-snowflake me-1"></i>ثلاجة
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_private_bathroom" class="form-check-input" id="has_private_bathroom">
+                                        <label class="form-check-label" for="has_private_bathroom">
+                                            <i class="fas fa-bath me-1"></i>حمام خاص
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="has_balcony" class="form-check-input" id="has_balcony">
+                                        <label class="form-check-label" for="has_balcony">
+                                            <i class="fas fa-building me-1"></i>شرفة
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
                                     <div class="form-check">
                                         <input type="checkbox" name="has_parking" class="form-check-input" id="has_parking">
                                         <label class="form-check-label" for="has_parking">
                                             <i class="fas fa-car me-1"></i>موقف سيارة
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input type="checkbox" name="bills_included" class="form-check-input" id="bills_included">
+                                        <label class="form-check-label" for="bills_included">
+                                            <i class="fas fa-file-invoice me-1"></i>الفواتير مشمولة
                                         </label>
                                     </div>
                                 </div>
@@ -195,7 +280,6 @@ let marker;
 
 // تهيئة الخريطة
 function initMap() {
-    // الموقع الافتراضي (الرياض)
     const defaultLocation = { lat: 24.7136, lng: 46.6753 };
     
     map = new google.maps.Map(document.getElementById("map"), {
@@ -203,7 +287,6 @@ function initMap() {
         center: defaultLocation,
     });
     
-    // إضافة marker قابل للسحب
     marker = new google.maps.Marker({
         position: defaultLocation,
         map: map,
@@ -211,14 +294,12 @@ function initMap() {
         title: "اسحب لتحديد الموقع"
     });
     
-    // عند سحب الـ marker
     marker.addListener('dragend', function() {
         const position = marker.getPosition();
         updateLocationInputs(position.lat(), position.lng());
         getAddressFromCoordinates(position.lat(), position.lng());
     });
     
-    // عند النقر على الخريطة
     map.addListener('click', function(event) {
         const lat = event.latLng.lat();
         const lng = event.latLng.lng();
@@ -229,13 +310,11 @@ function initMap() {
     });
 }
 
-// تحديث حقول الإحداثيات
 function updateLocationInputs(lat, lng) {
     document.getElementById('latitude').value = lat;
     document.getElementById('longitude').value = lng;
 }
 
-// الحصول على العنوان من الإحداثيات
 function getAddressFromCoordinates(lat, lng) {
     const geocoder = new google.maps.Geocoder();
     const latlng = { lat: lat, lng: lng };
@@ -247,7 +326,6 @@ function getAddressFromCoordinates(lat, lng) {
     });
 }
 
-// البحث عن العنوان
 function searchAddress() {
     const address = document.getElementById('address').value;
     if (!address) return;
@@ -263,7 +341,6 @@ function searchAddress() {
     });
 }
 
-// البحث عند تغيير العنوان
 document.addEventListener('DOMContentLoaded', function() {
     const addressInput = document.getElementById('address');
     let searchTimeout;
