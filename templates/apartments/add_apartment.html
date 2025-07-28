@@ -2,6 +2,20 @@
 
 {% block title %}إضافة إعلان جديد{% endblock %}
 
+{% block extra_css %}
+<style>
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+}
+.map-container {
+    margin: 20px 0;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
@@ -71,7 +85,7 @@
                         
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label">المساحة (متر مربع)</label>
+                                <label class="form-label" id="area-label">المساحة (متر مربع)</label>
                                 <input type="number" name="area" class="form-control" placeholder="80" required>
                             </div>
                             <div class="col-md-6">
@@ -85,21 +99,30 @@
                             </div>
                         </div>
                         
-                        <div class="row mb-3">
-                            <div class="col-md-8">
-                                <label class="form-label">العنوان التفصيلي</label>
-                                <input type="text" name="address" class="form-control" placeholder="الحي، الشارع، رقم المبنى" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label">المسافة من الجامعة (كم)</label>
-                                <input type="number" step="0.1" name="distance_to_university" class="form-control" placeholder="2.5">
-                            </div>
+                        <!-- الموقع والخريطة -->
+                        <div class="mb-3">
+                            <label class="form-label">العنوان التفصيلي</label>
+                            <input type="text" name="address" id="address" class="form-control" placeholder="الحي، الشارع، رقم المبنى" required>
+                            <div class="form-text">اكتب العنوان أو اضغط على الخريطة لتحديد الموقع</div>
+                        </div>
+                        
+                        <!-- الخريطة -->
+                        <div class="map-container">
+                            <label class="form-label">حدد الموقع على الخريطة:</label>
+                            <div id="map"></div>
+                            <input type="hidden" name="latitude" id="latitude">
+                            <input type="hidden" name="longitude" id="longitude">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">المسافة من الجامعة (كم)</label>
+                            <input type="number" step="0.1" name="distance_to_university" class="form-control" placeholder="2.5">
                         </div>
                         
                         <!-- وصف السكن -->
                         <div class="mb-3">
                             <label class="form-label">وصف السكن</label>
-                            <textarea name="description" class="form-control" rows="4" placeholder="اكتب وصف مفصل عن السكن، المرافق المتاحة، والشروط..."></textarea>
+                            <textarea name="description" id="description" class="form-control" rows="4" placeholder="اكتب وصف مفصل عن السكن، المرافق المتاحة، والشروط..."></textarea>
                         </div>
                         
                         <!-- المرافق المتاحة -->
@@ -163,14 +186,98 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
-// تحديث النصوص حسب نوع السكن المختار
+let map;
+let marker;
+
+// تهيئة الخريطة
+function initMap() {
+    // الموقع الافتراضي (الرياض)
+    const defaultLocation = { lat: 24.7136, lng: 46.6753 };
+    
+    map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12,
+        center: defaultLocation,
+    });
+    
+    // إضافة marker قابل للسحب
+    marker = new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        draggable: true,
+        title: "اسحب لتحديد الموقع"
+    });
+    
+    // عند سحب الـ marker
+    marker.addListener('dragend', function() {
+        const position = marker.getPosition();
+        updateLocationInputs(position.lat(), position.lng());
+        getAddressFromCoordinates(position.lat(), position.lng());
+    });
+    
+    // عند النقر على الخريطة
+    map.addListener('click', function(event) {
+        const lat = event.latLng.lat();
+        const lng = event.latLng.lng();
+        
+        marker.setPosition(event.latLng);
+        updateLocationInputs(lat, lng);
+        getAddressFromCoordinates(lat, lng);
+    });
+}
+
+// تحديث حقول الإحداثيات
+function updateLocationInputs(lat, lng) {
+    document.getElementById('latitude').value = lat;
+    document.getElementById('longitude').value = lng;
+}
+
+// الحصول على العنوان من الإحداثيات
+function getAddressFromCoordinates(lat, lng) {
+    const geocoder = new google.maps.Geocoder();
+    const latlng = { lat: lat, lng: lng };
+    
+    geocoder.geocode({ location: latlng }, (results, status) => {
+        if (status === "OK" && results[0]) {
+            document.getElementById('address').value = results[0].formatted_address;
+        }
+    });
+}
+
+// البحث عن العنوان
+function searchAddress() {
+    const address = document.getElementById('address').value;
+    if (!address) return;
+    
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: address }, (results, status) => {
+        if (status === "OK" && results[0]) {
+            const location = results[0].geometry.location;
+            map.setCenter(location);
+            marker.setPosition(location);
+            updateLocationInputs(location.lat(), location.lng());
+        }
+    });
+}
+
+// البحث عند تغيير العنوان
 document.addEventListener('DOMContentLoaded', function() {
+    const addressInput = document.getElementById('address');
+    let searchTimeout;
+    
+    addressInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(searchAddress, 1000);
+    });
+    
+    // تحديث النصوص حسب نوع السكن المختار
     const apartmentTypes = document.querySelectorAll('input[name="apartment_type"]');
     const titleInput = document.querySelector('input[name="title"]');
-    const areaLabel = document.querySelector('label[for="area"]');
-    const descriptionTextarea = document.querySelector('textarea[name="description"]');
+    const areaLabel = document.getElementById('area-label');
+    const descriptionTextarea = document.getElementById('description');
     
     apartmentTypes.forEach(function(radio) {
         radio.addEventListener('change', function() {
@@ -191,4 +298,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&libraries=geometry"></script>
 {% endblock %}

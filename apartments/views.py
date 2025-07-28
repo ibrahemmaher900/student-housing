@@ -91,6 +91,10 @@ def add_apartment(request):
         try:
             apartment_type = request.POST.get('apartment_type', 'studio')
             
+            # معالجة الإحداثيات
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            
             apartment = Apartment(
                 title=request.POST.get('title', 'شقة'),
                 description=request.POST.get('description', ''),
@@ -109,6 +113,15 @@ def add_apartment(request):
                 owner=request.user,
                 status='pending'
             )
+            
+            # حفظ الإحداثيات إذا كانت متاحة
+            if latitude and longitude:
+                try:
+                    apartment.latitude = float(latitude)
+                    apartment.longitude = float(longitude)
+                except:
+                    pass
+            
             apartment.save()
             
             for image in request.FILES.getlist('images'):
