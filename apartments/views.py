@@ -88,95 +88,52 @@ def book_apartment(request, pk):
 @login_required
 def add_apartment(request):
     if request.method == 'POST':
-        apartment = Apartment(
-            title=request.POST.get('title', 'شقة'),
-            description=request.POST.get('description', ''),
-            price=request.POST.get('price', 0),
-            apartment_type=request.POST.get('apartment_type', 'studio'),
-            area=request.POST.get('area', 50),
-            bedrooms=request.POST.get('bedrooms', 1),
-            bathrooms=request.POST.get('bathrooms', 1),
-            address=request.POST.get('address', ''),
-            distance_to_university=request.POST.get('distance_to_university', 0),
-            university_id=request.POST.get('university'),
-            furnished=request.POST.get('furnished') == 'on',
-            has_wifi=request.POST.get('has_wifi') == 'on',
-            has_ac=request.POST.get('has_ac') == 'on',
-            has_parking=request.POST.get('has_parking') == 'on',
-            owner=request.user,
-            status='pending'
-        )
-        apartment.save()
-        
-        for image in request.FILES.getlist('images'):
-            ApartmentImage.objects.create(apartment=apartment, image=image)
-        
-        messages.success(request, 'تم إضافة الشقة!')
-        return redirect('my_apartments')
+        try:
+            apartment_type = request.POST.get('apartment_type', 'studio')
+            
+            apartment = Apartment(
+                title=request.POST.get('title', 'شقة'),
+                description=request.POST.get('description', ''),
+                price=float(request.POST.get('price', 0) or 0),
+                apartment_type=apartment_type,
+                area=int(request.POST.get('area', 50) or 50),
+                bedrooms=1,
+                bathrooms=1,
+                address=request.POST.get('address', ''),
+                distance_to_university=float(request.POST.get('distance_to_university', 0) or 0),
+                university_id=request.POST.get('university'),
+                furnished=request.POST.get('furnished') == 'on',
+                has_wifi=request.POST.get('has_wifi') == 'on',
+                has_ac=request.POST.get('has_ac') == 'on',
+                has_parking=request.POST.get('has_parking') == 'on',
+                owner=request.user,
+                status='pending'
+            )
+            apartment.save()
+            
+            for image in request.FILES.getlist('images'):
+                ApartmentImage.objects.create(apartment=apartment, image=image)
+            
+            if apartment_type == 'room':
+                messages.success(request, 'تم إضافة الغرفة!')
+            elif apartment_type == 'bed':
+                messages.success(request, 'تم إضافة السرير!')
+            else:
+                messages.success(request, 'تم إضافة الشقة!')
+            
+            return redirect('my_apartments')
+        except Exception as e:
+            messages.error(request, 'حدث خطأ في إضافة الإعلان')
     
-    return render(request, 'apartments/add_apartment_simple.html', {'universities': University.objects.all()})
+    return render(request, 'apartments/add_apartment.html', {'universities': University.objects.all()})
 
 @login_required
 def add_room(request):
-    if request.method == 'POST':
-        apartment = Apartment(
-            title=request.POST.get('title', 'غرفة للإيجار'),
-            description=request.POST.get('description', ''),
-            price=request.POST.get('price', 0),
-            apartment_type='room',
-            area=request.POST.get('area', 20),
-            bedrooms=1,
-            bathrooms=1,
-            address=request.POST.get('address', ''),
-            distance_to_university=request.POST.get('distance_to_university', 0),
-            university_id=request.POST.get('university'),
-            furnished=request.POST.get('furnished') == 'on',
-            has_wifi=request.POST.get('has_wifi') == 'on',
-            has_ac=request.POST.get('has_ac') == 'on',
-            has_parking=request.POST.get('has_parking') == 'on',
-            owner=request.user,
-            status='pending'
-        )
-        apartment.save()
-        
-        for image in request.FILES.getlist('images'):
-            ApartmentImage.objects.create(apartment=apartment, image=image)
-        
-        messages.success(request, 'تم إضافة الغرفة!')
-        return redirect('my_apartments')
-    
-    return render(request, 'apartments/add_room.html', {'universities': University.objects.all()})
+    return redirect('add_apartment')
 
 @login_required
 def add_bed(request):
-    if request.method == 'POST':
-        apartment = Apartment(
-            title=request.POST.get('title', 'سرير للإيجار'),
-            description=request.POST.get('description', ''),
-            price=request.POST.get('price', 0),
-            apartment_type='bed',
-            area=request.POST.get('area', 10),
-            bedrooms=1,
-            bathrooms=1,
-            address=request.POST.get('address', ''),
-            distance_to_university=request.POST.get('distance_to_university', 0),
-            university_id=request.POST.get('university'),
-            furnished=request.POST.get('furnished') == 'on',
-            has_wifi=request.POST.get('has_wifi') == 'on',
-            has_ac=request.POST.get('has_ac') == 'on',
-            has_parking=request.POST.get('has_parking') == 'on',
-            owner=request.user,
-            status='pending'
-        )
-        apartment.save()
-        
-        for image in request.FILES.getlist('images'):
-            ApartmentImage.objects.create(apartment=apartment, image=image)
-        
-        messages.success(request, 'تم إضافة السرير!')
-        return redirect('my_apartments')
-    
-    return render(request, 'apartments/add_bed.html', {'universities': University.objects.all()})
+    return redirect('add_apartment')
 
 @login_required
 def edit_apartment(request, pk):

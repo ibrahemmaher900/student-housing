@@ -117,12 +117,9 @@ function markAsRead(notificationId) {
                     unreadBadge.remove();
                 }
             }
+            
             // تحديث عداد الإشعارات
             updateNotificationsCount();
-            // إعادة التوجيه إذا تم إرجاع رابط
-            if (data.redirect_url) {
-                window.location.href = data.redirect_url;
-            }
         }
     })
     .catch(error => console.error('خطأ في تعليم الإشعار كمقروء:', error));

@@ -10,30 +10,13 @@
             <!-- بطاقة المعلومات الأساسية -->
             <div class="card">
                 <div class="card-body text-center">
-                    <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px; overflow: hidden;">
-                        {% if user.profile.profile_picture %}
-                            <img src="{{ user.profile.get_profile_picture_url }}" alt="الصورة الشخصية" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                        {% else %}
-                            {{ user.username|first|upper }}
-                        {% endif %}
+                    <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #6c757d, #495057); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 36px;">
+                        {{ user.username|first|upper }}
                     </div>
                     <h4>{{ user.username }}</h4>
                     <p class="text-muted">{{ user.profile.get_user_type_display }}</p>
                     <div class="badge bg-success mb-2">نشط</div>
                     <p class="small text-muted">عضو منذ {{ user.date_joined|date:"M Y" }}</p>
-                    <form method="post" enctype="multipart/form-data" class="mt-2">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="update_picture">
-                        <input type="file" name="profile_picture" accept="image/*" class="form-control mb-2">
-                        <button type="submit" class="btn btn-outline-primary btn-sm w-100 mb-1"><i class="fas fa-image me-1"></i>تغيير الصورة</button>
-                    </form>
-                    {% if user.profile.profile_picture %}
-                    <form method="post" class="mb-2">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="remove_picture">
-                        <button type="submit" class="btn btn-outline-danger btn-sm w-100"><i class="fas fa-trash me-1"></i>حذف الصورة</button>
-                    </form>
-                    {% endif %}
                 </div>
             </div>
 
@@ -107,28 +90,31 @@
                 </div>
             </div>
 
-            <!-- تغيير كلمة المرور -->
+            <!-- معلومات إضافية -->
             <div class="card mt-3">
                 <div class="card-header">
-                    <h5 class="mb-0">تغيير كلمة المرور</h5>
+                    <h5 class="mb-0">معلومات إضافية</h5>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="" autocomplete="off">
+                    <form method="post">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="change_password">
-                        <div class="mb-3">
-                            <label class="form-label">كلمة المرور الحالية</label>
-                            <input type="password" name="old_password" class="form-control" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" name="phone" class="form-control" value="{{ user.profile.phone|default:'' }}" placeholder="01xxxxxxxxx">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">المدينة</label>
+                                <input type="text" name="city" class="form-control" value="{{ user.profile.city|default:'' }}" placeholder="القاهرة">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">نبذة شخصية</label>
+                                <textarea name="bio" class="form-control" rows="3" placeholder="اكتب نبذة عن نفسك...">{{ user.profile.bio|default:'' }}</textarea>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">كلمة المرور الجديدة</label>
-                            <input type="password" name="new_password1" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">تأكيد كلمة المرور الجديدة</label>
-                            <input type="password" name="new_password2" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-key me-2"></i>تغيير كلمة المرور</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>حفظ التغييرات
+                        </button>
                     </form>
                 </div>
             </div>

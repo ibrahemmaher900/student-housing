@@ -380,49 +380,50 @@
                             <span>مناسب للجميع</span>
                             {% endif %}
                         </div>
-                        {% if apartment.floor %}
-                        <div class="apartment-feature">
-                            <i class="fas fa-layer-group"></i>
-                            <span>الطابق: {{ apartment.floor }}</span>
-                        </div>
-                        {% endif %}
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <strong>نوع السكن:</strong> {{ apartment.get_apartment_type_display }}<br>
-                            <strong>نوع المعلن:</strong> {{ apartment.get_advertiser_type_display }}<br>
-                            <strong>اسم المعلن:</strong> {{ apartment.contact_name|default:apartment.owner.get_full_name|default:apartment.owner.username }}<br>
-                            <strong>رقم الهاتف:</strong> {{ apartment.phone }}<br>
-                            <strong>واتساب:</strong> {% if apartment.whatsapp_available %}نعم{% else %}لا{% endif %}<br>
-                            {% if apartment.additional_contact %}
-                            <strong>طرق تواصل إضافية:</strong> {{ apartment.additional_contact }}<br>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <strong>رابط خرائط جوجل:</strong>
-                            {% if apartment.google_maps_link %}
-                                <a href="{{ apartment.google_maps_link }}" target="_blank">اضغط هنا</a>
-                            {% else %}
-                                غير متوفر
-                            {% endif %}<br>
-                            <strong>مفروش:</strong> {% if apartment.furnished %}نعم{% else %}لا{% endif %}<br>
-                        </div>
-                    </div>
-                    <p class="mt-3">{{ apartment.description }}</p>
+                    
+                    <p>{{ apartment.description }}</p>
+                    
                     {% if apartment.additional_description %}
                         <p>{{ apartment.additional_description }}</p>
                     {% endif %}
+                    
                     <h6 class="mt-4 mb-3">المرافق والخدمات</h6>
                     <div class="amenities-list">
-                        <div class="amenity-item {% if not apartment.has_wifi %}unavailable{% endif %}"><i class="fas fa-wifi"></i><span>واي فاي</span></div>
-                        <div class="amenity-item {% if not apartment.has_ac %}unavailable{% endif %}"><i class="fas fa-snowflake"></i><span>تكييف</span></div>
-                        <div class="amenity-item {% if not apartment.has_fridge %}unavailable{% endif %}"><i class="fas fa-temperature-low"></i><span>ثلاجة</span></div>
-                        <div class="amenity-item {% if not apartment.has_washer %}unavailable{% endif %}"><i class="fas fa-tshirt"></i><span>غسالة</span></div>
-                        <div class="amenity-item {% if not apartment.has_kitchen %}unavailable{% endif %}"><i class="fas fa-utensils"></i><span>مطبخ</span></div>
-                        <div class="amenity-item {% if not apartment.has_private_bathroom %}unavailable{% endif %}"><i class="fas fa-bath"></i><span>حمام خاص</span></div>
-                        <div class="amenity-item {% if not apartment.has_balcony %}unavailable{% endif %}"><i class="fas fa-wind"></i><span>بلكونة</span></div>
-                        <div class="amenity-item {% if not apartment.has_parking %}unavailable{% endif %}"><i class="fas fa-parking"></i><span>موقف سيارات</span></div>
+                        <div class="amenity-item {% if not apartment.has_wifi %}unavailable{% endif %}">
+                            <i class="fas fa-wifi"></i>
+                            <span>واي فاي</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_ac %}unavailable{% endif %}">
+                            <i class="fas fa-snowflake"></i>
+                            <span>تكييف</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_fridge %}unavailable{% endif %}">
+                            <i class="fas fa-temperature-low"></i>
+                            <span>ثلاجة</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_washer %}unavailable{% endif %}">
+                            <i class="fas fa-tshirt"></i>
+                            <span>غسالة</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_kitchen %}unavailable{% endif %}">
+                            <i class="fas fa-utensils"></i>
+                            <span>مطبخ</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_private_bathroom %}unavailable{% endif %}">
+                            <i class="fas fa-bath"></i>
+                            <span>حمام خاص</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_balcony %}unavailable{% endif %}">
+                            <i class="fas fa-wind"></i>
+                            <span>بلكونة</span>
+                        </div>
+                        <div class="amenity-item {% if not apartment.has_parking %}unavailable{% endif %}">
+                            <i class="fas fa-parking"></i>
+                            <span>موقف سيارات</span>
+                        </div>
                     </div>
+                    
                     {% if apartment.conditions %}
                         <h6 class="mt-4 mb-3">شروط السكن</h6>
                         <p>{{ apartment.conditions }}</p>
