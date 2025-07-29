@@ -10,6 +10,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts - Tajawal -->
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <!-- Custom CSS -->
 <link rel="stylesheet" href="/static/css/apartment-detail-pro.css">
 {% endblock %}
@@ -88,94 +90,3 @@
                     </span>
                 </div>
             </div>
-        </div>
-
-        <!-- الجهة اليمنى -->
-        <div class="col-lg-4">
-            <!-- معلومات الشقة -->
-            <div class="apartment-info bg-light p-4 rounded">
-                <h2 class="h5 border-bottom pb-2 mb-3">معلومات الشقة</h2>
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <i class="fas fa-bed me-2"></i>
-                        <strong>عدد الغرف:</strong> {{ apartment.room_count }}
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-bath me-2"></i>
-                        <strong>عدد الحمامات:</strong> {{ apartment.bathroom_count }}
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-ruler-combined me-2"></i>
-                        <strong>المساحة:</strong> {{ apartment.area }} م²
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-map-marker-alt me-2"></i>
-                        <strong>الموقع:</strong> {{ apartment.location }}
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        <strong>تاريخ الإضافة:</strong> {{ apartment.created_at|date:"d/m/Y" }}
-                    </li>
-                </ul>
-            </div>
-
-            <!-- إجراءات الحجز -->
-            <div class="booking-actions mt-4">
-                {% if user.is_authenticated %}
-                {% if has_approved_booking %}
-                <div class="alert alert-danger" role="alert">
-                    لديك حجز مؤكد لهذه الشقة. لا يمكنك إجراء حجز جديد حتى انتهاء الحجز الحالي.
-                </div>
-                {% else %}
-                <a href="{% url 'booking_create' apartment.id %}" class="btn btn-primary w-100">
-                    <i class="fas fa-check me-2"></i> احجز الآن
-                </a>
-                {% endif %}
-                {% else %}
-                <a href="{% url 'login' %}" class="btn btn-primary w-100">
-                    <i class="fas fa-sign-in-alt me-2"></i> تسجيل الدخول للحجز
-                </a>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <!-- وصف الشقة -->
-    <div class="apartment-description mt-4">
-        <h2 class="h5 border-bottom pb-2 mb-3">وصف الشقة</h2>
-        <div class="bg-light p-3 rounded">
-            {{ apartment.description|linebreaks }}
-        </div>
-    </div>
-
-    <!-- المرافق -->
-    <div class="apartment-amenities mt-4">
-        <h2 class="h5 border-bottom pb-2 mb-3">المرافق</h2>
-        <ul class="list-unstyled">
-            {% for amenity in apartment.amenities.all %}
-            <li class="d-flex align-items-center mb-2">
-                <i class="fas fa-check-circle text-success me-2"></i>
-                {{ amenity.name }}
-            </li>
-            {% empty %}
-            <li class="text-muted">
-                لا توجد مرافق مضافة لهذه الشقة.
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- الخريطة -->
-    <div class="apartment-map mt-4">
-        <h2 class="h5 border-bottom pb-2 mb-3">الموقع على الخريطة</h2>
-        <div id="map" style="height: 400px;" class="rounded"></div>
-    </div>
-</div>
-
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-1A8xgD+K+K+K+K+K+K+K+K+K+K+K+K+K+K+K+K="></script>
-<!-- Lightbox JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-<!-- Custom JS -->
-<script src="/static/js/apartment-detail-pro.js"></script>
-{% endblock %}

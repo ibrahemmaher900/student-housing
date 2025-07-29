@@ -256,7 +256,7 @@ function updateApartmentStatus(apartmentId, status) {
                 throw new Error('Network response was not ok');
             }
         })
-        .then((data) => {
+        .then(data => {
             if (data.success) {
                 alert(data.message || `تم ${action} الشقة بنجاح`);
                 location.reload();

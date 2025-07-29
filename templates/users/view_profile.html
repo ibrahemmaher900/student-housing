@@ -1,6 +1,7 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
-{% block title %}الملف الشخصي{% endblock %}
+{% block title %}{{ user.username }} - سكن طالب{% endblock %}
 
 {% block content %}
 <div class="container py-5">
