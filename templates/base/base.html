@@ -38,7 +38,11 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="ownerDropdown">
                                 <li><a class="dropdown-item" href="/apartments/add/">إضافة شقة</a></li>
-                                <li><a class="dropdown-item" href="/owner/dashboard/">لوحة تحكم المالك</a></li>
+                                {% if user.is_staff or user.is_superuser %}
+                                    <li><a class="dropdown-item" href="/admin/dashboard/">لوحة تحكم الأدمن</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="/owner/dashboard/">لوحة تحكم المالك</a></li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="/users/profile/">الملف الشخصي</a></li>
                                 <li><a class="dropdown-item" href="/users/logout/">تسجيل الخروج</a></li>
