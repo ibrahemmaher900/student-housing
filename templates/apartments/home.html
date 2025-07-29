@@ -4,39 +4,40 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section position-relative py-5" style="background: linear-gradient(120deg, var(--primary) 0%, var(--primary-dark) 100%); min-height: 420px;">
-    <div class="container position-relative z-2">
+<section class="py-5" style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+    <div class="container">
         <div class="row align-items-center min-vh-50">
-            <div class="col-lg-6 mb-4 mb-lg-0 text-white">
-                <h1 class="display-3 fw-bold mb-3" style="font-family: 'Cairo', sans-serif; letter-spacing: -1px;">
-                    ابحث عن سكنك المثالي بسهولة
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4" style="color: var(--dark);">
+                    ابحث عن سكنك المثالي
                 </h1>
-                <p class="lead mb-4" style="color: #e0e7ff;">
-                    آلاف الشقق والغرف بالقرب من جامعتك، بأسعار تناسب الطلاب.
+                <p class="lead mb-4" style="color: var(--gray);">
+                    اكتشف آلاف الشقق والغرف المتاحة بالقرب من جامعتك بأسعار مناسبة
                 </p>
-                <div class="d-flex gap-3 flex-wrap">
-                    <a href="{% url 'apartment_list' %}" class="btn btn-light btn-lg shadow-sm px-4">
+                <div class="d-flex gap-3">
+                    <a href="{% url 'apartment_list' %}" class="btn btn-primary btn-lg">
                         <i class="fas fa-search me-2"></i>ابدأ البحث
                     </a>
                     {% if not user.is_authenticated %}
-                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg px-4">
+                    <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
                         <i class="fas fa-user-plus me-2"></i>انضم الآن
                     </a>
                     {% endif %}
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="/static/img/hero-student-housing.svg" alt="سكن طلابي" class="img-fluid" style="max-height: 320px;">
+                <div class="position-relative">
+                    <i class="fas fa-home" style="font-size: 12rem; color: var(--primary); opacity: 0.1;"></i>
+                </div>
             </div>
         </div>
     </div>
-    <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(120deg,rgba(99,102,241,0.08) 0%,rgba(16,185,129,0.08) 100%); z-index:1;"></div>
 </section>
 
 <!-- Quick Search -->
-<section class="py-4 bg-white position-relative" style="margin-top: -60px; z-index: 3;">
+<section class="py-4 bg-white">
     <div class="container">
-        <div class="card shadow-lg border-0">
+        <div class="card">
             <div class="card-body">
                 <form method="get" action="{% url 'apartment_list' %}" class="row g-3 align-items-end">
                     <div class="col-md-3">
@@ -83,11 +84,11 @@
 </section>
 
 <!-- Stats -->
-<section class="py-5 bg-light">
+<section class="py-5">
     <div class="container">
-        <div class="row g-4 justify-content-center">
+        <div class="row g-4">
             <div class="col-lg-3 col-md-6">
-                <div class="card text-center h-100 border-0 shadow-sm animate__animated animate__fadeInUp">
+                <div class="card text-center h-100">
                     <div class="card-body">
                         <div class="mb-3">
                             <i class="fas fa-home fa-3x" style="color: var(--primary);"></i>
@@ -98,7 +99,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card text-center h-100 border-0 shadow-sm animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="card text-center h-100">
                     <div class="card-body">
                         <div class="mb-3">
                             <i class="fas fa-university fa-3x" style="color: var(--secondary);"></i>
@@ -109,7 +110,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card text-center h-100 border-0 shadow-sm animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="card text-center h-100">
                     <div class="card-body">
                         <div class="mb-3">
                             <i class="fas fa-users fa-3x" style="color: var(--accent);"></i>
@@ -120,7 +121,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="card text-center h-100 border-0 shadow-sm animate__animated animate__fadeInUp animate__delay-3s">
+                <div class="card text-center h-100">
                     <div class="card-body">
                         <div class="mb-3">
                             <i class="fas fa-handshake fa-3x" style="color: var(--success);"></i>
@@ -142,18 +143,20 @@
             <h2 class="fw-bold mb-3">الشقق المميزة</h2>
             <p class="text-muted">اكتشف أفضل الخيارات المتاحة للإيجار</p>
         </div>
+        
         <div class="row g-4">
             {% for apartment in featured_apartments %}
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm hover-shadow animate__animated animate__fadeInUp">
+                <div class="card h-100">
                     <div class="position-relative">
                         {% if apartment.images.first %}
-                            <img src="{{ apartment.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover; border-radius: 16px 16px 0 0;" alt="{{ apartment.title }}">
+                            <img src="{{ apartment.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ apartment.title }}">
                         {% else %}
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px; border-radius: 16px 16px 0 0;">
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
                                 <i class="fas fa-home fa-3x text-muted"></i>
                             </div>
                         {% endif %}
+                        
                         <div class="position-absolute top-0 end-0 m-2">
                             {% if apartment.apartment_type == 'studio' %}
                                 <span class="badge" style="background: var(--primary);">شقة</span>
@@ -164,11 +167,13 @@
                             {% endif %}
                         </div>
                     </div>
+                    
                     <div class="card-body">
                         <h5 class="card-title">{{ apartment.title }}</h5>
                         <p class="text-muted small mb-2">
                             <i class="fas fa-map-marker-alt me-1"></i>{{ apartment.address|truncatechars:30 }}
                         </p>
+                        
                         <div class="mb-3">
                             {% if apartment.furnished %}
                                 <span class="badge bg-light text-dark me-1">مفروش</span>
@@ -180,6 +185,7 @@
                                 <span class="badge bg-light text-dark">مكيف</span>
                             {% endif %}
                         </div>
+                        
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="h5 mb-0" style="color: var(--success);">{{ apartment.price }} ج.م</span>
@@ -194,8 +200,9 @@
             </div>
             {% endfor %}
         </div>
+        
         <div class="text-center mt-5">
-            <a href="{% url 'apartment_list' %}" class="btn btn-primary btn-lg px-5">
+            <a href="{% url 'apartment_list' %}" class="btn btn-primary btn-lg">
                 عرض جميع الشقق
                 <i class="fas fa-arrow-left ms-2"></i>
             </a>
@@ -205,20 +212,19 @@
 {% endif %}
 
 <!-- CTA Section -->
-<section class="py-5" style="background: linear-gradient(90deg, var(--primary) 60%, var(--secondary) 100%); color: white;">
+<section class="py-5" style="background: var(--primary); color: white;">
     <div class="container text-center">
         <h2 class="fw-bold mb-3">هل لديك شقة للإيجار؟</h2>
-        <p class="lead mb-4">انضم إلى منصتنا واربح دخل إضافي من شقتك بسهولة وأمان</p>
+        <p class="lead mb-4">انضم إلى منصتنا واربح دخل إضافي من شقتك</p>
         {% if user.is_authenticated %}
-            <a href="{% url 'add_apartment' %}" class="btn btn-light btn-lg px-4">
+            <a href="{% url 'add_apartment' %}" class="btn btn-light btn-lg">
                 <i class="fas fa-plus me-2"></i>أضف شقتك الآن
             </a>
         {% else %}
-            <a href="{% url 'register' %}" class="btn btn-light btn-lg px-4">
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg">
                 <i class="fas fa-user-plus me-2"></i>ابدأ الآن مجاناً
             </a>
         {% endif %}
     </div>
 </section>
-
 {% endblock %}
