@@ -786,12 +786,12 @@
         let latitude = 30.0444;
         let longitude = 31.2357;
         let zoom = 13;
-        
-        {% if apartment.latitude and apartment.longitude %}
-            latitude = {{ apartment.latitude }};
-            longitude = {{ apartment.longitude }};
+        let hasCoords = '{% if apartment.latitude and apartment.longitude %}true{% else %}false{% endif %}' === 'true';
+        if (hasCoords) {
+            latitude = parseFloat("{{ apartment.latitude|default_if_none:'30.0444' }}");
+            longitude = parseFloat("{{ apartment.longitude|default_if_none:'31.2357' }}");
             zoom = 15;
-        {% endif %}
+        }
         
         // إنشاء الخريطة
         const map = tt.map({
@@ -805,61 +805,46 @@
         map.addControl(new tt.NavigationControl());
         map.addControl(new tt.FullscreenControl());
         
-        {% if apartment.latitude and apartment.longitude %}
+        if (hasCoords) {
             // إضافة علامة على موقع الشقة
             const marker = new tt.Marker()
                 .setLngLat([longitude, latitude])
                 .addTo(map);
-                
-            // إضافة نافذة معلومات
             const popup = new tt.Popup({ offset: 30 })
-                .setHTML('<strong>{{ apartment.title }}</strong><br>{{ apartment.address }}')
+                .setHTML('<strong>{{ apartment.title|escapejs }}</strong><br>{{ apartment.address|escapejs }}')
                 .setLngLat([longitude, latitude]);
-                
             marker.setPopup(popup);
             popup.addTo(map);
-        {% else %}
+        } else {
             // البحث عن العنوان باستخدام TomTom Search API
-            const searchQuery = "{{ apartment.address }}, {{ apartment.university.city }}, مصر";
-            
-            if (searchQuery.trim() !== ",") {
+            const searchQuery = "{{ apartment.address|escapejs }}, {{ apartment.university.city|default_if_none:''|escapejs }}, مصر";
+            if (searchQuery.trim() !== ", مصر") {
                 const searchOptions = {
                     key: apiKey,
                     query: searchQuery,
                     limit: 1
                 };
-                
                 tt.services.fuzzySearch(searchOptions)
                     .then(function(response) {
                         if (response.results && response.results.length > 0) {
                             const result = response.results[0];
                             const position = result.position;
-                            
-                            // تحريك الخريطة إلى الموقع المعثور عليه
                             map.flyTo({
                                 center: position,
                                 zoom: 15
                             });
-                            
-                            // إضافة علامة
                             const marker = new tt.Marker()
                                 .setLngLat(position)
                                 .addTo(map);
-                                
-                            // إضافة نافذة معلومات
                             const popup = new tt.Popup({ offset: 30 })
-                                .setHTML('<strong>{{ apartment.title }}</strong><br>{{ apartment.address }}')
+                                .setHTML('<strong>{{ apartment.title|escapejs }}</strong><br>{{ apartment.address|escapejs }}')
                                 .setLngLat(position);
-                                
                             marker.setPopup(popup);
                             popup.addTo(map);
                         }
-                    })
-                    .catch(function(error) {
-                        console.error('Error searching for address:', error);
                     });
             }
-        {% endif %}
+        }
     });
     
     // مشاركة الشقة
