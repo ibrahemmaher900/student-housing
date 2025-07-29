@@ -4,106 +4,292 @@
 
 {% block extra_css %}
 <style>
-.auth-container {
+.auth-section {
+    background: linear-gradient(120deg, #fff 60%, #ffe4ec 100%);
+    padding: 4rem 0;
     min-height: 80vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 .auth-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
     max-width: 500px;
     margin: 0 auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-    overflow: hidden;
 }
 
 .auth-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: var(--primary);
     color: white;
     padding: 2rem;
     text-align: center;
+}
+
+.auth-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    opacity: 0.9;
+    margin-bottom: 0;
 }
 
 .auth-body {
     padding: 2rem;
 }
 
-.form-floating {
+.form-group {
     margin-bottom: 1.5rem;
 }
 
-.form-floating .form-control {
-    height: 60px;
+.form-label {
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
     border: 2px solid var(--border);
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(255, 56, 92, 0.1);
+    outline: none;
 }
 
 .btn-register {
-    width: 100%;
-    height: 50px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: var(--primary);
     border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-register:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
     color: white;
 }
 
 .auth-footer {
     text-align: center;
-    padding: 1rem 2rem 2rem;
+    padding: 1.5rem 2rem 2rem;
+    background: #f8f9fa;
     color: var(--gray);
+}
+
+.auth-footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.user-type-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-type-card {
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.user-type-card:hover {
+    border-color: var(--primary);
+    background: rgba(255, 56, 92, 0.05);
+}
+
+.user-type-card.active {
+    border-color: var(--primary);
+    background: rgba(255, 56, 92, 0.1);
+}
+
+.user-type-card i {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.user-type-card h6 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--secondary);
+}
+
+.user-type-card small {
+    color: var(--gray);
+}
+
+@media (max-width: 768px) {
+    .auth-section {
+        padding: 2rem 0;
+    }
+    
+    .auth-card {
+        margin: 1rem;
+    }
+    
+    .user-type-selector {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="auth-container">
+<section class="auth-section">
     <div class="container">
         <div class="auth-card">
             <div class="auth-header">
                 <h2><i class="fas fa-user-plus me-2"></i>إنشاء حساب جديد</h2>
-                <p class="mb-0">انضم إلى منصة سكن طالب</p>
+                <p>انضم إلى منصة سكن طالب واكتشف أفضل الخيارات</p>
             </div>
             
             <div class="auth-body">
-                <form method="post">
+                <form method="post" id="registerForm">
                     {% csrf_token %}
                     
-                    <div class="form-floating">
-                        <input type="text" class="form-control" name="username" placeholder="اسم المستخدم" required>
-                        <label>اسم المستخدم</label>
+                    <!-- User Type Selection -->
+                    <div class="user-type-selector">
+                        <div class="user-type-card active" data-type="student">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h6>طالب</h6>
+                            <small>أبحث عن سكن</small>
+                        </div>
+                        <div class="user-type-card" data-type="owner">
+                            <i class="fas fa-home"></i>
+                            <h6>مالك عقار</h6>
+                            <small>أريد تأجير شقة</small>
+                        </div>
                     </div>
                     
-                    <div class="form-floating">
-                        <input type="email" class="form-control" name="email" placeholder="البريد الإلكتروني" required>
-                        <label>البريد الإلكتروني</label>
+                    <input type="hidden" name="user_type" id="user_type" value="student">
+                    
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <label class="form-label">اسم المستخدم</label>
+                        <input type="text" class="form-control" name="username" placeholder="اختر اسم مستخدم فريد" required>
                     </div>
                     
-                    <div class="form-floating">
-                        <input type="password" class="form-control" name="password1" placeholder="كلمة المرور" required>
-                        <label>كلمة المرور</label>
+                    <div class="form-group">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" name="email" placeholder="example@email.com" required>
                     </div>
                     
-                    <div class="form-floating">
-                        <input type="password" class="form-control" name="password2" placeholder="تأكيد كلمة المرور" required>
-                        <label>تأكيد كلمة المرور</label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">الاسم الأول</label>
+                                <input type="text" class="form-control" name="first_name" placeholder="الاسم الأول" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">الاسم الأخير</label>
+                                <input type="text" class="form-control" name="last_name" placeholder="الاسم الأخير" required>
+                            </div>
+                        </div>
                     </div>
                     
-                    <button type="submit" class="btn btn-register">
+                    <div class="form-group">
+                        <label class="form-label">كلمة المرور</label>
+                        <input type="password" class="form-control" name="password1" placeholder="كلمة مرور قوية" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">تأكيد كلمة المرور</label>
+                        <input type="password" class="form-control" name="password2" placeholder="أعد كتابة كلمة المرور" required>
+                    </div>
+                    
+                    <button type="submit" class="btn-register">
                         <i class="fas fa-user-plus me-2"></i>إنشاء الحساب
                     </button>
                 </form>
             </div>
             
             <div class="auth-footer">
-                <p>لديك حساب بالفعل؟ <a href="/users/login/">سجل دخولك هنا</a></p>
+                <p>لديك حساب بالفعل؟ <a href="{% url 'login' %}">سجل دخولك هنا</a></p>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // User type selection
+    const userTypeCards = document.querySelectorAll('.user-type-card');
+    const userTypeInput = document.getElementById('user_type');
+    
+    userTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            userTypeCards.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            userTypeInput.value = this.dataset.type;
+        });
+    });
+    
+    // Form validation
+    const form = document.getElementById('registerForm');
+    const password1 = document.querySelector('input[name="password1"]');
+    const password2 = document.querySelector('input[name="password2"]');
+    
+    form.addEventListener('submit', function(e) {
+        if (password1.value !== password2.value) {
+            e.preventDefault();
+            alert('كلمات المرور غير متطابقة');
+            password2.focus();
+            return false;
+        }
+        
+        if (password1.value.length < 8) {
+            e.preventDefault();
+            alert('كلمة المرور يجب أن تكون 8 أحرف على الأقل');
+            password1.focus();
+            return false;
+        }
+        
+        // Show loading
+        const submitBtn = form.querySelector('.btn-register');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري إنشاء الحساب...';
+        submitBtn.disabled = true;
+    });
+    
+    // Real-time password validation
+    password2.addEventListener('input', function() {
+        if (password1.value !== password2.value) {
+            password2.setCustomValidity('كلمات المرور غير متطابقة');
+        } else {
+            password2.setCustomValidity('');
+        }
+    });
+});
+</script>
 {% endblock %}
