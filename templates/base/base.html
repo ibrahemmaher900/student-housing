@@ -21,18 +21,15 @@
             <a class="navbar-brand" href="{% url 'home' %}">
                 <i class="fas fa-home me-2"></i>سكن طالب
             </a>
-            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'apartment_list' %}">الشقق</a>
                     </li>
                 </ul>
-                
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -40,12 +37,15 @@
                                 {{ user.username }}
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'add_apartment' %}">إضافة شقة</a></li>
+                                {% if user.is_staff or user.is_superuser %}
+                                    <li><a class="dropdown-item" href="{% url 'admin_dashboard' %}">لوحة تحكم الأدمن</a></li>
+                                {% else %}
+                                    <li><a class="dropdown-item" href="{% url 'owner_dashboard' %}">لوحة تحكم المالك</a></li>
+                                {% endif %}
                                 <li><a class="dropdown-item" href="{% url 'profile' %}">الملف الشخصي</a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_apartments' %}">شققي</a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_bookings' %}">حجوزاتي</a></li>
-                                <li><a class="dropdown-item" href="{% url 'owner_dashboard' %}">
-                                    <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم
-                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">تسجيل الخروج</a></li>
                             </ul>
