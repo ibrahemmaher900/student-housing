@@ -33,6 +33,47 @@ body {
     object-fit: cover;
 }
 
+/* أنماط responsive للموبايل */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    /* تحسين الهيرو للموبايل */
+    .hero-icon {
+        font-size: 100px !important;
+    }
+    
+    /* تحسين الإحصائيات للموبايل */
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* أنماط العملة */
+.currency::after {
+    content: " ج.م";
+    color: #28a745;
+    font-weight: bold;
+}
+
 /* تحسين الأداء */
 .lazy-load {
     opacity: 0;
@@ -43,32 +84,33 @@ body {
     opacity: 1;
 }
 
-/* أنماط responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 15px;
-    }
+/* أنماط الأزرار */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
 }
 
-/* أنماط صفحات الخطأ */
-.error-page {
-    padding: 50px 0;
+/* أنماط البطاقات */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-.error-page h1 {
-    font-size: 8rem;
-    font-weight: bold;
+.card-img-top {
+    border-radius: 0;
 }
 
-/* تحسين الخرائط */
-#map {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+/* أنماط الشارات */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5em 0.75em;
 }
 
-/* أنماط العملة */
-.currency::after {
-    content: " ج.م";
-    color: #28a745;
-    font-weight: bold;
+/* تحسين النصوص */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.fw-bold {
+    font-weight: 700 !important;
 }

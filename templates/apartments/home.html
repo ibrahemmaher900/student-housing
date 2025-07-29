@@ -2,553 +2,153 @@
 
 {% block title %}سكن طالب - الصفحة الرئيسية{% endblock %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="/static/css/home.css">
-{% endblock %}
-
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section">
+<div class="bg-primary text-white py-5">
     <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">ابحث عن سكنك المثالي</h1>
+                <p class="lead mb-4">منصة سكن طالب تساعدك في العثور على أفضل الشقق والغرف بالقرب من جامعتك</p>
+                <a href="{% url 'apartment_list' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-search me-2"></i>ابدأ البحث الآن
+                </a>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-home" style="font-size: 200px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<div class="py-5 bg-light">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body">
+                        <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                        <h3 class="fw-bold">{{ apartments_count }}</h3>
+                        <p class="text-muted">شقة متاحة</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body">
+                        <i class="fas fa-university fa-3x text-success mb-3"></i>
+                        <h3 class="fw-bold">{{ universities_count }}</h3>
+                        <p class="text-muted">جامعة</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x text-info mb-3"></i>
+                        <h3 class="fw-bold">{{ users_count|default:0 }}</h3>
+                        <p class="text-muted">مستخدم</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="card border-0 h-100">
+                    <div class="card-body">
+                        <i class="fas fa-calendar-check fa-3x text-warning mb-3"></i>
+                        <h3 class="fw-bold">{{ bookings_count|default:0 }}</h3>
+                        <p class="text-muted">حجز مكتمل</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Apartments -->
+{% if featured_apartments %}
+<div class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">الشقق المميزة</h2>
+            <p class="text-muted">اكتشف أفضل الشقق المتاحة للإيجار</p>
+        </div>
+        
         <div class="row">
-            <div class="col-lg-8 col-md-10 mx-auto text-center">
-                <h1 class="hero-title fade-in delay-1">ابحث عن سكن قريب من جامعتك</h1>
-                <p class="hero-subtitle fade-in delay-2">منصة سكن طالب تساعدك في العثور على شقة مناسبة بالقرب من جامعتك بأسعار تناسب ميزانيتك</p>
-                
-                <div class="search-box fade-in delay-3">
-                    <form action="{% url 'apartment_list' %}" method="get">
-                        <div class="row g-3">
-                            <div class="col-md-5">
-                                <select name="university" class="form-select form-control">
-                                    <option value="">اختر الجامعة</option>
-                                    {% for university in universities %}
-                                    <option value="{{ university.id }}">{{ university.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <select name="apartment_type" class="form-select form-control">
-                                    <option value="">نوع السكن</option>
-                                    <option value="studio">استوديو</option>
-                                    <option value="1bhk">غرفة وصالة</option>
-                                    <option value="2bhk">غرفتين وصالة</option>
-                                    <option value="3bhk">ثلاث غرف وصالة</option>
-                                    <option value="shared">سكن مشترك</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary flex-grow-1">بحث</button>
-                                </div>
-                            </div>
+            {% for apartment in featured_apartments %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if apartment.images.first %}
+                        <img src="{{ apartment.images.first.image.url }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="{{ apartment.title }}">
+                    {% else %}
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-home fa-3x text-muted"></i>
                         </div>
-                        
-                        <!-- خيارات بحث إضافية -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-center">
-                                    <a class="btn btn-light btn-sm px-3 py-1" data-bs-toggle="collapse" href="#advancedSearch" role="button" aria-expanded="false">
-                                        خيارات بحث متقدمة <i class="fas fa-chevron-down ms-1"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="collapse mt-3" id="advancedSearch">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">من</span>
-                                        <input type="number" name="min_price" class="form-control" placeholder="السعر الأدنى">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="input-group">
-                                        <span class="input-group-text">إلى</span>
-                                        <input type="number" name="max_price" class="form-control" placeholder="السعر الأقصى">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <select name="bedrooms" class="form-select">
-                                        <option value="">عدد الغرف</option>
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3+</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mt-3">
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="furnished" id="furnished">
-                                        <label class="form-check-label text-white" for="furnished">
-                                            مفروش
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="has_wifi" id="has_wifi">
-                                        <label class="form-check-label text-white" for="has_wifi">
-                                            واي فاي
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="has_ac" id="has_ac">
-                                        <label class="form-check-label text-white" for="has_ac">
-                                            تكييف
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- قسم الإحصائيات -->
-<div class="container stats-section fade-in">
-    <div class="row text-center">
-        <div class="col-12 mb-5">
-            <h2 class="section-title text-center mx-auto">إحصائيات المنصة</h2>
-        </div>
-        <div class="col-md-3 col-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-home"></i>
-                </div>
-                <div class="stat-number" data-count="{{ apartments_count }}">0</div>
-                <div class="stat-title">شقة متاحة</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-university"></i>
-                </div>
-                <div class="stat-number" data-count="{{ universities_count }}">0</div>
-                <div class="stat-title">جامعة</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <div class="stat-number" data-count="{{ users_count }}">0</div>
-                <div class="stat-title">مستخدم مسجل</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-number" data-count="{{ bookings_count }}">0</div>
-                <div class="stat-title">حجز ناجح</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- إحصائيات إضافية -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="stats-details p-4 bg-white rounded-3 shadow-sm">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-3">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <div class="stat-icon-small me-3" style="background-color: rgba(255, 90, 95, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-user-graduate" style="color: var(--primary-color);"></i>
-                            </div>
-                            <div class="text-start">
-                                <div class="small text-muted">عدد الطلاب</div>
-                                <div class="fw-bold">{{ students_count }} طالب</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <div class="stat-icon-small me-3" style="background-color: rgba(0, 166, 153, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-user-tie" style="color: var(--secondary-color);"></i>
-                            </div>
-                            <div class="text-start">
-                                <div class="small text-muted">عدد الملاك</div>
-                                <div class="fw-bold">{{ owners_count }} مالك</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="d-flex align-items-center justify-content-center">
-                            <div class="stat-icon-small me-3" style="background-color: rgba(255, 193, 7, 0.1); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-percentage" style="color: #ffc107;"></i>
-                            </div>
-                            <div class="text-start">
-                                <div class="small text-muted">نسبة الشغل</div>
-                                <div class="fw-bold">{{ bookings_count|default:0|floatformat:0 }}%</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Featured Apartments Section -->
-<div class="container fade-in">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="section-title">الشقق المميزة</h2>
-        </div>
-        <div class="col-md-4 text-end">
-            <a href="{% url 'apartment_list' %}" class="btn btn-outline-primary">عرض جميع الشقق</a>
-        </div>
-    </div>
-
-    <div class="row">
-        {% for apartment in featured_apartments %}
-        <div class="col-md-4 mb-4">
-            <div class="card featured-apartment-card h-100">
-                <div class="price-tag">{{ apartment.price }} جنيه/شهر</div>
-                <div class="university-tag">{{ apartment.university.name }}</div>
-                <div style="position: relative;">
-                    {% if apartment.has_approved_booking %}
-                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 5; display: flex; align-items: center; justify-content: center;">
-                        <div class="bg-danger text-white p-2 rounded" style="transform: rotate(-15deg); font-weight: bold; font-size: 1.5rem;">محجوزة</div>
-                    </div>
                     {% endif %}
                     
-                    <!-- بادج الجنس -->
-                    {% if apartment.gender != 'all' %}
-                    <div style="position: absolute; top: 60px; right: 10px; z-index: 10;">
-                        {% if apartment.gender == 'male' %}
-                        <div class="badge bg-primary p-2">
-                            <i class="fas fa-male me-1"></i> للذكور
-                        </div>
-                        {% elif apartment.gender == 'female' %}
-                        <div class="badge bg-danger p-2">
-                            <i class="fas fa-female me-1"></i> للإناث
-                        </div>
-                        {% endif %}
-                    </div>
-                    {% endif %}
-                    {% if apartment.images.first %}
-                    <img src="{{ apartment.images.first.image.url }}" class="card-img-top" alt="{{ apartment.title }}">
-                    {% else %}
-                    <div class="bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 240px;">
-                        <p class="m-0">لا توجد صورة</p>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="card-title mb-0">
-                            {{ apartment.title }}
-                        </h5>
-                        <!-- زر المفضلة -->
-                        <button class="btn btn-sm btn-light rounded-circle p-1 wishlist-btn" data-id="{{ apartment.id }}" data-in-wishlist="{% if apartment.id in wishlist_apartments %}true{% else %}false{% endif %}">
-                            <i class="{% if apartment.id in wishlist_apartments %}fas{% else %}far{% endif %} fa-heart" style="{% if apartment.id in wishlist_apartments %}color: red;{% endif %}"></i>
-                        </button>
-                    </div>
-                    <p class="card-text text-muted small">
-                        <i class="fas fa-map-marker-alt me-1"></i> {{ apartment.address }}
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span><i class="fas fa-bed me-1"></i> {{ apartment.bedrooms }}</span>
-                            <span class="ms-3"><i class="fas fa-bath me-1"></i> {{ apartment.bathrooms }}</span>
-                            <span class="ms-3"><i class="fas fa-ruler-combined me-1"></i> {{ apartment.area }} م²</span>
-                        </div>
-                    </div>
-                    <div class="apartment-features mt-3">
-                        <span class="feature-badge">{{ apartment.get_apartment_type_display }}</span>
-                        {% if apartment.furnished %}<span class="feature-badge">مفروش</span>{% endif %}
-                        {% if apartment.has_wifi %}<span class="feature-badge">واي فاي</span>{% endif %}
-                    </div>
-                    <div class="mt-2 text-muted small">
-                        <i class="fas fa-eye me-1"></i> {{ apartment.views_count }} مشاهدة
-                    </div>
-                </div>
-                <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center">
-                    <div>
-                        <div>
-                            <i class="fas fa-university me-1 text-primary"></i>
-                            <span class="small">{{ apartment.distance_to_university }} كم من الجامعة</span>
-                        </div>
-                        <div class="mt-1">
-                            {% if apartment.walking_time %}
-                            <span class="small me-2"><i class="fas fa-walking text-info"></i> {{ apartment.walking_time }} د</span>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ apartment.title }}</h5>
+                        <p class="card-text text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ apartment.address|truncatechars:30 }}
+                        </p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h5 text-success mb-0">{{ apartment.price }} ج.م</span>
+                            {% if apartment.apartment_type == 'studio' %}
+                                <span class="badge bg-warning">شقة</span>
+                            {% elif apartment.apartment_type == 'room' %}
+                                <span class="badge bg-primary">غرفة</span>
+                            {% elif apartment.apartment_type == 'bed' %}
+                                <span class="badge bg-success">سرير</span>
                             {% endif %}
-                            {% if apartment.driving_time %}
-                            <span class="small"><i class="fas fa-car text-danger"></i> {{ apartment.driving_time }} د</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            {% if apartment.furnished %}
+                                <span class="badge bg-light text-dark me-1">مفروش</span>
+                            {% endif %}
+                            {% if apartment.has_wifi %}
+                                <span class="badge bg-light text-dark me-1">واي فاي</span>
+                            {% endif %}
+                            {% if apartment.has_ac %}
+                                <span class="badge bg-light text-dark">مكيف</span>
                             {% endif %}
                         </div>
                     </div>
-                    <a href="{% url 'apartment_detail' apartment.id %}" class="btn btn-sm btn-outline-primary">عرض التفاصيل</a>
-                </div>
-            </div>
-        </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                لا توجد شقق متاحة حالياً
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- Universities Section -->
-<div class="container mt-5 pt-3 fade-in">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="section-title">الجامعات المتوفرة</h2>
-        </div>
-    </div>
-
-    <div class="row">
-        {% for university in universities %}
-        <div class="col-md-4 mb-4">
-            <div class="university-card">
-                <img src="{{ university.get_image_url }}" alt="{{ university.name }}">
-                <div class="overlay">
-                    <div>
-                        <h4>{{ university.name }}</h4>
-                        <p>{{ university.city }}</p>
-                        <a href="{% url 'apartment_list' %}?university={{ university.id }}" class="btn btn-light">عرض الشقق القريبة</a>
+                    
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'apartment_detail' apartment.pk %}" class="btn btn-primary w-100">
+                            عرض التفاصيل
+                        </a>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                لا توجد جامعات مسجلة حالياً
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<!-- How It Works Section -->
-<div class="container-fluid how-it-works-section fade-in">
-    <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="section-title d-inline-block">كيف يعمل الموقع</h2>
-            </div>
-        </div>
-
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-search fa-2x"></i>
-                    </div>
-                    <h4>ابحث</h4>
-                    <p class="text-muted">ابحث عن شقق قريبة من جامعتك بمواصفات تناسب احتياجاتك</p>
-                    <ul class="list-unstyled text-start mt-3">
-                        <li><i class="fas fa-check-circle text-success me-2"></i> تصفية حسب السعر والموقع</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i> مقارنة بين الخيارات المتاحة</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i> عرض الصور والتفاصيل الكاملة</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-home fa-2x"></i>
-                    </div>
-                    <h4>احجز</h4>
-                    <p class="text-muted">احجز شقتك المفضلة بسهولة من خلال منصتنا</p>
-                    <ul class="list-unstyled text-start mt-3">
-                        <li><i class="fas fa-check-circle text-success me-2"></i> إجراءات حجز بسيطة وسريعة</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i> تواصل مباشر مع المالك</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i> تأكيد الحجز إلكترونياً</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-graduation-cap fa-2x"></i>
-                    </div>
-                    <h4>ركز على دراستك</h4>
-                    <p class="text-muted">استمتع بسكن مريح قريب من جامعتك وركز على دراستك</p>
-                    <ul class="list-unstyled text-start mt-3">
-                        <li><i class="fas fa-check-circle text-success me-2"></i> توفير الوقت والجهد</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i> سكن قريب من الجامعة</li>
-                        <li><i class="fas fa-check-circle text-success me-2"></i> بيئة مناسبة للدراسة</li>
-                    </ul>
-                </div>
-            </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'apartment_list' %}" class="btn btn-outline-primary btn-lg">
+                عرض جميع الشقق
+            </a>
         </div>
     </div>
 </div>
-
-<!-- قسم الشهادات -->
-{% include 'apartments/testimonials.html' %}
+{% endif %}
 
 <!-- CTA Section -->
-<div class="container fade-in">
-    <div class="row">
-        <div class="col-12">
-            <div class="cta-section">
-                <div class="row align-items-center">
-                    <div class="col-lg-8 col-md-7">
-                        <h3>هل أنت مالك عقار؟</h3>
-                        <p>أضف شقتك إلى منصتنا وابدأ في استقبال الحجوزات من الطلاب. الآلاف من الطلاب يبحثون عن سكن قريب من جامعاتهم.</p>
-                    </div>
-                    <div class="col-lg-4 col-md-5 text-center">
-                        {% if user.is_authenticated and user.profile.user_type == 'owner' %}
-                        <div class="property-add-options">
-                            <a href="{% url 'add_apartment' %}" class="property-option">
-                                <div class="property-icon">
-                                    <i class="fas fa-building"></i>
-                                </div>
-                                <div class="property-text">
-                                    <h5>أضف شقة</h5>
-                                    <p>شقة كاملة للإيجار</p>
-                                </div>
-                            </a>
-                            <a href="{% url 'add_room' %}" class="property-option">
-                                <div class="property-icon">
-                                    <i class="fas fa-door-open"></i>
-                                </div>
-                                <div class="property-text">
-                                    <h5>أضف غرفة</h5>
-                                    <p>غرفة في شقة مشتركة</p>
-                                </div>
-                            </a>
-                            <a href="{% url 'add_bed' %}" class="property-option">
-                                <div class="property-icon">
-                                    <i class="fas fa-bed"></i>
-                                </div>
-                                <div class="property-text">
-                                    <h5>أضف سرير</h5>
-                                    <p>سرير في غرفة مشتركة</p>
-                                </div>
-                            </a>
-                        </div>
-                        <style>
-                            .property-add-options {
-                                display: flex;
-                                flex-direction: column;
-                                gap: 15px;
-                                max-width: 400px;
-                                margin: 0 auto;
-                            }
-                            .property-option {
-                                display: flex;
-                                align-items: center;
-                                padding: 15px;
-                                border-radius: 10px;
-                                background-color: #fff;
-                                box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-                                transition: all 0.3s ease;
-                                text-decoration: none;
-                                color: #333;
-                            }
-                            .property-option:hover {
-                                transform: translateY(-3px);
-                                box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-                                background-color: #f8f9fa;
-                            }
-                            .property-icon {
-                                width: 50px;
-                                height: 50px;
-                                border-radius: 50%;
-                                background-color: rgba(var(--bs-primary-rgb), 0.1);
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                margin-left: 15px;
-                                font-size: 1.5rem;
-                                color: var(--bs-primary);
-                            }
-                            .property-text {
-                                flex: 1;
-                            }
-                            .property-text h5 {
-                                margin-bottom: 5px;
-                                font-weight: 600;
-                            }
-                            .property-text p {
-                                margin-bottom: 0;
-                                font-size: 0.9rem;
-                                color: #6c757d;
-                            }
-                        </style>
-                        {% elif user.is_authenticated %}
-                        <a href="/users/profile/" class="btn btn-light btn-lg">تغيير نوع الحساب</a>
-                        {% else %}
-                        <a href="{% url 'register' %}" class="btn btn-light btn-lg">سجل كمالك عقار</a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="bg-primary text-white py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">هل لديك شقة للإيجار؟</h2>
+        <p class="lead mb-4">انضم إلى منصتنا وابدأ في تأجير شقتك اليوم</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'add_apartment' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-plus me-2"></i>أضف شقتك الآن
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>سجل الآن
+            </a>
+        {% endif %}
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<!-- Wishlist JS -->
-<script src="/static/js/wishlist.js"></script>
-<script>
-    // تحريك الصفحة بسلاسة عند النقر على الروابط
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
-    
-    // تفعيل تأثيرات الظهور عند التمرير
-    document.addEventListener('DOMContentLoaded', function() {
-        // تفعيل العناصر المرئية عند تحميل الصفحة
-        document.querySelectorAll('.fade-in').forEach(element => {
-            element.classList.add('active');
-        });
-        
-        // تفعيل عداد الإحصائيات
-        const statNumbers = document.querySelectorAll('.stat-number');
-        
-        statNumbers.forEach(stat => {
-            const target = parseInt(stat.getAttribute('data-count'));
-            const duration = 2000; // مدة العد بالمللي ثانية
-            const step = target / (duration / 16); // 16ms لكل إطار (60fps)
-            let current = 0;
-            
-            const updateCounter = () => {
-                current += step;
-                if (current < target) {
-                    stat.textContent = Math.floor(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    stat.textContent = target;
-                }
-            };
-            
-            // بدء العد عندما يكون العنصر مرئياً
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        requestAnimationFrame(updateCounter);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.5 });
-            
-            observer.observe(stat);
-        });
-    });
-</script>
 {% endblock %}
