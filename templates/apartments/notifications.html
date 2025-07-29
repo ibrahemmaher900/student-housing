@@ -1,245 +1,422 @@
-{% extends 'base/base.html' %}
+{% extends 'base/base_updated.html' %}
+{% load static %}
 
-{% block title %}سكن طالب{% endblock %}
+{% block title %}التنبيهات{% endblock %}
 
 {% block extra_css %}
 <style>
-    .notification-item {
+    .notifications-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 1rem 1rem;
+    }
+    .notification-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: all 0.2s;
         border-right: 4px solid transparent;
-        transition: all 0.2s ease;
-        margin-bottom: 10px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
-    .notification-item:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    .notification-card:hover {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        transform: translateY(-1px);
     }
-    .notification-item.unread {
-        border-right-color: #007bff;
-        background-color: rgba(0,123,255,0.05);
+    .notification-card.unread {
+        border-right-color: var(--primary);
+        background: #fff8f0;
     }
-    
+    .notification-card.read {
+        border-right-color: #e5e7eb;
+        opacity: 0.8;
+    }
     .notification-icon {
-        width: 50px;
-        height: 50px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.2rem;
-        margin-left: 15px;
-    }
-    
-    .notification-filters {
-        margin-bottom: 20px;
-        background-color: #fff;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    
-    .notification-filters .btn-group .btn {
-        border-radius: 20px;
-        margin-left: 5px;
-        font-size: 14px;
-        padding: 8px 15px;
-    }
-    
-    .notification-date {
-        font-size: 12px;
-        color: #6c757d;
-    }
-    
-    .notification-actions {
-        visibility: hidden;
-        opacity: 0;
-        transition: all 0.2s ease;
-    }
-    
-    .notification-item:hover .notification-actions {
-        visibility: visible;
-        opacity: 1;
-    }
-    
-    .notification-header {
-        background: linear-gradient(135deg, rgba(0, 123, 255, 0.9) 0%, rgba(0, 166, 153, 0.9) 100%);
-        padding: 20px;
-        border-radius: 8px;
         color: white;
-        margin-bottom: 20px;
     }
+    .notification-icon.booking_request { background: #3b82f6; }
+    .notification-icon.booking_approved { background: #10b981; }
+    .notification-icon.booking_rejected { background: #ef4444; }
+    .notification-icon.apartment_approved { background: #10b981; }
+    .notification-icon.apartment_rejected { background: #ef4444; }
+    .notification-icon.apartment_pending { background: #f59e0b; }
+    .notification-icon.new_comment { background: #8b5cf6; }
+    .notification-icon.comment_reply { background: #06b6d4; }
     
-    .notification-count {
-        background-color: rgba(255,255,255,0.2);
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-weight: 600;
+    .filter-tabs {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    
-    .notification-empty {
+    .filter-tabs .nav-link {
+        border: none;
+        color: #666;
+        font-weight: 500;
+        border-radius: 8px;
+        margin: 0 0.25rem;
+    }
+    .filter-tabs .nav-link.active {
+        background: var(--primary);
+        color: white;
+    }
+    .notification-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    .notification-time {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+    .bulk-actions {
+        background: white;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .empty-state {
         text-align: center;
-        padding: 40px 20px;
+        padding: 3rem 0;
+        color: #6b7280;
     }
-    
-    .notification-empty i {
+    .empty-state i {
         font-size: 4rem;
-        color: #dee2e6;
-        margin-bottom: 20px;
+        margin-bottom: 1rem;
+        opacity: 0.5;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <!-- رأس الصفحة -->
-    <div class="notification-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2 class="mb-1">التنبيهات</h2>
-                <p class="mb-0">اطلع على آخر التحديثات والإشعارات</p>
+<div class="notifications-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-bell me-2"></i>التنبيهات</h1>
+                <p class="mb-0">تابع جميع التحديثات والإشعارات الخاصة بك</p>
             </div>
-            <div class="notification-count">
-                {{ notifications.count }} تنبيه
-                {% if unread_count %}
-                <span class="ms-2 badge bg-danger">{{ unread_count }} جديد</span>
-                {% endif %}
+            <div class="col-md-4 text-end">
+                <span class="badge bg-light text-dark fs-6">
+                    {{ unread_count }} غير مقروء
+                </span>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- فلاتر التنبيهات -->
+    <div class="filter-tabs">
+        <ul class="nav nav-pills justify-content-center" id="filterTabs">
+            <li class="nav-item">
+                <a class="nav-link {% if not filter_status and not filter_type %}active{% endif %}" 
+                   href="{% url 'notifications_list' %}">
+                    الكل
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if filter_status == 'unread' %}active{% endif %}" 
+                   href="{% url 'notifications_list' %}?status=unread">
+                    غير مقروء
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if filter_status == 'read' %}active{% endif %}" 
+                   href="{% url 'notifications_list' %}?status=read">
+                    مقروء
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if filter_type == 'booking_request' %}active{% endif %}" 
+                   href="{% url 'notifications_list' %}?type=booking_request">
+                    طلبات الحجز
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if filter_type == 'apartment_approved' %}active{% endif %}" 
+                   href="{% url 'notifications_list' %}?type=apartment_approved">
+                    موافقات الشقق
+                </a>
+            </li>
+        </ul>
     </div>
 
-    {% if notifications %}
-    <!-- فلاتر التنبيهات -->
-    <div class="notification-filters">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="btn-group" role="group">
-                <button type="button" class="btn btn-sm btn-primary active" data-filter="all">الكل</button>
-                <button type="button" class="btn btn-sm btn-outline-primary" data-filter="booking">الحجوزات</button>
-                <button type="button" class="btn btn-sm btn-outline-primary" data-filter="apartment">الشقق</button>
-                <button type="button" class="btn btn-sm btn-outline-danger" data-filter="unread">غير مقروءة</button>
+    <!-- أدوات الإجراءات المجمعة -->
+    {% if page_obj.object_list %}
+    <div class="bulk-actions">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAll">
+                    <label class="form-check-label" for="selectAll">
+                        تحديد الكل
+                    </label>
+                </div>
             </div>
-            {% if unread_count %}
-            <a href="{% url 'mark_all_read' %}" class="btn btn-sm btn-outline-success">
-                <i class="fas fa-check-double me-1"></i> تعليم الكل كمقروء
-            </a>
-            {% endif %}
+            <div class="col-md-6 text-end">
+                <button type="button" class="btn btn-primary btn-sm" onclick="markAllAsRead()">
+                    <i class="fas fa-check me-1"></i>تعيين كمقروء
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteSelected()">
+                    <i class="fas fa-trash me-1"></i>حذف المحدد
+                </button>
+                {% if filter_status != 'unread' %}
+                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deleteAllRead()">
+                    <i class="fas fa-trash-alt me-1"></i>حذف المقروء
+                </button>
+                {% endif %}
+            </div>
         </div>
     </div>
-    
+    {% endif %}
+
     <!-- قائمة التنبيهات -->
-    <div class="notification-list" id="notifications-list">
-        {% for notification in notifications %}
-        <div class="notification-item p-3 {% if not notification.is_read %}unread{% endif %}" 
-             data-id="{{ notification.id }}" 
-             data-type="{{ notification.notification_type }}">
-            <div class="notification-header-row d-flex align-items-center mb-3">
-                <div class="notification-icon me-2 
-                    {% if notification.notification_type == 'booking_request' %}bg-primary
-                    {% elif notification.notification_type == 'booking_approved' %}bg-success
-                    {% elif notification.notification_type == 'booking_rejected' %}bg-danger
-                    {% elif 'apartment_approved' == notification.notification_type %}bg-success
-                    {% elif 'apartment_rejected' == notification.notification_type %}bg-danger
-                    {% elif 'apartment_pending' == notification.notification_type %}bg-warning
-                    {% elif 'non_serious_booking' == notification.notification_type %}bg-warning text-dark
-                    {% elif 'user_banned' == notification.notification_type %}bg-dark
-                    {% else %}bg-info{% endif %} text-white">
-                    <i class="fas 
-                        {% if 'booking' in notification.notification_type %}fa-calendar-check
-                        {% elif 'apartment' in notification.notification_type %}fa-home
-                        {% elif 'user_banned' in notification.notification_type %}fa-ban
-                        {% elif 'comment' in notification.notification_type %}fa-comment
-                        {% else %}fa-bell{% endif %}"></i>
+    {% for notification in page_obj %}
+    <div class="notification-card {% if not notification.is_read %}unread{% else %}read{% endif %}">
+        <div class="row align-items-center">
+            <div class="col-md-1">
+                <div class="form-check">
+                    <input class="form-check-input notification-checkbox" type="checkbox" 
+                           value="{{ notification.id }}">
                 </div>
-                <h5 class="mb-0 fw-bold">{{ notification.get_notification_type_display }}</h5>
-                {% if not notification.is_read %}
-                <div class="ms-auto">
-                    <span class="badge bg-danger rounded-circle p-2" style="width: 15px; height: 15px;"></span>
-                </div>
-                {% endif %}
             </div>
-            
-            <div class="notification-body">
-                <p class="mb-3">{{ notification.message }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="notification-date">
-                        <i class="far fa-clock me-1"></i> {{ notification.created_at|date:"j F Y, g:i a" }}
-                    </div>
-                    <div class="notification-actions">
-                        <a href="{% url 'mark_notification_as_read' notification.id %}" class="btn btn-sm btn-primary">
-                            <i class="fas fa-eye me-1"></i> عرض
-                        </a>
-                        <a href="{% url 'delete_notification' notification.id %}" class="btn btn-sm btn-outline-danger" 
-                           onclick="return confirm('هل أنت متأكد من حذف هذا التنبيه؟')">
-                            <i class="fas fa-trash"></i>
-                        </a>
+            <div class="col-md-1">
+                <div class="notification-icon {{ notification.notification_type }}">
+                    {% if notification.notification_type == 'booking_request' %}
+                        <i class="fas fa-calendar-plus"></i>
+                    {% elif notification.notification_type == 'booking_approved' %}
+                        <i class="fas fa-check-circle"></i>
+                    {% elif notification.notification_type == 'booking_rejected' %}
+                        <i class="fas fa-times-circle"></i>
+                    {% elif notification.notification_type == 'apartment_approved' %}
+                        <i class="fas fa-home"></i>
+                    {% elif notification.notification_type == 'apartment_rejected' %}
+                        <i class="fas fa-home"></i>
+                    {% elif notification.notification_type == 'apartment_pending' %}
+                        <i class="fas fa-clock"></i>
+                    {% elif notification.notification_type == 'new_comment' %}
+                        <i class="fas fa-comment"></i>
+                    {% elif notification.notification_type == 'comment_reply' %}
+                        <i class="fas fa-reply"></i>
+                    {% else %}
+                        <i class="fas fa-bell"></i>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-7">
+                <div class="notification-content">
+                    <p class="mb-1 {% if not notification.is_read %}fw-bold{% endif %}">
+                        {{ notification.message }}
+                    </p>
+                    <div class="notification-time">
+                        <i class="fas fa-clock me-1"></i>
+                        {{ notification.created_at|timesince }} مضت
                     </div>
                 </div>
             </div>
-            
-            {% if notification.related_apartment or notification.related_booking %}
-            <div class="mt-3 pt-2 border-top">
-                {% if notification.related_apartment %}
-                <a href="{% url 'apartment_detail' notification.related_apartment.id %}" class="btn btn-sm btn-outline-info">
-                    <i class="fas fa-home me-1"></i> عرض الشقة
-                </a>
-                {% endif %}
-                
-                {% if notification.related_booking %}
-                <a href="{% if user.profile.user_type == 'owner' %}{% url 'manage_bookings' %}{% else %}{% url 'my_bookings' %}{% endif %}" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-calendar-check me-1"></i> عرض الحجز
-                </a>
-                {% endif %}
+            <div class="col-md-3 text-end">
+                <div class="notification-actions">
+                    {% if not notification.is_read %}
+                        <button class="btn btn-outline-primary btn-sm" 
+                                onclick="markAsRead({{ notification.id }})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    {% endif %}
+                    <a href="{% url 'mark_notification_as_read' notification.id %}" 
+                       class="btn btn-primary btn-sm">
+                        <i class="fas fa-external-link-alt"></i>
+                    </a>
+                    <button class="btn btn-outline-danger btn-sm" 
+                            onclick="deleteNotification({{ notification.id }})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <i class="fas fa-bell-slash"></i>
+        <h4>لا توجد تنبيهات</h4>
+        <p>ستظهر هنا جميع التنبيهات والإشعارات الخاصة بك</p>
+    </div>
+    {% endfor %}
+
+    <!-- ترقيم الصفحات -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="ترقيم الصفحات" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filter_type %}&type={{ filter_type }}{% endif %}{% if filter_status %}&status={{ filter_status }}{% endif %}">
+                        السابق
+                    </a>
+                </li>
             {% endif %}
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <!-- لا توجد تنبيهات -->
-    <div class="card">
-        <div class="card-body notification-empty">
-            <i class="far fa-bell-slash"></i>
-            <h4>لا توجد تنبيهات حالياً</h4>
-            <p class="text-muted">ستظهر هنا التنبيهات الخاصة بالحجوزات والشقق وغيرها</p>
-        </div>
-    </div>
+            
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if filter_type %}&type={{ filter_type }}{% endif %}{% if filter_status %}&status={{ filter_status }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filter_type %}&type={{ filter_type }}{% endif %}{% if filter_status %}&status={{ filter_status }}{% endif %}">
+                        التالي
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
     {% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // تصفية الإشعارات
-        const filterButtons = document.querySelectorAll('.notification-filters .btn');
-        const notificationItems = document.querySelectorAll('.notification-item');
-        
-        filterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                // إزالة الفلتر النشط
-                filterButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.classList.remove('btn-primary');
-                    btn.classList.add('btn-outline-primary');
-                });
-                
-                this.classList.add('active');
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('btn-primary');
-                
-                const filter = this.getAttribute('data-filter');
-                
-                notificationItems.forEach(item => {
-                    if (filter === 'all') {
-                        item.style.display = 'block';
-                    } else if (filter === 'unread') {
-                        item.style.display = item.classList.contains('unread') ? 'block' : 'none';
-                    } else {
-                        const type = item.getAttribute('data-type');
-                        item.style.display = type.includes(filter) ? 'block' : 'none';
-                    }
-                });
+// تحديد/إلغاء تحديد جميع التنبيهات
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.notification-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+});
+
+// تعيين جميع التنبيهات كمقروءة
+function markAllAsRead() {
+    if (confirm('هل تريد تعيين جميع التنبيهات كمقروءة؟')) {
+        fetch('{% url "mark_all_read" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+// تعيين تنبيه واحد كمقروء
+function markAsRead(notificationId) {
+    fetch(`/notifications/${notificationId}/read/api/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+// حذف تنبيه واحد
+function deleteNotification(notificationId) {
+    if (confirm('هل تريد حذف هذا التنبيه؟')) {
+        fetch(`/notifications/${notificationId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+// حذف التنبيهات المحددة
+function deleteSelected() {
+    const selectedIds = getSelectedIds();
+    if (selectedIds.length === 0) {
+        alert('يرجى تحديد تنبيه واحد على الأقل');
+        return;
+    }
+    
+    if (confirm(`هل تريد حذف ${selectedIds.length} تنبيه؟`)) {
+        // تنفيذ حذف متعدد (يحتاج إضافة endpoint)
+        selectedIds.forEach(id => {
+            fetch(`/notifications/${id}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
             });
         });
-    });
+        
+        setTimeout(() => location.reload(), 1000);
+    }
+}
+
+// حذف جميع التنبيهات المقروءة
+function deleteAllRead() {
+    if (confirm('هل تريد حذف جميع التنبيهات المقروءة؟')) {
+        fetch('{% url "delete_all_read" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+// الحصول على معرفات التنبيهات المحددة
+function getSelectedIds() {
+    const checkboxes = document.querySelectorAll('.notification-checkbox:checked');
+    return Array.from(checkboxes).map(cb => cb.value);
+}
+
+// الحصول على قيمة الكوكي
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 {% endblock %}
