@@ -1,7 +1,5 @@
 {% extends 'base/base.html' %}
-{% load static %}
-
-{% block title %}لوحة التحكم - الإدارة{% endblock %}
+{% block title %}لوحة تحكم الإدارة{% endblock %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -293,25 +291,4 @@
         </div>
     </div>
 </div>
-
-<style>
-.card {
-    border: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-}
-
-.table th {
-    border-top: none;
-    font-weight: 600;
-}
-
-.badge {
-    font-size: 0.75rem;
-}
-</style>
 {% endblock %}

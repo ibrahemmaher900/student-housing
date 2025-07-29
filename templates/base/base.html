@@ -229,6 +229,38 @@
                 </div>
             </div>
         </section>
+        <section class="container mt-5">
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-2 col-6">
+                    <div class="feature-card text-center" style="background:var(--card);">
+                        <div class="feature-icon"><i class="fas fa-home"></i></div>
+                        <h3 class="fw-bold" style="color:var(--primary);">{{ apartments_count|default:0 }}</h3>
+                        <div class="text-muted">شقة متاحة</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6">
+                    <div class="feature-card text-center" style="background:var(--card);">
+                        <div class="feature-icon"><i class="fas fa-university"></i></div>
+                        <h3 class="fw-bold" style="color:var(--primary-dark);">{{ universities_count|default:0 }}</h3>
+                        <div class="text-muted">جامعة</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6">
+                    <div class="feature-card text-center" style="background:var(--card);">
+                        <div class="feature-icon"><i class="fas fa-users"></i></div>
+                        <h3 class="fw-bold" style="color:var(--secondary);">{{ users_count|default:0 }}</h3>
+                        <div class="text-muted">مستخدم</div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-6">
+                    <div class="feature-card text-center" style="background:var(--card);">
+                        <div class="feature-icon"><i class="fas fa-calendar-check"></i></div>
+                        <h3 class="fw-bold" style="color:var(--accent);">{{ bookings_count|default:0 }}</h3>
+                        <div class="text-muted">حجز ناجح</div>
+                    </div>
+                </div>
+            </div>
+        </section>
         <section class="container apartment-listing">
             <h3 class="mb-4 mt-5 text-primary">أحدث الشقق المضافة</h3>
             <div class="row g-4">

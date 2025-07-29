@@ -73,11 +73,11 @@
                                             <td>{{ user.email }}</td>
                                             <td>{{ user.profile.get_user_type_display }}</td>
                                             <td>
-                                                <button class="btn btn-sm btn-danger" onclick="manualBanUser({{ user.id }})">
+                                                <button class="btn btn-sm btn-danger" onclick="manualBanUser('{{ user.id }}')">
                                                     <i class="fas fa-ban"></i> حظر المستخدم
                                                 </button>
-                                                <button class="btn btn-sm btn-success" onclick="resetReports({{ user.id }})">
-                                                    <i class="fas fa-redo"></i> إعادة ضبط الإبلاغات
+                                                <button class="btn btn-sm btn-success" onclick="resetReports('{{ user.id }}')">
+                                                    <i class="fas fa-undo"></i> إعادة ضبط الإبلاغات
                                                 </button>
                                             </td>
                                         </tr>
